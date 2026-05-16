@@ -1,0 +1,47 @@
+.ctaSection {
+  padding-top: calc(var(--mantine-spacing-xl) * 2.5); /* Generous padding */
+  padding-bottom: calc(var(--mantine-spacing-xl) * 2.5);
+  text-align: center;
+  position: relative;
+  z-index: 3;
+  /* Light, inviting background - perhaps a very subtle primary tint or a clean light gray */
+  /* background-color: var(--mantine-color-blue-0); */
+  /* Optional: Add a very subtle pattern for texture if desired, ensure it's light */
+  /* background-image: url('/images/light-molecular-pattern.svg'); */
+  /* background-blend-mode: overlay; */
+  background-color: rgba(
+    var(--mantine-color-white-rgb),
+    0.75
+  ); /* Slightly transparent white */
+  backdrop-filter: blur(2px);
+}
+
+.ctaContainer {
+  max-width: var(--mantine-container-width-sm);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+}
+
+.title {
+  font-family: "Lexend", sans-serif;
+  font-size: clamp(2rem, 4.5vw, 2.8rem); /* Powerful CTA title */
+  color: var(--mantine-color-black);
+  margin-bottom: var(--mantine-spacing-md);
+}
+
+.description {
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-lg);
+  margin-bottom: var(--mantine-spacing-xl);
+  line-height: 1.65;
+}
+
+.button {
+  /* Inheriting from Hero's primary button for consistency */
+  composes: ctaButtonPrimary from "./HeroSection.module.css";
+  /* Override if specific changes needed for this CTA button */
+  padding: var(--mantine-spacing-lg) var(--mantine-spacing-xl); /* Larger button */
+  font-size: var(--mantine-font-size-lg);
+}

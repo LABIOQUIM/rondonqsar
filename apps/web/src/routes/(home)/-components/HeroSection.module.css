@@ -1,0 +1,99 @@
+.hero {
+  min-height: calc(100dvh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  padding: var(--mantine-spacing-xl) var(--mantine-spacing-md);
+  background-color: rgba(
+    var(--mantine-color-white-rgb),
+    0.75
+  ); /* Slightly transparent white */
+  backdrop-filter: blur(2px);
+  /* Optional: A very subtle gradient at the top if particles are too distracting */
+  /* background: linear-gradient(to bottom, rgba(var(--mantine-color-white-rgb),0.3) 0%, transparent 20%); */
+}
+
+.heroContainer {
+  max-width: var(--mantine-container-width-md);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 3;
+}
+
+.title {
+  font-family: "Lexend", sans-serif;
+  font-size: clamp(2.8rem, 6vw, 4.2rem);
+  font-weight: 700;
+  color: var(--mantine-color-black); /* Strong black for title */
+  line-height: 1.15;
+  margin-bottom: var(--mantine-spacing-lg); /* Increased margin */
+  /* No text-shadow for cleaner light theme, or a very subtle one */
+  /* text-shadow: 0 1px 2px rgba(var(--mantine-color-gray-4-rgb), 0.2); */
+}
+
+.subtitle {
+  font-size: clamp(1.1rem, 2.5vw, 1.35rem); /* Slightly larger base */
+  color: var(--mantine-color-gray-7); /* Dark gray for readability */
+  line-height: 1.7;
+  margin-bottom: calc(
+    var(--mantine-spacing-xl) * 1.5
+  ); /* More space for buttons */
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttonsGroup {
+  display: flex;
+  gap: var(--mantine-spacing-lg);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaButton {
+  padding: var(--mantine-spacing-md) var(--mantine-spacing-xl);
+  border-radius: var(--mantine-radius-md); /* Standard radius */
+  font-size: var(--mantine-font-size-md); /* Standard size */
+  font-weight: 500; /* Inter 500 */
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mantine-spacing-sm);
+}
+
+.ctaButtonPrimary {
+  composes: ctaButton;
+  background-color: var(--mantine-color-blue-6);
+  color: var(--mantine-color-white);
+  box-shadow: 0 3px 10px rgba(var(--mantine-color-blue-6-rgb), 0.2);
+}
+.ctaButtonPrimary:hover {
+  background-color: var(--mantine-color-blue-7);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(var(--mantine-color-blue-7-rgb), 0.25);
+}
+
+.ctaButtonSecondary {
+  composes: ctaButton;
+  background-color: transparent;
+  color: var(--mantine-color-blue-7); /* Darker blue for text */
+  border-color: var(--mantine-color-blue-5); /* Primary color border */
+  box-shadow: 0 2px 5px rgba(var(--mantine-color-black-rgb), 0.03);
+}
+.ctaButtonSecondary:hover {
+  background-color: var(--mantine-color-blue-0); /* Very light blue bg */
+  border-color: var(--mantine-color-blue-6);
+  color: var(--mantine-color-blue-8);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(var(--mantine-color-black-rgb), 0.05);
+}

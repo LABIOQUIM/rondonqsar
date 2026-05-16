@@ -1,0 +1,81 @@
+services:
+  redis:
+    image: redis:alpine
+    command: redis-server --maxmemory-policy noeviction
+    restart: always
+    networks:
+      - traefik
+    volumes:
+      - redis:/data
+
+  web:
+    image: ghcr.io/labioquim/protoqsar-web:beta
+    env_file: .env
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`visualdynamics.ivopr.com.br`)"
+      - "traefik.http.routers.web.service=web"
+      - "traefik.http.services.web.loadbalancer.server.port=3000"
+      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.web.tls.domains[0].main=visualdynamics.ivopr.com.br"
+      - "traefik.http.routers.web.entryPoints=websecure"
+    networks:
+      - traefik
+
+  api:
+    image: ghcr.io/labioquim/protoqsar-api:beta
+    env_file: .env
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`protoqsar.ivopr.com.br`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.service=api"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.api.tls.domains[0].main=protoqsar.ivopr.com.br"
+      - "traefik.http.routers.api.entryPoints=websecure"
+    networks:
+      - traefik
+    depends_on:
+      - redis
+
+  traefik:
+    restart: always
+    image: traefik
+    command:
+      # - "--log.level=DEBUG"
+      - "--providers.docker=true"
+      - "--providers.docker.watch"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.exposedByDefault=false"
+
+      - "--certificatesresolvers.letsencrypt.acme.email=labioquim@fiocruz.br" # replace with your email
+      - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+
+      - "--entryPoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entryPoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.web.http.redirections.entrypoint.permanent=true"
+    networks:
+      - traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./acme.json:/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+
+volumes:
+  data:
+    # Existing NFS-backed volumes may need a one-time host-side ownership fix to 1001:1001.
+    driver: nfsvol
+  redis:
+    driver: nfsvol
+
+networks:
+  traefik:

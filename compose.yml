@@ -1,0 +1,40 @@
+services:
+  api:
+    image: protoqsar/api:dev
+    build:
+      context: .
+      dockerfile: apps/api/dev.Dockerfile
+    restart: always
+    command: ["pnpm", "--filter", "api", "start:dev"]
+    env_file: .env
+    depends_on:
+      - redis
+    ports:
+      - "6000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+  web:
+    image: protoqsar/web:dev
+    build:
+      context: .
+      dockerfile: apps/web/dev.Dockerfile
+    restart: always
+    command: ["pnpm", "--filter", "web", "dev", "--", "--host"]
+    ports:
+      - "5000:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+  redis:
+    image: redis:alpine
+    command: redis-server --maxmemory-policy noeviction
+    restart: always
+    volumes:
+      - redis:/data
+
+volumes:
+  redis:
+    driver: nfsvol

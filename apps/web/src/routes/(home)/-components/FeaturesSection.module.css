@@ -1,0 +1,31 @@
+.featuresSection {
+  padding-top: calc(var(--mantine-spacing-xl) * 1.5); /* Consistent padding */
+  padding-bottom: calc(var(--mantine-spacing-xl) * 2);
+  background-color: rgba(
+    var(--mantine-color-white-rgb),
+    0.75
+  ); /* Slightly transparent white */
+  backdrop-filter: blur(2px);
+}
+
+.sectionTitle {
+  font-family: "Lexend", sans-serif;
+  font-size: clamp(2.2rem, 5vw, 3.2rem); /* Adjusted size */
+  font-weight: 700;
+  color: var(--mantine-color-black);
+  text-align: center;
+  margin-bottom: calc(var(--mantine-spacing-xl) * 1.5);
+}
+
+/* .grid {
+  /* SimpleGrid handles layout, no specific styles needed here unless overriding defaults 
+} */
+
+.featuresContainer {
+  max-width: var(--mantine-container-width-lg);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--mantine-spacing-md);
+  padding-right: var(--mantine-spacing-md);
+  z-index: 10;
+}

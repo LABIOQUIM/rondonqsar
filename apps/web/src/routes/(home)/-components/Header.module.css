@@ -1,0 +1,80 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(
+    var(--mantine-color-white-rgb),
+    0.75
+  ); /* Slightly transparent white */
+  backdrop-filter: blur(2px);
+  /* A very subtle border to distinguish from content on scroll */
+  /* border-bottom: 1px solid var(--mantine-color-gray-2); */
+  padding-left: var(--mantine-spacing-xl);
+  padding-right: var(--mantine-spacing-xl);
+  height: 70px;
+}
+
+.innerHeader {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--mantine-container-width-lg);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.logoImage {
+  height: 58px;
+  width: auto;
+  margin: auto;
+}
+
+.navLinks {
+  display: flex;
+  /* Using CSS gap, ensure browser support or use margins */
+  gap: var(--mantine-spacing-md);
+}
+
+.navLink {
+  text-decoration: none;
+  color: var(--mantine-color-gray-7); /* Dark gray for good readability */
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
+  border-radius: var(--mantine-radius-sm);
+  font-weight: 500; /* Use Inter's 500 weight */
+  font-size: var(--mantine-font-size-sm);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.navLink:hover {
+  background-color: var(
+    --mantine-color-blue-0
+  ); /* Very light blue accent background */
+  color: var(--mantine-color-blue-7); /* Darker blue on hover */
+}
+
+.launchButton {
+  display: flex;
+  flex-direction: row;
+  gap: var(--mantine-spacing-xs);
+  background-color: var(--mantine-color-blue-6); /* Primary button color */
+  color: var(--mantine-color-white);
+  font-weight: 500; /* Inter 500 */
+  font-size: var(--mantine-font-size-sm);
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-lg);
+  border-radius: var(--mantine-radius-md);
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(var(--mantine-color-black-rgb), 0.05); /* Subtle shadow */
+}
+
+.launchButton:hover {
+  background-color: var(--mantine-color-blue-7); /* Darken on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(var(--mantine-color-black-rgb), 0.08);
+}
