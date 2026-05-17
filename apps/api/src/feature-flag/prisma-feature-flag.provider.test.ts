@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createPrismaStub } from "../test-utils/mocks.js";
-
 import { PrismaFeatureFlagProvider } from "./prisma-feature-flag.provider.js";
 
 describe("PrismaFeatureFlagProvider", () => {
@@ -22,12 +21,7 @@ describe("PrismaFeatureFlagProvider", () => {
       variants: { on: true },
     });
     await expect(
-      provider.resolveBooleanEvaluation(
-        "disabled",
-        false,
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveBooleanEvaluation("disabled", false, {} as any, {} as any),
     ).resolves.toEqual({ value: false, reason: "DISABLED" });
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce({
@@ -75,9 +69,9 @@ describe("PrismaFeatureFlagProvider", () => {
       defaultVariant: "big",
       variants: { big: 42 },
     });
-    await expect(
-      provider.resolveNumberEvaluation("num", 0, {} as any, {} as any),
-    ).resolves.toEqual({ value: 42, variant: "big", reason: "STATIC" });
+    await expect(provider.resolveNumberEvaluation("num", 0, {} as any, {} as any)).resolves.toEqual(
+      { value: 42, variant: "big", reason: "STATIC" },
+    );
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce({
       key: "obj",
@@ -87,12 +81,7 @@ describe("PrismaFeatureFlagProvider", () => {
       variants: { full: { nested: true } },
     });
     await expect(
-      provider.resolveObjectEvaluation(
-        "obj",
-        { nested: false },
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveObjectEvaluation("obj", { nested: false }, {} as any, {} as any),
     ).resolves.toEqual({
       value: { nested: true },
       variant: "full",
@@ -122,9 +111,9 @@ describe("PrismaFeatureFlagProvider", () => {
       defaultVariant: "bad",
       variants: { bad: "oops" },
     });
-    await expect(
-      provider.resolveNumberEvaluation("num", 9, {} as any, {} as any),
-    ).resolves.toEqual({ value: 9, reason: "ERROR" });
+    await expect(provider.resolveNumberEvaluation("num", 9, {} as any, {} as any)).resolves.toEqual(
+      { value: 9, reason: "ERROR" },
+    );
   });
 
   it("returns default or disabled reasons for string, number, and object flags", async () => {
@@ -133,12 +122,7 @@ describe("PrismaFeatureFlagProvider", () => {
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce(null);
     await expect(
-      provider.resolveStringEvaluation(
-        "missing-string",
-        "fallback",
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveStringEvaluation("missing-string", "fallback", {} as any, {} as any),
     ).resolves.toEqual({ value: "fallback", reason: "DEFAULT" });
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce({
@@ -149,22 +133,12 @@ describe("PrismaFeatureFlagProvider", () => {
       variants: { value: "blue" },
     });
     await expect(
-      provider.resolveStringEvaluation(
-        "disabled-string",
-        "fallback",
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveStringEvaluation("disabled-string", "fallback", {} as any, {} as any),
     ).resolves.toEqual({ value: "fallback", reason: "DISABLED" });
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce(null);
     await expect(
-      provider.resolveNumberEvaluation(
-        "missing-number",
-        7,
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveNumberEvaluation("missing-number", 7, {} as any, {} as any),
     ).resolves.toEqual({ value: 7, reason: "DEFAULT" });
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce({
@@ -175,22 +149,12 @@ describe("PrismaFeatureFlagProvider", () => {
       variants: { value: 1 },
     });
     await expect(
-      provider.resolveNumberEvaluation(
-        "disabled-number",
-        7,
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveNumberEvaluation("disabled-number", 7, {} as any, {} as any),
     ).resolves.toEqual({ value: 7, reason: "DISABLED" });
 
     prisma.featureFlag.findUnique.mockResolvedValueOnce(null);
     await expect(
-      provider.resolveObjectEvaluation(
-        "missing-object",
-        { enabled: false },
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveObjectEvaluation("missing-object", { enabled: false }, {} as any, {} as any),
     ).resolves.toEqual({
       value: { enabled: false },
       reason: "DEFAULT",
@@ -204,12 +168,7 @@ describe("PrismaFeatureFlagProvider", () => {
       variants: { full: { enabled: true } },
     });
     await expect(
-      provider.resolveObjectEvaluation(
-        "disabled-object",
-        { enabled: false },
-        {} as any,
-        {} as any,
-      ),
+      provider.resolveObjectEvaluation("disabled-object", { enabled: false }, {} as any, {} as any),
     ).resolves.toEqual({
       value: { enabled: false },
       reason: "DISABLED",

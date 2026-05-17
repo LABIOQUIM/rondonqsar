@@ -1,9 +1,9 @@
-import classes from "../index.module.css";
-
-import { type Control, Controller } from "react-hook-form";
 import { Radio, Text } from "@mantine/core";
+import { type Control, Controller } from "react-hook-form";
 
 import type { SimulationFormValues } from "./schema";
+
+import classes from "../index.module.css";
 
 interface Props {
   control: Control<SimulationFormValues>;
@@ -12,14 +12,14 @@ interface Props {
 
 const options = [
   {
-    value: "apo",
-    label: "Free Protein",
-    description: "Protein-only simulation",
+    value: "plasmo",
+    label: "Plasmo",
+    description: "Plasmodium calculation",
   },
   {
-    value: "acpype",
-    label: "Protein + Ligand",
-    description: "ACPYPE parameterization",
+    value: "leish",
+    label: "Leish",
+    description: "Leishmania calculation",
   },
 ] as const;
 

@@ -1,7 +1,7 @@
-import classes from "./Step.module.css";
-
 import { Box, Loader, Text } from "@mantine/core";
 import { IconCircleCheckFilled, IconClockPause } from "@tabler/icons-react";
+
+import classes from "./Step.module.css";
 
 interface Props {
   state: StepState;

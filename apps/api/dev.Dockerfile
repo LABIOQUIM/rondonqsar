@@ -15,27 +15,11 @@ RUN pnpm install --frozen-lockfile
 RUN DB_USER=x DB_PASS=x DB_HOST=x DB_PORT=5432 DB_DATABASE=x pnpm --filter api exec prisma generate
 
 # Rebuild the source code only when needed
-FROM nvidia/cuda:13.1.0-runtime-ubuntu24.04 AS builder
+FROM base AS builder
 WORKDIR /app
 
-ENV PATH="${PATH}:/gromacs/bin"
+ENV PATH="${PATH}:/mold2"
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends \
-      ca-certificates \
-      curl \
-      gnupg \
-      dirmngr \
-      build-essential \
-      python3 \
-      git \
-      grace \
-      zip
-  RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
-RUN apt-get install -y --no-install-recommends nodejs
-RUN npm install -g corepack
-RUN corepack enable
-RUN corepack prepare pnpm@10.33.0 --activate
-RUN rm -rf /var/lib/apt/lists/*
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
 
 COPY --from=deps /app/node_modules ./node_modules

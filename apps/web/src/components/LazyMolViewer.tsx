@@ -1,8 +1,8 @@
 import { lazy, Suspense } from "react";
 
-import { Loader } from "@/components/Loader";
-
 import type { LatestMacromolecules } from "@/queries/latestMacromolecules";
+
+import { Loader } from "@/components/Loader";
 
 const MolViewer = lazy(() => import("@/components/MolViewer"));
 

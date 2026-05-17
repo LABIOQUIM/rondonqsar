@@ -1,18 +1,14 @@
-import classes from "./ImportTable.module.css";
-
-import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  MantineReactTable,
-  useMantineReactTable,
-} from "mantine-react-table-open";
-
-import { ImportButton } from "./ImportButton";
-import { useUserImporter } from "./Provider";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table-open";
+import { useMemo } from "react";
 
 import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
 import { getMgmtUsers } from "@/queries/getMgmtUsers";
+
+import { ImportButton } from "./ImportButton";
+import classes from "./ImportTable.module.css";
+import { useUserImporter } from "./Provider";
 
 export function ImportTable() {
   const { users } = useUserImporter();
@@ -49,9 +45,7 @@ export function ImportTable() {
     mantineTableContainerProps: {
       className: classes.tableContainer,
     },
-    renderTopToolbarCustomActions: ({ table }) => (
-      <ImportButton table={table} />
-    ),
+    renderTopToolbarCustomActions: ({ table }) => <ImportButton table={table} />,
     mantineTableProps: {
       highlightOnHover: true,
     },

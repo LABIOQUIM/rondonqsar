@@ -1,5 +1,4 @@
 import "@tanstack/react-start/server-only";
-
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 
@@ -21,12 +20,8 @@ export function resolveSiteUrl(request: Request) {
   }
 
   const requestUrl = new URL(request.url);
-  const forwardedProto = getForwardedValue(
-    request.headers.get("x-forwarded-proto"),
-  );
-  const forwardedHost = getForwardedValue(
-    request.headers.get("x-forwarded-host"),
-  );
+  const forwardedProto = getForwardedValue(request.headers.get("x-forwarded-proto"));
+  const forwardedHost = getForwardedValue(request.headers.get("x-forwarded-host"));
 
   if (forwardedHost) {
     requestUrl.host = forwardedHost;
@@ -39,11 +34,9 @@ export function resolveSiteUrl(request: Request) {
   return normalizeSiteUrl(requestUrl.origin);
 }
 
-export const getRuntimeSiteUrl = createServerFn({ method: "GET" }).handler(
-  async () => {
-    return resolveSiteUrl(getRequest());
-  },
-);
+export const getRuntimeSiteUrl = createServerFn({ method: "GET" }).handler(async () => {
+  return resolveSiteUrl(getRequest());
+});
 
 export async function loadRuntimeSeoData() {
   return {

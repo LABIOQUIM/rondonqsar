@@ -1,13 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
+import { loadRuntimeSeoData } from "@/lib/seo.runtime";
+
 import { LanderBackingSection } from "./-components/BackingSection";
 import { LanderCallToActionSection } from "./-components/CallToActionSection";
 import { LanderFeaturesSection } from "./-components/FeaturesSection";
 import { LanderHeroSection } from "./-components/HeroSection";
 import { LanderLayout } from "./-components/Layout";
-
-import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
-import { loadRuntimeSeoData } from "@/lib/seo.runtime";
 
 export const Route = createFileRoute("/(home)/")({
   loader: () => loadRuntimeSeoData(),

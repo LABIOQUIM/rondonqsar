@@ -1,18 +1,19 @@
-import classes from "./ImportButton.module.css";
+import type { MRT_TableInstance } from "mantine-react-table-open";
 
-import { useCallback, useMemo, useRef, useState } from "react";
-import { createPortal, flushSync } from "react-dom";
 import { Button, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import type { MRT_TableInstance } from "mantine-react-table-open";
-
-import type { ImporterUser } from "./Provider";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { createPortal, flushSync } from "react-dom";
 
 import { authClient } from "@/lib/auth-client";
 import { getMgmtUsers } from "@/queries/getMgmtUsers";
+
+import type { ImporterUser } from "./Provider";
+
+import classes from "./ImportButton.module.css";
 
 type Props = {
   table: MRT_TableInstance<ImporterUser>;
@@ -39,8 +40,7 @@ export function ImportButton({ table }: Props) {
     [table.getSelectedRowModel().rows],
   );
 
-  const fillWidth =
-    progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  const fillWidth = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
 
   const onImport = useCallback(async () => {
     const rows = selectedRows.map((r) => r.original);
@@ -127,8 +127,7 @@ export function ImportButton({ table }: Props) {
         ) : (
           <Stack>
             <Text>
-              Import <strong>{selectedRows.length}</strong> selected user(s)
-              into the system?
+              Import <strong>{selectedRows.length}</strong> selected user(s) into the system?
             </Text>
             <Button
               classNames={{

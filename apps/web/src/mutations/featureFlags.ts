@@ -21,10 +21,7 @@ export async function createFeatureFlag(data: CreateFeatureFlagInput) {
   return api.post("/feature-flags", data).then((r) => r.data);
 }
 
-export async function updateFeatureFlag(
-  key: string,
-  data: UpdateFeatureFlagInput,
-) {
+export async function updateFeatureFlag(key: string, data: UpdateFeatureFlagInput) {
   const api = await getAPIClient();
   return api.patch(`/feature-flags/${key}`, data).then((r) => r.data);
 }

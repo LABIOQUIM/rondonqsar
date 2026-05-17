@@ -1,23 +1,16 @@
-import classes from "./register.module.css";
-
-import { useState } from "react";
-import {
-  Anchor,
-  Box,
-  Button,
-  PasswordInput,
-  Text,
-  TextInput,
-} from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
 import { authClient } from "@/lib/auth-client";
+
+import classes from "./register.module.css";
 
 const schema = z.object({
   email: z.string().min(8, "Invalid email"),

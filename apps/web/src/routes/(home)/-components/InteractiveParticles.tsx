@@ -1,6 +1,6 @@
-import styles from "./InteractiveParticles.module.css";
-
 import { useEffect, useRef, useState } from "react";
+
+import styles from "./InteractiveParticles.module.css";
 
 function throttleRaf<T extends (...args: never[]) => void>(fn: T): T {
   let rafId: ReturnType<typeof requestAnimationFrame> | null = null;
@@ -78,11 +78,7 @@ export function InteractiveParticles() {
   }, []);
 
   return (
-    <div
-      aria-hidden="true"
-      className={styles.particleContainer}
-      ref={containerRef}
-    >
+    <div aria-hidden="true" className={styles.particleContainer} ref={containerRef}>
       {particles.map((p) => (
         <div
           className={styles.particle} // Potentially add more type classes here

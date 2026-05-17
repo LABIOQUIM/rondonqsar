@@ -16,10 +16,7 @@ const defaultOptions: Required<FormatterOptions> = {
   full: true,
 };
 
-export function formatDecimal(
-  value: number | string,
-  options?: FormatterOptions,
-): string {
+export function formatDecimal(value: number | string, options?: FormatterOptions): string {
   const currentValue = typeof value === "string" ? parseFloat(value) : value;
 
   if (Number.isNaN(currentValue)) {
@@ -34,10 +31,7 @@ export function formatDecimal(
   };
 
   const parts = currentValue.toFixed(precision).split(".");
-  const integerPart = parts[0].replace(
-    /\B(?=(\d{3})+(?!\d))/g,
-    thousandSeparator,
-  );
+  const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSeparator);
   const decimalPart = parts[1];
 
   return `${prefix}${integerPart}`
@@ -49,10 +43,7 @@ export function formatInt(value: number | string, options?: FormatterOptions) {
   return formatDecimal(value, { ...options, precision: 0 });
 }
 
-export function formatPercentage(
-  value: number | string,
-  options?: FormatterOptions,
-): string {
+export function formatPercentage(value: number | string, options?: FormatterOptions): string {
   return formatDecimal(value, { ...options, suffix: "%" });
 }
 

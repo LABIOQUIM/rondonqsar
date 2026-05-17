@@ -1,22 +1,15 @@
-import React from "react";
-import {
-  ActionIcon,
-  type ActionIconProps,
-  Button,
-  type ButtonProps,
-} from "@mantine/core";
+import { ActionIcon, type ActionIconProps, Button, type ButtonProps } from "@mantine/core";
 import { createLink, type LinkProps } from "@tanstack/react-router";
+import React from "react";
 
-const ActionIconLinkComponent = React.forwardRef<
-  HTMLAnchorElement,
-  LinkProps & ActionIconProps
->((props, ref) => <ActionIcon ref={ref as React.Ref<HTMLButtonElement>} {...props} />);
+const ActionIconLinkComponent = React.forwardRef<HTMLAnchorElement, LinkProps & ActionIconProps>(
+  (props, ref) => <ActionIcon ref={ref as React.Ref<HTMLButtonElement>} {...props} />,
+);
 ActionIconLinkComponent.displayName = "ActionIconLink";
 
-const ButtonLinkComponent = React.forwardRef<
-  HTMLAnchorElement,
-  LinkProps & ButtonProps
->((props, ref) => <Button ref={ref as React.Ref<HTMLButtonElement>} {...props} />);
+const ButtonLinkComponent = React.forwardRef<HTMLAnchorElement, LinkProps & ButtonProps>(
+  (props, ref) => <Button ref={ref as React.Ref<HTMLButtonElement>} {...props} />,
+);
 ButtonLinkComponent.displayName = "ButtonLink";
 
 export const ActionIconLink = createLink(ActionIconLinkComponent);

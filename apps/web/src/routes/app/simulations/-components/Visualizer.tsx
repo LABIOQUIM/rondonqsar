@@ -1,12 +1,12 @@
-import classes from "./Visualizer.module.css";
-
 import { Box, Text } from "@mantine/core";
 import { IconCloudOff, IconFolderOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 
-import { Loader } from "@/components/Loader";
 import { LazyMolViewer } from "@/components/LazyMolViewer";
+import { Loader } from "@/components/Loader";
 import { getSimulation } from "@/queries/getSimulation";
+
+import classes from "./Visualizer.module.css";
 
 type VisualizerProps = {
   simulationId: string;
@@ -23,9 +23,7 @@ export function Visualizer({ simulationId }: VisualizerProps) {
     return (
       <Box className={classes.noMoleculesContainer}>
         <IconFolderOff size={64} />
-        <Text size="lg">
-          This simulation is not stored anymore. 3D viewer is unavailable.
-        </Text>
+        <Text size="lg">This simulation is not stored anymore. 3D viewer is unavailable.</Text>
       </Box>
     );
   }
@@ -43,9 +41,7 @@ export function Visualizer({ simulationId }: VisualizerProps) {
     <LazyMolViewer
       macromolecules={{
         macromolecule: data.molecules.macromolecule,
-        ...(data.molecules.ligands.length > 0
-          ? { ligandPdbs: data.molecules.ligands }
-          : {}),
+        ...(data.molecules.ligands.length > 0 ? { ligandPdbs: data.molecules.ligands } : {}),
       }}
     />
   );

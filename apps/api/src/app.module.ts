@@ -1,17 +1,18 @@
 import { ExpressAdapter } from "@bull-board/express";
 import { BullBoardModule } from "@bull-board/nestjs";
+import { MailerModule as NestMailerModule } from "@nestjs-modules/mailer";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/adapters/handlebars.adapter";
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
-import { MailerModule as NestMailerModule } from "@nestjs-modules/mailer";
-import { HandlebarsAdapter } from "@nestjs-modules/mailer/adapters/handlebars.adapter";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 
 import { FeatureFlagModule } from "./feature-flag/feature-flag.module.js";
+import { LeishModule } from "./leish/leish.module.js";
 import { auth } from "./lib/auth.js";
 import { MailerModule } from "./mailer/mailer.module.js";
-import { SimulationModule } from "./simulation/simulation.module.js";
+import { PlasmoModule } from "./plasmo/plasmo.module.js";
 import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
 
 @Module({
@@ -55,9 +56,10 @@ import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
         },
       }),
     }),
-    SimulationModule,
     SystemInfoModule,
     FeatureFlagModule,
+    PlasmoModule,
+    LeishModule,
   ],
 })
 export class AppModule {}

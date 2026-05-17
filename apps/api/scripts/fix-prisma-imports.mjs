@@ -12,10 +12,13 @@ function processFile(filePath) {
   // .ts extensions → .js
   content = content.replace(/(from\s+['"])(\.\.?\/[^'"]+?)\.ts(['"])/g, "$1$2.js$3");
   // bare relative imports (no extension) → add .js
-  content = content.replace(/(from\s+['"])(\.\.?\/[^'"]+?)(['"])/g, (match, prefix, path, quote) => {
-    if (/\.[a-z]{1,4}$/.test(path)) return match;
-    return `${prefix}${path}.js${quote}`;
-  });
+  content = content.replace(
+    /(from\s+['"])(\.\.?\/[^'"]+?)(['"])/g,
+    (match, prefix, path, quote) => {
+      if (/\.[a-z]{1,4}$/.test(path)) return match;
+      return `${prefix}${path}.js${quote}`;
+    },
+  );
   writeFileSync(filePath, content);
 }
 

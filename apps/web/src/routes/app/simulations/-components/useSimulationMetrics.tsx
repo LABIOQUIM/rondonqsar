@@ -1,7 +1,5 @@
-import { useMemo } from "react";
-import dayjs from "dayjs";
-
 import type { Icon } from "@tabler/icons-react";
+
 import {
   IconAtom,
   IconAtom2,
@@ -12,6 +10,8 @@ import {
   IconHourglassHigh,
   IconStatusChange,
 } from "@tabler/icons-react";
+import dayjs from "dayjs";
+import { useMemo } from "react";
 
 import { StatusBadge } from "@/components/StatusBadge";
 import { TypeBadge } from "@/components/TypeBadge";
@@ -28,9 +28,7 @@ export type MetricRow = {
   icon2: Icon;
 };
 
-export function useSimulationMetrics(
-  data: SimulationDetails | undefined,
-): MetricRow[] {
+export function useSimulationMetrics(data: SimulationDetails | undefined): MetricRow[] {
   return useMemo(() => {
     if (!data) return [];
 

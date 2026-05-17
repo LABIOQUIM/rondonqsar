@@ -1,15 +1,6 @@
-import classes from "./-components/adminTable.module.css";
-
-import { useState } from "react";
 import { ActionIcon, Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import {
-  IconCheck,
-  IconDotsVertical,
-  IconEdit,
-  IconEye,
-  IconX,
-} from "@tabler/icons-react";
+import { IconCheck, IconDotsVertical, IconEdit, IconEye, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
@@ -21,6 +12,7 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from "mantine-react-table-open";
+import { useState } from "react";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
@@ -31,6 +23,8 @@ import { TableTextCell } from "@/components/TableTextCell";
 import { TypeBadge } from "@/components/TypeBadge";
 import { getAPIClient } from "@/lib/api";
 import { getMgmtSimulations } from "@/queries/getMgmtSimulations";
+
+import classes from "./-components/adminTable.module.css";
 
 export const Route = createFileRoute("/app/mgmt/simulations")({
   component: RouteComponent,
@@ -57,32 +51,35 @@ function RouteComponent() {
   });
   const { data, isLoading } = useQuery(getMgmtSimulations(pagination));
 
-  const onEditingRowSave: MRT_TableOptions<SimulationWithUser>["onEditingRowSave"] =
-    async ({ values, table, row }) => {
-      const api = await getAPIClient();
+  const onEditingRowSave: MRT_TableOptions<SimulationWithUser>["onEditingRowSave"] = async ({
+    values,
+    table,
+    row,
+  }) => {
+    const api = await getAPIClient();
 
-      try {
-        await api.patch(`/simulation/update/${row.id}`, {
-          status: values.status,
-        });
+    try {
+      await api.patch(`/simulation/update/${row.id}`, {
+        status: values.status,
+      });
 
-        notifications.show({
-          message: "Simulation updated successfully",
-          color: "green",
-          icon: <IconCheck />,
-          withBorder: true,
-        });
-      } catch {
-        notifications.show({
-          message: "Failed to update simulation",
-          color: "red",
-          icon: <IconX />,
-          withBorder: true,
-        });
-      }
+      notifications.show({
+        message: "Simulation updated successfully",
+        color: "green",
+        icon: <IconCheck />,
+        withBorder: true,
+      });
+    } catch {
+      notifications.show({
+        message: "Failed to update simulation",
+        color: "red",
+        icon: <IconX />,
+        withBorder: true,
+      });
+    }
 
-      table.setEditingRow(null);
-    };
+    table.setEditingRow(null);
+  };
 
   const table = useMantineReactTable({
     data: data?.records || [],
@@ -111,26 +108,15 @@ function RouteComponent() {
     ),
     renderRowActions: ({ row, table }) => (
       <ActionIcon.Group>
-        <Link
-          params={{ simulationId: row.original.id }}
-          to="/app/simulations/$simulationId"
-        >
+        <Link params={{ simulationId: row.original.id }} to="/app/simulations/$simulationId">
           <ActionIcon size="lg" variant="subtle">
             <IconEye />
           </ActionIcon>
         </Link>
-        <ActionIcon
-          onClick={() => table.setEditingRow(row)}
-          size="lg"
-          variant="subtle"
-        >
+        <ActionIcon onClick={() => table.setEditingRow(row)} size="lg" variant="subtle">
           <IconEdit />
         </ActionIcon>
-        <ActionIcon
-          onClick={() => table.setEditingRow(row)}
-          size="lg"
-          variant="subtle"
-        >
+        <ActionIcon onClick={() => table.setEditingRow(row)} size="lg" variant="subtle">
           <IconDotsVertical />
         </ActionIcon>
       </ActionIcon.Group>
@@ -170,9 +156,7 @@ function RouteComponent() {
         accessorKey: "type",
         header: "Type",
         enableEditing: false,
-        Cell: ({ cell }) => (
-          <TypeBadge type={cell.getValue<SIMULATION_TYPE>()} />
-        ),
+        Cell: ({ cell }) => <TypeBadge type={cell.getValue<SIMULATION_TYPE>()} />,
       },
       {
         accessorKey: "status",

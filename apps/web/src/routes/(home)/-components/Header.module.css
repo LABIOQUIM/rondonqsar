@@ -2,10 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background-color: rgba(
-    var(--mantine-color-white-rgb),
-    0.75
-  ); /* Slightly transparent white */
+  background-color: rgba(var(--mantine-color-white-rgb), 0.75); /* Slightly transparent white */
   backdrop-filter: blur(2px);
   /* A very subtle border to distinguish from content on scroll */
   /* border-bottom: 1px solid var(--mantine-color-gray-2); */
@@ -49,9 +46,7 @@
 }
 
 .navLink:hover {
-  background-color: var(
-    --mantine-color-blue-0
-  ); /* Very light blue accent background */
+  background-color: var(--mantine-color-blue-0); /* Very light blue accent background */
   color: var(--mantine-color-blue-7); /* Darker blue on hover */
 }
 

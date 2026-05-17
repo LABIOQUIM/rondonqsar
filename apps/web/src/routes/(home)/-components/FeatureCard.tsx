@@ -1,7 +1,7 @@
-import styles from "./FeatureCard.module.css";
-
-import React from "react";
 import { Badge } from "@mantine/core";
+import React from "react";
+
+import styles from "./FeatureCard.module.css";
 
 interface FeatureCardProps {
   icon: React.ReactNode; // Expect a Tabler Icon component
@@ -10,12 +10,7 @@ interface FeatureCardProps {
   soon?: boolean | undefined;
 }
 
-export function FeatureCard({
-  icon,
-  title,
-  description,
-  soon,
-}: FeatureCardProps) {
+export function FeatureCard({ icon, title, description, soon }: FeatureCardProps) {
   return (
     // Using Paper as a semantic container, styling via CSS Module
     <div className={styles.card}>

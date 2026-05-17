@@ -1,10 +1,9 @@
-import classes from "./Steps.module.css";
-
-import { Fragment } from "react";
 import { Box, Title } from "@mantine/core";
 import { IconArrowDown } from "@tabler/icons-react";
+import { Fragment } from "react";
 
 import { Step } from "./Step";
+import classes from "./Steps.module.css";
 
 const steps = {
   topology: "Topology definition",
@@ -27,8 +26,7 @@ export function Steps({ stepsDone, isSimulationRunning }: StepsProps) {
     <Box className={classes.container}>
       <Title order={3}>Steps</Title>
       {Object.entries(steps).map(([key, value]) => {
-        const isRunning =
-          stepsDone[stepsDone.length - 1] === `#${key}` && isSimulationRunning;
+        const isRunning = stepsDone[stepsDone.length - 1] === `#${key}` && isSimulationRunning;
         const isDone = stepsDone.some((k) => k === `#${key}`);
 
         let state: StepState = "waiting";
@@ -44,9 +42,7 @@ export function Steps({ stepsDone, isSimulationRunning }: StepsProps) {
         return (
           <Fragment key={key}>
             <Step label={value} state={state} />
-            {key !== "analyzemd" && (
-              <IconArrowDown className={classes.arrow_down_icon} />
-            )}
+            {key !== "analyzemd" && <IconArrowDown className={classes.arrow_down_icon} />}
           </Fragment>
         );
       })}

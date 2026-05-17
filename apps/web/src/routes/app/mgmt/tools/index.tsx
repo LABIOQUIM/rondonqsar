@@ -1,15 +1,11 @@
-import classes from "./index.module.css";
-
 import { Group, Text } from "@mantine/core";
-import {
-  IconArrowRight,
-  IconMailForward,
-  IconTableImport,
-} from "@tabler/icons-react";
+import { IconArrowRight, IconMailForward, IconTableImport } from "@tabler/icons-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
+
+import classes from "./index.module.css";
 
 export const Route = createFileRoute("/app/mgmt/tools/")({
   component: RouteComponent,
@@ -52,11 +48,7 @@ function RouteComponent() {
                   <Text fw={600} size="sm">
                     {label}
                   </Text>
-                  <IconArrowRight
-                    color="var(--mantine-color-dimmed)"
-                    size={14}
-                    strokeWidth={1.5}
-                  />
+                  <IconArrowRight color="var(--mantine-color-dimmed)" size={14} strokeWidth={1.5} />
                 </Group>
                 <Text c="dimmed" size="xs">
                   {description}

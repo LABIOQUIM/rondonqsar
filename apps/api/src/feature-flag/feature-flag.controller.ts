@@ -12,8 +12,8 @@ import {
 import { AllowAnonymous, Session } from "@thallesp/nestjs-better-auth";
 
 import type { FEATURE_FLAG_TYPE, Prisma } from "../generated/prisma/client.js";
-import { auth } from "../lib/auth.js";
 
+import { auth } from "../lib/auth.js";
 import { FeatureFlagService } from "./feature-flag.service.js";
 
 @Controller("feature-flags")
@@ -40,10 +40,7 @@ export class FeatureFlagController {
   }
 
   @Get("/:key")
-  async findByKey(
-    @Param("key") key: string,
-    @Session() session: typeof auth.$Infer.Session,
-  ) {
+  async findByKey(@Param("key") key: string, @Session() session: typeof auth.$Infer.Session) {
     if (!session || session.user.role !== "admin") {
       throw new UnauthorizedException();
     }
@@ -96,10 +93,7 @@ export class FeatureFlagController {
   }
 
   @Delete("/:key")
-  async remove(
-    @Param("key") key: string,
-    @Session() session: typeof auth.$Infer.Session,
-  ) {
+  async remove(@Param("key") key: string, @Session() session: typeof auth.$Infer.Session) {
     if (!session || session.user.role !== "admin") {
       throw new UnauthorizedException();
     }

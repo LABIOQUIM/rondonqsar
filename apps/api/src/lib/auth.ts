@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import { PrismaPg } from "@prisma/adapter-pg";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
@@ -54,14 +53,13 @@ export const auth = betterAuth({
                 })
               : await prisma.user.findUnique({
                   where: {
-                    username:
-                      (ctx.body as { username?: string })?.username ?? "",
+                    username: (ctx.body as { username?: string })?.username ?? "",
                   },
                   select: { role: true },
                 });
 
           const role = identifier?.role;
-          if (role!== "admin") {
+          if (role !== "admin") {
             throw new APIError("FORBIDDEN", {
               message:
                 "The system is currently under maintenance. Only administrators can sign in.",
@@ -81,9 +79,7 @@ export const auth = betterAuth({
 
       const signsEnabled =
         signupsFlag?.enabled === true &&
-        (signupsFlag.variants as Record<string, unknown>)?.[
-          signupsFlag.defaultVariant
-        ] === true;
+        (signupsFlag.variants as Record<string, unknown>)?.[signupsFlag.defaultVariant] === true;
 
       if (!signsEnabled) {
         throw new APIError("FORBIDDEN", {

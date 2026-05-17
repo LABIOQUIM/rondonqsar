@@ -1,15 +1,14 @@
-import classes from "./guides.module.css";
-
 import { Box } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-
-import { LanderCallToActionSection } from "./-components/CallToActionSection";
-import { LanderLayout } from "./-components/Layout";
 
 import { Heading } from "@/components/Heading";
 import { YouTubePlayer } from "@/components/YoutubePlayer";
 import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
 import { loadRuntimeSeoData } from "@/lib/seo.runtime";
+
+import { LanderCallToActionSection } from "./-components/CallToActionSection";
+import { LanderLayout } from "./-components/Layout";
+import classes from "./guides.module.css";
 
 const simulationVideos = [
   {

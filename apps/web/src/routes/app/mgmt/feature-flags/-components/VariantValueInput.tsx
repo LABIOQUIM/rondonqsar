@@ -8,11 +8,7 @@ interface VariantValueInputProps {
   onChange: (value: string) => void;
 }
 
-export function VariantValueInput({
-  type,
-  entry,
-  onChange,
-}: VariantValueInputProps) {
+export function VariantValueInput({ type, entry, onChange }: VariantValueInputProps) {
   if (type === "BOOLEAN") {
     return (
       <Switch

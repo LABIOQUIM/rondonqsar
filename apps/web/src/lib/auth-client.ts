@@ -1,8 +1,4 @@
-import {
-  adminClient,
-  twoFactorClient,
-  usernameClient,
-} from "better-auth/client/plugins";
+import { adminClient, twoFactorClient, usernameClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 import { getPublicApiUrl } from "./env";

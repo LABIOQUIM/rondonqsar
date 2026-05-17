@@ -6,10 +6,7 @@
   text-align: center;
   position: relative;
   padding: var(--mantine-spacing-xl) var(--mantine-spacing-md);
-  background-color: rgba(
-    var(--mantine-color-white-rgb),
-    0.75
-  ); /* Slightly transparent white */
+  background-color: rgba(var(--mantine-color-white-rgb), 0.75); /* Slightly transparent white */
   backdrop-filter: blur(2px);
   /* Optional: A very subtle gradient at the top if particles are too distracting */
   /* background: linear-gradient(to bottom, rgba(var(--mantine-color-white-rgb),0.3) 0%, transparent 20%); */
@@ -38,9 +35,7 @@
   font-size: clamp(1.1rem, 2.5vw, 1.35rem); /* Slightly larger base */
   color: var(--mantine-color-gray-7); /* Dark gray for readability */
   line-height: 1.7;
-  margin-bottom: calc(
-    var(--mantine-spacing-xl) * 1.5
-  ); /* More space for buttons */
+  margin-bottom: calc(var(--mantine-spacing-xl) * 1.5); /* More space for buttons */
   max-width: 620px;
   margin-left: auto;
   margin-right: auto;

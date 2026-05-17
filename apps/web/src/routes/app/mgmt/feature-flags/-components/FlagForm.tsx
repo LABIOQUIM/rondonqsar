@@ -1,5 +1,4 @@
-import classes from "./FlagForm.module.css";
-
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ActionIcon,
   Badge,
@@ -13,13 +12,13 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { type CreateFeatureFlagInput } from "@/mutations/featureFlags";
 
+import classes from "./FlagForm.module.css";
 import { VariantValueInput } from "./VariantValueInput";
 
 const FLAG_TYPE_OPTIONS = [
@@ -131,10 +130,7 @@ export function FlagForm({
     new Map(
       (currentVariants ?? [])
         .filter((e) => e.variantKey.trim())
-        .map((e) => [
-          e.variantKey,
-          { value: e.variantKey, label: e.variantKey },
-        ]),
+        .map((e) => [e.variantKey, { value: e.variantKey, label: e.variantKey }]),
     ).values(),
   );
 
@@ -152,10 +148,7 @@ export function FlagForm({
           <Stack>
             <Group justify="space-between">
               <Title order={5}>Variants</Title>
-              <Badge
-                color={FLAG_TYPE_COLORS[currentType] ?? "gray"}
-                variant="light"
-              >
+              <Badge color={FLAG_TYPE_COLORS[currentType] ?? "gray"} variant="light">
                 {currentType}
               </Badge>
             </Group>
@@ -194,11 +187,7 @@ export function FlagForm({
                         />
                       )}
                     />
-                    <ActionIcon
-                      color="red"
-                      onClick={() => remove(index)}
-                      variant="subtle"
-                    >
+                    <ActionIcon color="red" onClick={() => remove(index)} variant="subtle">
                       <IconTrash size={14} />
                     </ActionIcon>
                   </div>

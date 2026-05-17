@@ -1,40 +1,17 @@
 import { Button } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
-import { IconDownload, IconPlayerPlay } from "@tabler/icons-react";
-
-import { downloadMdpFiles } from "@/mutations/downloadMdpFiles";
+import { IconPlayerPlay } from "@tabler/icons-react";
 
 interface Props {
-  onDownloadCommands: () => void;
   submitClassName: string;
   containerClassName: string;
 }
 
-export function FormActions({
-  onDownloadCommands,
-  submitClassName,
-  containerClassName,
-}: Props) {
+export function FormActions({ submitClassName, containerClassName }: Props) {
   const { value: submissionEnabled } = useFlag("simulation-submission", false);
 
   return (
     <div className={containerClassName}>
-      <Button
-        leftSection={<IconDownload size={16} />}
-        onClick={onDownloadCommands}
-        type="button"
-        variant="light"
-      >
-        Commands
-      </Button>
-      <Button
-        leftSection={<IconDownload size={16} />}
-        onClick={downloadMdpFiles}
-        type="button"
-        variant="light"
-      >
-        MDP Files
-      </Button>
       <Button
         className={submitClassName}
         disabled={!submissionEnabled}

@@ -4,9 +4,7 @@
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: var(
-    --mantine-primary-color-filled
-  ); /* color of the scrollbar thumb */
+  background-color: var(--mantine-primary-color-filled); /* color of the scrollbar thumb */
   border-radius: 12px; /* round the corners of the thumb */
 }
 

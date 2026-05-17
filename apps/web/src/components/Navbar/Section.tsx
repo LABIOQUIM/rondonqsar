@@ -1,10 +1,10 @@
-import classes from "./Section.module.css";
-
 import { Badge, Box, Text, UnstyledButton } from "@mantine/core";
 import { Link, useLocation } from "@tanstack/react-router";
 import clsx from "clsx";
 
 import { parsePathname } from "@/lib/utils";
+
+import classes from "./Section.module.css";
 
 interface Props {
   section: NavSection;
@@ -24,8 +24,7 @@ export function Section({ section, toggle }: Props) {
         {section.links.map((link) => (
           <UnstyledButton
             className={clsx(classes.linkContainer, {
-              [classes.linkActiveContainer]:
-                !section.disabled && pathname === link.href,
+              [classes.linkActiveContainer]: !section.disabled && pathname === link.href,
             })}
             component={Link}
             key={link.label}
@@ -37,11 +36,7 @@ export function Section({ section, toggle }: Props) {
               <link.icon className={classes.linkIcon} size={16} stroke={1.5} />
               <span className={classes.linkLabel}>{link.label}</span>
               {link.badge && (
-                <Badge
-                  className={classes.badge}
-                  color={link.badge.color}
-                  variant="light"
-                >
+                <Badge className={classes.badge} color={link.badge.color} variant="light">
                   {link.badge.message}
                 </Badge>
               )}

@@ -1,7 +1,7 @@
-import classes from "./Loader.module.css";
-
-import { useMemo } from "react";
 import { Box } from "@mantine/core";
+import { useMemo } from "react";
+
+import classes from "./Loader.module.css";
 
 interface Props {
   steps?: number;

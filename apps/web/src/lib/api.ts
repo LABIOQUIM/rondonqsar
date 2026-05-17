@@ -16,10 +16,7 @@ export async function getAPIClient() {
   const authHeader = `Bearer ${session.data?.session.token}`;
 
   return {
-    get: async <T = unknown>(
-      path: string,
-      options: GetOptions = {},
-    ): Promise<{ data: T }> => {
+    get: async <T = unknown>(path: string, options: GetOptions = {}): Promise<{ data: T }> => {
       const url = new URL(`${getAPIBaseUrl()}${path}`);
       if (options.params) {
         for (const [key, value] of Object.entries(options.params)) {

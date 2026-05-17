@@ -1,10 +1,9 @@
 import { Test } from "@nestjs/testing";
 import { describe, expect, it, vi } from "vitest";
 
-import { withEnv } from "../test-utils/env.js";
 import { PrismaService } from "../prisma.service.js";
-
-import { MailerssController } from "./mailer.controller.js";
+import { withEnv } from "../test-utils/env.js";
+import { MailerController } from "./mailer.controller.js";
 import { MailerService } from "./mailer.service.js";
 
 function createController({
@@ -15,7 +14,7 @@ function createController({
   prisma: any;
 }) {
   return Test.createTestingModule({
-    controllers: [MailerssController],
+    controllers: [MailerController],
     providers: [
       {
         provide: MailerService,
@@ -29,7 +28,7 @@ function createController({
   }).compile();
 }
 
-describe("MailerssController", () => {
+describe("MailerController", () => {
   it("lists users ordered by creation time", async () => {
     const users = [{ id: "1", email: "a@example.com" }];
     const prisma = {
@@ -42,9 +41,7 @@ describe("MailerssController", () => {
       prisma,
     });
 
-    await expect(module.get(MailerssController).listUsers()).resolves.toEqual(
-      users,
-    );
+    await expect(module.get(MailerController).listUsers()).resolves.toEqual(users);
     expect(prisma.user.findMany).toHaveBeenCalledWith({
       select: {
         id: true,
@@ -70,7 +67,7 @@ describe("MailerssController", () => {
     };
 
     await expect(
-      module.get(MailerssController).sendMail(payload as any, {} as any),
+      module.get(MailerController).sendMail(payload as any, {} as any),
     ).resolves.toBeUndefined();
     expect(sendMail).toHaveBeenCalledWith(payload);
   });
@@ -92,7 +89,7 @@ describe("MailerssController", () => {
 
       await expect(
         module
-          .get(MailerssController)
+          .get(MailerController)
           .sendBatchMail({ subject: "Subj", html: "<p>Body</p>" }, {} as any),
       ).resolves.toEqual({ queued: 2 });
       expect(sendMail).toHaveBeenNthCalledWith(1, {
@@ -112,7 +109,7 @@ describe("MailerssController", () => {
       });
 
       await module
-        .get(MailerssController)
+        .get(MailerController)
         .sendBatchMail({ subject: "Subj", html: "<p>Body</p>" }, {} as any);
       expect(sendMail).toHaveBeenNthCalledWith(1, {
         from: "sender@example.com",

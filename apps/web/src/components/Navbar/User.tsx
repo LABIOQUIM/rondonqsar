@@ -1,10 +1,10 @@
-import classes from "./User.module.css";
-
-import { useCallback } from "react";
 import { ActionIcon, Avatar, Box, Group, Text } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
+import { useCallback } from "react";
 
 import { authClient } from "@/lib/auth-client";
+
+import classes from "./User.module.css";
 
 export function User() {
   const { data } = authClient.useSession();

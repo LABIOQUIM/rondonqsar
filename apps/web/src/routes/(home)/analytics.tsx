@@ -1,14 +1,13 @@
-import classes from "./analytics.module.css";
-
 import { AspectRatio } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
-
-import { LanderCallToActionSection } from "./-components/CallToActionSection";
-import { LanderLayout } from "./-components/Layout";
 
 import { Heading } from "@/components/Heading";
 import { buildSeoHead, DEFAULT_SITE_URL } from "@/lib/seo";
 import { loadRuntimeSeoData } from "@/lib/seo.runtime";
+
+import { LanderCallToActionSection } from "./-components/CallToActionSection";
+import { LanderLayout } from "./-components/Layout";
+import classes from "./analytics.module.css";
 
 export const Route = createFileRoute("/(home)/analytics")({
   loader: () => loadRuntimeSeoData(),

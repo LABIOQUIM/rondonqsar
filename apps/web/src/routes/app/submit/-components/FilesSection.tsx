@@ -1,43 +1,33 @@
-import {
-  type Control,
-  Controller,
-  type FormState,
-  useWatch,
-} from "react-hook-form";
 import { FileInput, Stack } from "@mantine/core";
+import { type Control, Controller } from "react-hook-form";
 
-import { LigandFields } from "./LigandFields";
 import type { SimulationFormValues } from "./schema";
 
 interface Props {
   control: Control<SimulationFormValues>;
-  formState: FormState<SimulationFormValues>;
 }
 
-export function FilesSection({ control, formState }: Props) {
-  const simulationType = useWatch({ control, name: "type" });
-  const isAcpype = simulationType === "acpype";
+export function FilesSection({ control }: Props) {
   return (
     <Stack gap="xs">
       <Controller
         control={control}
-        name="filePDB"
+        name="file"
         render={({ field: { value, onChange, ref }, fieldState }) => (
           <FileInput
-            accept=".pdb"
+            accept=".sdf"
             clearable
-            description="PDB format"
+            description="SDF format"
             error={fieldState.error?.message}
-            label="Protein"
+            label="Input molecule"
             onChange={onChange}
-            placeholder="Upload protein PDB file"
+            placeholder="Upload SDF file"
             ref={ref}
             value={value}
             withAsterisk
           />
         )}
       />
-      {isAcpype && <LigandFields control={control} formState={formState} />}
     </Stack>
   );
 }

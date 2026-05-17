@@ -1,10 +1,12 @@
-import { randomUUID } from "crypto";
 import type { Request } from "express";
+
+import { randomUUID } from "crypto";
 import * as fs from "fs";
 import { diskStorage } from "multer";
 import * as path from "path";
 
-const ALLOWED_EXTENSIONS = new Set([".pdb", ".itp"]);
+const ALLOWED_EXTENSIONS = new Set([".sdf"]);
+type UploadCalculationType = "plasmo" | "leish";
 type SessionRequest = Request & {
   session?: {
     user?: {
@@ -13,35 +15,60 @@ type SessionRequest = Request & {
   };
 };
 
+function getCalculationType(req: Request): UploadCalculationType | null {
+  const sourceUrl = req.originalUrl ?? req.url;
+  const segments = sourceUrl.split("?")[0]?.split("/").filter(Boolean) ?? [];
+  const calculation = segments.find(
+    (segment): segment is UploadCalculationType => segment === "plasmo" || segment === "leish",
+  );
+
+  return calculation ?? null;
+}
+
 const multerConfig = {
   limits: {
     fileSize: 8000000, // Compliant: 8MB
   },
   storage: diskStorage({
-    destination: "/files",
-    filename: (req: SessionRequest, file, cb) => {
+    destination: (req: SessionRequest, file, cb) => {
       const extension = path.parse(file.originalname).ext.toLowerCase();
 
-      if (!req.session?.user) {
+      if (!req.session?.user?.username) {
         return cb(new Error("Unauthorized"), "");
       }
 
-      const userDir = `/files/${req.session.user.username}`;
+      const calculation = getCalculationType(req);
+
+      if (!calculation) {
+        return cb(new Error("Unsupported calculation type"), "");
+      }
 
       if (!ALLOWED_EXTENSIONS.has(extension)) {
         return cb(new Error(`File type not allowed: ${extension}`), "");
       }
 
-      if (!fs.existsSync(userDir)) {
-        fs.mkdirSync(userDir);
+      const uploadDir = path.join("/files", req.session.user.username, calculation);
+
+      fs.mkdirSync(uploadDir, { recursive: true });
+
+      cb(null, uploadDir);
+    },
+    filename: (req: SessionRequest, file, cb) => {
+      const extension = path.parse(file.originalname).ext.toLowerCase();
+
+      if (!req.session?.user?.username) {
+        return cb(new Error("Unauthorized"), "");
       }
 
-      const filename =
-        file.fieldname === "filePDB"
-          ? "originalMacromolecule"
-          : `ligand_${randomUUID()}`;
+      if (!getCalculationType(req)) {
+        return cb(new Error("Unsupported calculation type"), "");
+      }
 
-      cb(null, `${req.session.user.username}/${filename}${extension}`);
+      if (!ALLOWED_EXTENSIONS.has(extension)) {
+        return cb(new Error(`File type not allowed: ${extension}`), "");
+      }
+
+      cb(null, `input_${randomUUID()}${extension}`);
     },
   }),
 };

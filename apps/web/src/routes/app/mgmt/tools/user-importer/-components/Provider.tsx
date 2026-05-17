@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useState } from "react";
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
+
+import { createContext, useContext, useMemo, useState } from "react";
 
 export type ImporterUser = {
   createdAt: string;
@@ -35,9 +36,5 @@ export function UserImporterProvider({ children }: PropsWithChildren) {
     [users],
   );
 
-  return (
-    <ImporterContext.Provider value={contextValue}>
-      {children}
-    </ImporterContext.Provider>
-  );
+  return <ImporterContext.Provider value={contextValue}>{children}</ImporterContext.Provider>;
 }

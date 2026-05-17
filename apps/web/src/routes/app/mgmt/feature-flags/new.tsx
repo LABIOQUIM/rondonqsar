@@ -1,11 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { FlagForm, type FlagFormValues } from "./-components/FlagForm";
-import { useFlagMutations } from "./-components/useFlagMutations";
-
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { type CreateFeatureFlagInput } from "@/mutations/featureFlags";
+
+import { FlagForm, type FlagFormValues } from "./-components/FlagForm";
+import { useFlagMutations } from "./-components/useFlagMutations";
 
 export const Route = createFileRoute("/app/mgmt/feature-flags/new")({
   component: RouteComponent,

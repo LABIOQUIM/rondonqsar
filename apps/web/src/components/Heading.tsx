@@ -1,10 +1,10 @@
-import classes from "./Heading.module.css";
-
 import { ActionIcon, Title } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useCanGoBack, useLocation, useRouter } from "@tanstack/react-router";
 
 import { parsePathname } from "@/lib/utils";
+
+import classes from "./Heading.module.css";
 
 interface HeadingProps {
   title: string;
@@ -32,9 +32,7 @@ export function Heading({ centered, rightElement, title }: HeadingProps) {
         </ActionIcon>
       )}
       <Title order={2}>{title}</Title>
-      {rightElement ? (
-        <div className={classes.rightElementContainer}>{rightElement}</div>
-      ) : null}
+      {rightElement ? <div className={classes.rightElementContainer}>{rightElement}</div> : null}
     </div>
   );
 }

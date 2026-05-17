@@ -5,6 +5,7 @@ import type {
   Provider,
   ResolutionDetails,
 } from "@openfeature/web-sdk";
+
 import { ProviderEvents } from "@openfeature/web-sdk";
 
 import { getPublicApiUrl } from "./env";
@@ -128,8 +129,7 @@ export class ApiFeatureFlagProvider implements Provider {
       if (response.ok) {
         const newFlags = (await response.json()) as FlagStore;
         const changedKeys = Object.keys(newFlags).filter(
-          (key) =>
-            JSON.stringify(newFlags[key]) !== JSON.stringify(this.flags[key]),
+          (key) => JSON.stringify(newFlags[key]) !== JSON.stringify(this.flags[key]),
         );
         this.flags = newFlags;
         if (changedKeys.length > 0) {

@@ -89,11 +89,7 @@ describe("auth", () => {
         expect(auth.basePath).toBe("/auth");
         expect(auth.trustedOrigins).toEqual(["https://app.example.com"]);
         expect(auth.emailAndPassword).toEqual({ enabled: true });
-        expect(auth.plugins).toEqual([
-          "admin-plugin",
-          "two-factor-plugin",
-          "username-plugin",
-        ]);
+        expect(auth.plugins).toEqual(["admin-plugin", "two-factor-plugin", "username-plugin"]);
         expect(prismaPg).toHaveBeenCalledWith({
           connectionString: "postgresql://dbuser:dbpass@dbhost:5432/dbname",
         });

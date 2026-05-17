@@ -2,7 +2,7 @@ export {};
 
 declare global {
   type USER_ROLE = "USER" | "ADMINISTRATOR";
-  type SIMULATION_TYPE = "apo" | "acpype";
+  type SIMULATION_TYPE = "plasmo" | "leish";
   type SIMULATION_STATUS =
     | "QUEUED"
     | "RUNNING"

@@ -3,7 +3,6 @@ import { Test } from "@nestjs/testing";
 import { describe, expect, it, vi } from "vitest";
 
 import { createSession } from "../test-utils/session.js";
-
 import { FeatureFlagController } from "./feature-flag.controller.js";
 import { FeatureFlagService } from "./feature-flag.service.js";
 
@@ -26,9 +25,7 @@ describe("FeatureFlagController", () => {
       getAllFlagsForClient: vi.fn().mockResolvedValue(flags),
     });
 
-    await expect(
-      module.get(FeatureFlagController).getClientFlags(),
-    ).resolves.toEqual(flags);
+    await expect(module.get(FeatureFlagController).getClientFlags()).resolves.toEqual(flags);
   });
 
   it("blocks non-admin users from listing flags", async () => {
@@ -51,9 +48,7 @@ describe("FeatureFlagController", () => {
     const controller = module.get(FeatureFlagController);
     const session = createSession() as any;
 
-    await expect(controller.findByKey("a", session)).rejects.toBeInstanceOf(
-      UnauthorizedException,
-    );
+    await expect(controller.findByKey("a", session)).rejects.toBeInstanceOf(UnauthorizedException);
     await expect(
       controller.create(
         {
@@ -66,12 +61,10 @@ describe("FeatureFlagController", () => {
         session,
       ),
     ).rejects.toBeInstanceOf(UnauthorizedException);
-    await expect(
-      controller.update("a", { enabled: false }, session),
-    ).rejects.toBeInstanceOf(UnauthorizedException);
-    await expect(controller.remove("a", session)).rejects.toBeInstanceOf(
+    await expect(controller.update("a", { enabled: false }, session)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
+    await expect(controller.remove("a", session)).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
   it("returns all flags for admins", async () => {
@@ -81,9 +74,7 @@ describe("FeatureFlagController", () => {
     });
 
     await expect(
-      module
-        .get(FeatureFlagController)
-        .findAll(createSession({ user: { role: "admin" } }) as any),
+      module.get(FeatureFlagController).findAll(createSession({ user: { role: "admin" } }) as any),
     ).resolves.toEqual(flags);
   });
 
@@ -95,10 +86,7 @@ describe("FeatureFlagController", () => {
     await expect(
       module
         .get(FeatureFlagController)
-        .findByKey(
-          "missing",
-          createSession({ user: { role: "admin" } }) as any,
-        ),
+        .findByKey("missing", createSession({ user: { role: "admin" } }) as any),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
@@ -128,9 +116,7 @@ describe("FeatureFlagController", () => {
     await expect(controller.findByKey("a", session)).resolves.toEqual({
       key: "a",
     });
-    await expect(
-      controller.create(createBody as any, session),
-    ).resolves.toEqual({
+    await expect(controller.create(createBody as any, session)).resolves.toEqual({
       key: "a",
     });
     await expect(controller.update("a", updateBody, session)).resolves.toEqual({

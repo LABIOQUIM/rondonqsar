@@ -1,10 +1,10 @@
-import classes from "./MolViewer.module.css";
-
-import { useEffect, useRef } from "react";
 import { IconCircleOff } from "@tabler/icons-react";
 import * as NGL from "ngl";
+import { useEffect, useRef } from "react";
 
 import type { LatestMacromolecules } from "@/queries/latestMacromolecules";
+
+import classes from "./MolViewer.module.css";
 
 interface Props {
   macromolecules?: LatestMacromolecules;

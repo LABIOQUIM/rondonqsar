@@ -15,7 +15,7 @@ export const waterModels = {
 } as const;
 
 export const allForceFields = {
-  apo: {
+  plasmo: {
     amber03: "AMBER03 protein, nucleic AMBER94",
     amber94: "AMBER94 force field",
     amber96: "AMBER96 protein, nucleic AMBER94",
@@ -32,7 +32,7 @@ export const allForceFields = {
     gromos54a7: "GROMOS96 54a7 force field",
     oplsaa: "OPLS-AA/L all-atom force",
   },
-  acpype: {
+  leish: {
     amber03: "AMBER03 protein, nucleic AMBER94",
     amber94: "AMBER94 force field",
     amber96: "AMBER96 protein, nucleic AMBER94",
@@ -44,6 +44,6 @@ export const allForceFields = {
 } as const;
 
 export const simulationTypes = {
-  apo: "Free Protein",
-  acpype: "Protein with Ligand (ACPYPE)",
+  plasmo: "Plasmo",
+  leish: "Leish",
 };

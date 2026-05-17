@@ -1,17 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mkdirSync = vi.fn();
-const existsSync = vi.fn();
 const randomUUID = vi.fn();
 const diskStorage = vi.fn((options) => options);
 
 vi.mock("fs", () => ({
   default: {
     mkdirSync,
-    existsSync,
   },
   mkdirSync,
-  existsSync,
 }));
 
 vi.mock("crypto", () => ({
@@ -26,31 +23,51 @@ describe("multerConfig", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
-    existsSync.mockReturnValue(true);
     randomUUID.mockReturnValue("uuid-123");
   });
 
-  it("rejects requests without a session user", async () => {
-    await import("./multer.config.js");
+  async function getStorage() {
+    const { default: multerConfig } = await import("./multer.config.js");
+    return multerConfig.storage as any;
+  }
 
-    const filename = diskStorage.mock.calls[0][0].filename;
+  it("rejects requests without a session user", async () => {
+    const storage = await getStorage();
     const cb = vi.fn();
 
-    filename({} as any, { originalname: "file.pdb", fieldname: "filePDB" }, cb);
+    storage.destination({ originalUrl: "/v1/plasmo/submit" }, { originalname: "molecule.sdf" }, cb);
 
     expect(cb).toHaveBeenCalledWith(expect.any(Error), "");
     expect(cb.mock.calls[0][0]?.message).toBe("Unauthorized");
   });
 
-  it("rejects unsupported extensions", async () => {
-    await import("./multer.config.js");
-
-    const filename = diskStorage.mock.calls[0][0].filename;
+  it("rejects unsupported route paths", async () => {
+    const storage = await getStorage();
     const cb = vi.fn();
 
-    filename(
-      { session: { user: { username: "owner" } } } as any,
-      { originalname: "file.txt", fieldname: "filePDB" },
+    storage.destination(
+      {
+        session: { user: { username: "owner" } },
+        originalUrl: "/v1/simulation/submit",
+      },
+      { originalname: "molecule.sdf" },
+      cb,
+    );
+
+    expect(cb).toHaveBeenCalledWith(expect.any(Error), "");
+    expect(cb.mock.calls[0][0]?.message).toBe("Unsupported calculation type");
+  });
+
+  it("rejects unsupported extensions", async () => {
+    const storage = await getStorage();
+    const cb = vi.fn();
+
+    storage.destination(
+      {
+        session: { user: { username: "owner" } },
+        originalUrl: "/v1/plasmo/submit",
+      },
+      { originalname: "file.txt" },
       cb,
     );
 
@@ -58,34 +75,58 @@ describe("multerConfig", () => {
     expect(cb.mock.calls[0][0]?.message).toBe("File type not allowed: .txt");
   });
 
-  it("creates missing user directories and uses the canonical macromolecule filename", async () => {
-    existsSync.mockReturnValue(false);
-    const { default: multerConfig } = await import("./multer.config.js");
-
+  it("stores plasmo uploads under the user's plasmo folder", async () => {
+    const storage = await getStorage();
     const cb = vi.fn();
 
-    (multerConfig.storage as any).filename(
-      { session: { user: { username: "owner" } } },
-      { originalname: "protein.PDB", fieldname: "filePDB" },
+    storage.destination(
+      {
+        session: { user: { username: "owner" } },
+        originalUrl: "/v1/plasmo/submit",
+      },
+      { originalname: "molecule.sdf" },
       cb,
     );
 
-    expect(mkdirSync).toHaveBeenCalledWith("/files/owner");
-    expect(cb).toHaveBeenCalledWith(null, "owner/originalMacromolecule.pdb");
+    expect(mkdirSync).toHaveBeenCalledWith("/files/owner/plasmo", {
+      recursive: true,
+    });
+    expect(cb).toHaveBeenCalledWith(null, "/files/owner/plasmo");
   });
 
-  it("uses generated ligand filenames for non-macromolecule files", async () => {
-    const { default: multerConfig } = await import("./multer.config.js");
-
+  it("stores leish uploads under the user's leish folder", async () => {
+    const storage = await getStorage();
     const cb = vi.fn();
 
-    (multerConfig.storage as any).filename(
-      { session: { user: { username: "owner" } } },
-      { originalname: "ligand.itp", fieldname: "fileLigandITP" },
+    storage.destination(
+      {
+        session: { user: { username: "owner" } },
+        originalUrl: "/v1/leish/submit",
+      },
+      { originalname: "molecule.sdf" },
+      cb,
+    );
+
+    expect(mkdirSync).toHaveBeenCalledWith("/files/owner/leish", {
+      recursive: true,
+    });
+    expect(cb).toHaveBeenCalledWith(null, "/files/owner/leish");
+  });
+
+  it("uses generated SDF filenames", async () => {
+    const storage = await getStorage();
+    const cb = vi.fn();
+
+    storage.filename(
+      {
+        session: { user: { username: "owner" } },
+        originalUrl: "/v1/plasmo/submit",
+      },
+      { originalname: "molecule.SDF" },
       cb,
     );
 
     expect(randomUUID).toHaveBeenCalled();
-    expect(cb).toHaveBeenCalledWith(null, "owner/ligand_uuid-123.itp");
+    expect(cb).toHaveBeenCalledWith(null, "input_uuid-123.sdf");
   });
 });

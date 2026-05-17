@@ -1,7 +1,8 @@
-import { Badge } from "@mantine/core";
-import { IconCrown, IconUser, type ReactNode } from "@tabler/icons-react";
 import type { UserWithRole } from "better-auth/plugins";
 import type { MRT_Cell } from "mantine-react-table-open";
+
+import { Badge } from "@mantine/core";
+import { IconCrown, IconUser, type ReactNode } from "@tabler/icons-react";
 
 const roleColors: { [key: string]: string } = {
   admin: "yellow",
@@ -21,11 +22,7 @@ export function TableRoleCell({ cell }: { cell: MRT_Cell<UserWithRole> }) {
   }
 
   return (
-    <Badge
-      color={roleColors[role]}
-      leftSection={roleIcons[role]}
-      variant="light"
-    >
+    <Badge color={roleColors[role]} leftSection={roleIcons[role]} variant="light">
       {role}
     </Badge>
   );

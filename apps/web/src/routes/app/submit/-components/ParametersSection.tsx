@@ -1,11 +1,11 @@
-import classes from "../index.module.css";
-
-import { type Control, Controller, useWatch } from "react-hook-form";
 import { Box, NumberInput, Select, Stack, Text } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
+import { type Control, Controller, useWatch } from "react-hook-form";
 
-import { allForceFields, boxTypes, waterModels } from "./constants";
 import type { SimulationFormValues } from "./schema";
+
+import classes from "../index.module.css";
+import { allForceFields, boxTypes, waterModels } from "./constants";
 import { SectionContainer } from "./SectionContainer";
 
 const dropdownStyles = {
@@ -29,8 +29,7 @@ interface Props {
 
 export function ParametersSection({ control }: Props) {
   const simulationType = useWatch({ control, name: "type" });
-  const isAcpype = simulationType === "acpype";
-  const forceFields = isAcpype ? allForceFields.acpype : allForceFields.apo;
+  const forceFields = allForceFields[simulationType];
   return (
     <SectionContainer title="Parameters">
       <Stack gap="xs">
@@ -45,9 +44,7 @@ export function ParametersSection({ control }: Props) {
                 label="Force Field"
                 onChange={field.onChange}
                 placeholder="Select a force field"
-                renderOption={({ option }) =>
-                  renderOption(forceFields, option.value)
-                }
+                renderOption={({ option }) => renderOption(forceFields, option.value)}
                 rightSection={<IconChevronDown />}
                 searchable
                 styles={dropdownStyles}
@@ -66,9 +63,7 @@ export function ParametersSection({ control }: Props) {
                 label="Water Model"
                 onChange={field.onChange}
                 placeholder="Select a water model"
-                renderOption={({ option }) =>
-                  renderOption(waterModels, option.value)
-                }
+                renderOption={({ option }) => renderOption(waterModels, option.value)}
                 rightSection={<IconChevronDown />}
                 searchable
                 styles={dropdownStyles}
@@ -89,9 +84,7 @@ export function ParametersSection({ control }: Props) {
                 label="Box Type"
                 onChange={field.onChange}
                 placeholder="Select a box type"
-                renderOption={({ option }) =>
-                  renderOption(boxTypes, option.value)
-                }
+                renderOption={({ option }) => renderOption(boxTypes, option.value)}
                 rightSection={<IconChevronDown />}
                 searchable
                 styles={dropdownStyles}

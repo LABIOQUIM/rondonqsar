@@ -1,5 +1,3 @@
-import styles from "./FeaturesSection.module.css";
-
 import { Box, SimpleGrid } from "@mantine/core";
 import {
   IconChartArrowsVertical,
@@ -11,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 
 import { FeatureCard } from "./FeatureCard";
+import styles from "./FeaturesSection.module.css";
 
 const featuresData = [
   {
@@ -35,8 +34,7 @@ const featuresData = [
   {
     icon: <IconCloudComputing size={32} />,
     title: "Web-Based & Accessible",
-    description:
-      "No installation needed. Access Visual Dynamics from any modern web browser.",
+    description: "No installation needed. Access Visual Dynamics from any modern web browser.",
   },
   {
     icon: <IconCode size={32} />,

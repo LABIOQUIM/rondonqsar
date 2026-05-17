@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { FlagForm, type FlagFormValues } from "./-components/FlagForm";
-import { useFlagMutations } from "./-components/useFlagMutations";
-
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { type UpdateFeatureFlagInput } from "@/mutations/featureFlags";
 import { getFeatureFlags } from "@/queries/getFeatureFlags";
+
+import { FlagForm, type FlagFormValues } from "./-components/FlagForm";
+import { useFlagMutations } from "./-components/useFlagMutations";
 
 export const Route = createFileRoute("/app/mgmt/feature-flags/$key")({
   component: RouteComponent,
@@ -37,9 +37,9 @@ function RouteComponent() {
 
   if (!flag) return null;
 
-  const variantEntries: FlagFormValues["variants"] = Object.entries(
-    flag.variants ?? {},
-  ).map(([k, v]) => ({ variantKey: k, variantValue: String(v) }));
+  const variantEntries: FlagFormValues["variants"] = Object.entries(flag.variants ?? {}).map(
+    ([k, v]) => ({ variantKey: k, variantValue: String(v) }),
+  );
 
   function handleSubmit(values: FlagFormValues) {
     const input: UpdateFeatureFlagInput = {

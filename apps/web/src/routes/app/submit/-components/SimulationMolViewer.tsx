@@ -1,18 +1,18 @@
 import { type Control, useWatch } from "react-hook-form";
 
-import type { SimulationFormValues } from "./schema";
-import { useSimulationViewer } from "./useSimulationViewer";
-
 import { LazyMolViewer } from "@/components/LazyMolViewer";
+
+import type { SimulationFormValues } from "./schema";
+
+import { useSimulationViewer } from "./useSimulationViewer";
 
 interface Props {
   control: Control<SimulationFormValues>;
 }
 
 export function SimulationMolViewer({ control }: Props) {
-  const filePDB = useWatch({ control, name: "filePDB" });
-  const ligands = useWatch({ control, name: "ligands" });
-  const files = useSimulationViewer(filePDB, ligands);
+  const file = useWatch({ control, name: "file" });
+  const files = useSimulationViewer(file);
 
   return <LazyMolViewer macromolecules={files} />;
 }

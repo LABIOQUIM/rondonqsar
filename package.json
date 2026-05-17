@@ -1,7 +1,27 @@
 {
   "name": "protoqsar",
-  "packageManager": "pnpm@10.33.0",
+  "version": "5.0.0-next.16",
   "private": true,
+  "scripts": {
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint ."
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^20.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.2",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "semantic-release": "^25.0.2",
+    "semantic-release-replace-plugin": "^1.2.7",
+    "typescript": "~5.9.3"
+  },
+  "packageManager": "pnpm@10.33.0",
   "pnpm": {
     "overrides": {
       "zod": "4.3.6",
@@ -18,25 +38,5 @@
       "msgpackr-extract",
       "prisma"
     ]
-  },
-  "scripts": {
-    "lint": "oxlint .",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check"
-  },
-  "devDependencies": {
-    "@commitlint/config-conventional": "^20.0.0",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^12.0.2",
-    "@semantic-release/release-notes-generator": "^14.1.0",
-    "conventional-changelog-conventionalcommits": "^9.1.0",
-    "oxlint": "^1.60.0",
-    "oxfmt": "^0.45.0",
-    "semantic-release": "^25.0.2",
-    "semantic-release-replace-plugin": "^1.2.7",
-    "typescript": "~5.9.3"
-  },
-  "version": "5.0.0-next.16"
+  }
 }

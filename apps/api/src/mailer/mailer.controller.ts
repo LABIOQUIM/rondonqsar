@@ -3,13 +3,12 @@ import { Roles, Session } from "@thallesp/nestjs-better-auth";
 
 import { auth } from "../lib/auth.js";
 import { PrismaService } from "../prisma.service.js";
-
 import { MailerService } from "./mailer.service.js";
 import { MailerBody } from "./mailer.types.js";
 
 @Controller("mailer")
 @Roles(["admin"])
-export class MailerssController {
+export class MailerController {
   constructor(
     private mailService: MailerService,
     private prisma: PrismaService,
@@ -29,10 +28,7 @@ export class MailerssController {
   }
 
   @Post("/")
-  async sendMail(
-    @Body() data: MailerBody,
-    @Session() _session: typeof auth.$Infer.Session,
-  ) {
+  async sendMail(@Body() data: MailerBody, @Session() _session: typeof auth.$Infer.Session) {
     await this.mailService.sendMail(data);
   }
 

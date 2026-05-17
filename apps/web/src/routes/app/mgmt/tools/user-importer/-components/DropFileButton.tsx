@@ -1,11 +1,10 @@
-import classes from "./DropFileButton.module.css";
-
-import { usePapaParse } from "react-papaparse";
 import { Button, Group, Text } from "@mantine/core";
 import { Dropzone, type FileWithPath, MIME_TYPES } from "@mantine/dropzone";
 import { IconCloudUpload, IconDownload, IconX } from "@tabler/icons-react";
 import { useCallback, useRef } from "react";
+import { usePapaParse } from "react-papaparse";
 
+import classes from "./DropFileButton.module.css";
 import { type ImporterUser, useUserImporter } from "./Provider";
 
 type ImportedUser = {
@@ -70,11 +69,7 @@ export function DropFileButton() {
               <IconX className={classes.icon} size={50} stroke={1.5} />
             </Dropzone.Reject>
             <Dropzone.Idle>
-              <IconCloudUpload
-                className={classes.icon}
-                size={50}
-                stroke={1.5}
-              />
+              <IconCloudUpload className={classes.icon} size={50} stroke={1.5} />
             </Dropzone.Idle>
           </Group>
 
@@ -85,18 +80,13 @@ export function DropFileButton() {
           </Text>
 
           <Text className={classes.description}>
-            Drag&apos;n&apos;drop files here to upload. We can accept only{" "}
-            <i>.csv</i> files that are less than 30mb in size.
+            Drag&apos;n&apos;drop files here to upload. We can accept only <i>.csv</i> files that
+            are less than 30mb in size.
           </Text>
         </div>
       </Dropzone>
 
-      <Button
-        className={classes.control}
-        onClick={() => openRef.current?.()}
-        radius="xl"
-        size="md"
-      >
+      <Button className={classes.control} onClick={() => openRef.current?.()} radius="xl" size="md">
         Select files
       </Button>
     </div>

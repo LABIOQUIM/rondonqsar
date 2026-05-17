@@ -1,8 +1,8 @@
-import { useMemo } from "react";
 import { Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "@tanstack/react-router";
 import dayjs from "dayjs";
+import { useMemo } from "react";
 
 import { useCountdown } from "@/hooks/useCountdown";
 import { getSimulation } from "@/queries/getSimulation";
@@ -11,9 +11,7 @@ export function RefetchTime() {
   const { simulationId } = useParams({
     from: "/app/simulations/$simulationId",
   });
-  const { data, dataUpdatedAt, isError } = useQuery(
-    getSimulation(simulationId),
-  );
+  const { data, dataUpdatedAt, isError } = useQuery(getSimulation(simulationId));
 
   const nextRefetchAt = useMemo(() => {
     if (!dataUpdatedAt) return null;
@@ -42,8 +40,7 @@ export function RefetchTime() {
   if (!data.isActive && data.queuePosition === -1) {
     return (
       <Text>
-        Your simulation might be starting. We&apos;ll check again in{" "}
-        {secsToRefetch} second(s)
+        Your simulation might be starting. We&apos;ll check again in {secsToRefetch} second(s)
       </Text>
     );
   }

@@ -1,16 +1,15 @@
-import classes from "./$simulationId.module.css";
-
 import { Tabs } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { PageLayout } from "@/components/PageLayout";
+import { getSimulation } from "@/queries/getSimulation";
+
+import classes from "./$simulationId.module.css";
 import { Download } from "./-components/Download";
 import { ExecutionProgress } from "./-components/ExecutionProgress";
 import { Overview } from "./-components/Overview";
 import { Visualizer } from "./-components/Visualizer";
-
-import { PageLayout } from "@/components/PageLayout";
-import { getSimulation } from "@/queries/getSimulation";
 
 export const Route = createFileRoute("/app/simulations/$simulationId")({
   component: RouteComponent,
@@ -37,10 +36,7 @@ function RouteComponent() {
         <Tabs.List>
           <Tabs.Tab value="overview">Overview</Tabs.Tab>
           <Tabs.Tab value="run">Run</Tabs.Tab>
-          <Tabs.Tab
-            disabled={data.simulation.status === "RUNNING"}
-            value="3d-vis"
-          >
+          <Tabs.Tab disabled={data.simulation.status === "RUNNING"} value="3d-vis">
             3D Visualizer
           </Tabs.Tab>
           <Tabs.Tab value="downloads">Downloads</Tabs.Tab>

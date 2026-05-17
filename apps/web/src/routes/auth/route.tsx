@@ -1,15 +1,10 @@
-import classes from "./route.module.css";
-
 import { Box, Paper } from "@mantine/core";
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 
 import VISUAL_DYNAMICS_LOGO from "@/assets/visualdynamics.svg";
 import { authClient } from "@/lib/auth-client";
+
+import classes from "./route.module.css";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,

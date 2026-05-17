@@ -1,10 +1,7 @@
 .demoSection {
   padding-top: calc(var(--mantine-spacing-xl) * 2);
   padding-bottom: calc(var(--mantine-spacing-xl) * 2);
-  background-color: rgba(
-    var(--mantine-color-white-rgb),
-    0.75
-  ); /* Slightly transparent white */
+  background-color: rgba(var(--mantine-color-white-rgb), 0.75); /* Slightly transparent white */
   backdrop-filter: blur(2px);
   position: relative;
   z-index: 3;

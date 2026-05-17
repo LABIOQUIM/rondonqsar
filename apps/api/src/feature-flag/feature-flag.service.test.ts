@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createPrismaStub } from "../test-utils/mocks.js";
-
 import { FeatureFlagService } from "./feature-flag.service.js";
 
 describe("FeatureFlagService", () => {

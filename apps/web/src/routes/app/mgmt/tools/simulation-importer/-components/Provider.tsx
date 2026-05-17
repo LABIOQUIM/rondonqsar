@@ -1,4 +1,5 @@
 import type { Dispatch, PropsWithChildren, SetStateAction } from "react";
+
 import { createContext, useContext, useMemo, useState } from "react";
 
 export type ImporterSimulation = {
@@ -51,9 +52,5 @@ export function SimulationImporterProvider({ children }: PropsWithChildren) {
     [simulations, users],
   );
 
-  return (
-    <ImporterContext.Provider value={contextValue}>
-      {children}
-    </ImporterContext.Provider>
-  );
+  return <ImporterContext.Provider value={contextValue}>{children}</ImporterContext.Provider>;
 }

@@ -9,10 +9,7 @@
   /* Optional: Add a very subtle pattern for texture if desired, ensure it's light */
   /* background-image: url('/images/light-molecular-pattern.svg'); */
   /* background-blend-mode: overlay; */
-  background-color: rgba(
-    var(--mantine-color-white-rgb),
-    0.75
-  ); /* Slightly transparent white */
+  background-color: rgba(var(--mantine-color-white-rgb), 0.75); /* Slightly transparent white */
   backdrop-filter: blur(2px);
 }
 

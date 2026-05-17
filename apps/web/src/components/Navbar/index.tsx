@@ -1,5 +1,3 @@
-import classes from "./index.module.css";
-
 import { ActionIcon, Box, Text } from "@mantine/core";
 import {
   IconAutomation,
@@ -19,10 +17,11 @@ import {
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
+import { authClient } from "@/lib/auth-client";
+
+import classes from "./index.module.css";
 import { Section } from "./Section";
 import { User } from "./User";
-
-import { authClient } from "@/lib/auth-client";
 
 const sections: NavSection[] = [
   {

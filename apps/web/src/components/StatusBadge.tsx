@@ -14,9 +14,5 @@ type StatusBadgeProps = {
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  return (
-    <span className={`${classes.badge} ${classes[status]}`}>
-      {labels[status]}
-    </span>
-  );
+  return <span className={`${classes.badge} ${classes[status]}`}>{labels[status]}</span>;
 }

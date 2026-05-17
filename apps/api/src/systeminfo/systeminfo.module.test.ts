@@ -11,9 +11,7 @@ describe("SystemInfoModule", () => {
       imports: [SystemInfoModule],
     }).compile();
 
-    expect(module.get(SystemInfoController)).toBeInstanceOf(
-      SystemInfoController,
-    );
+    expect(module.get(SystemInfoController)).toBeInstanceOf(SystemInfoController);
     expect(module.get(SystemInfoService)).toBeInstanceOf(SystemInfoService);
   });
 });

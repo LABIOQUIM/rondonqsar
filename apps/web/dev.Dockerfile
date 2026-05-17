@@ -1,5 +1,4 @@
-# Base image (unchanged)
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 LABEL authors="ivopr"
 
 # --------------------
@@ -8,10 +7,11 @@ LABEL authors="ivopr"
 FROM base AS deps
 ARG HOST_UID=1000
 ARG HOST_GID=1000
+ARG PNPM_VERSION
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy pnpm metadata + lockfile and workspace package.json files so resolution is consistent.
 # Adjust the workspace paths if your monorepo has other locations (packages/* etc).
@@ -43,13 +43,14 @@ RUN set -eux; \
 # --------------------
 # runner stage: runtime
 # --------------------
-FROM node:20-alpine AS runner
+FROM node:24-alpine AS runner
 ARG HOST_UID=1000
 ARG HOST_GID=1000
+ARG PNPM_VERSION
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Recreate or reuse group/user in runtime (so the numeric UID has a name when needed).
 RUN set -eux; \

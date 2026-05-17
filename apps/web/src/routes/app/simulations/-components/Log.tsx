@@ -1,8 +1,7 @@
-import classes from "./Log.module.css";
-
 import { Box, Title } from "@mantine/core";
 import { LazyLog } from "@melloware/react-logviewer";
 
+import classes from "./Log.module.css";
 import { RefetchTime } from "./RefetchTime";
 
 type LogProps = {
@@ -17,12 +16,7 @@ export function Log({ logs }: LogProps) {
         <RefetchTime />
       </Box>
       <Box className={classes.logContainer}>
-        <LazyLog
-          caseInsensitive
-          enableSearch
-          text={logs.join("\n")}
-          wrapLines
-        />
+        <LazyLog caseInsensitive enableSearch text={logs.join("\n")} wrapLines />
       </Box>
       {/*<ScrollAreaAutosize className={classes.logContainer} offsetScrollbars="y">
         {logs.map((line, idx) => (

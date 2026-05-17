@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import { defineConfig, env } from "prisma/config";
 
 const user = env("DB_USER");

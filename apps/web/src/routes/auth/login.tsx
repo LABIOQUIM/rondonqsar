@@ -1,23 +1,16 @@
-import classes from "./login.module.css";
-
-import { useState } from "react";
-import {
-  Anchor,
-  Box,
-  Button,
-  PasswordInput,
-  Text,
-  TextInput,
-} from "@mantine/core";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
 import { authClient } from "@/lib/auth-client";
+
+import classes from "./login.module.css";
 
 const schema = z.object({
   identifier: z.string().min(4, "Your email and username both have more than 3 characters"),
@@ -71,10 +64,7 @@ function RouteComponent() {
     if (regex.test(identifier)) {
       await authClient.signIn.email({ email: identifier, password }, options);
     } else {
-      await authClient.signIn.username(
-        { username: identifier, password },
-        options,
-      );
+      await authClient.signIn.username({ username: identifier, password }, options);
     }
   }
 
@@ -85,8 +75,7 @@ function RouteComponent() {
           status={{
             status: "error",
             title: "System under maintenance",
-            message:
-              "Only administrators can sign in at this time. Please check back later.",
+            message: "Only administrators can sign in at this time. Please check back later.",
           }}
         />
       );
@@ -101,8 +90,7 @@ function RouteComponent() {
         status={{
           status: "info",
           title: "Login to continue",
-          message:
-            "To access the totality of the system you need to be logged in.",
+          message: "To access the totality of the system you need to be logged in.",
         }}
       />
     );
@@ -112,11 +100,7 @@ function RouteComponent() {
     <>
       <Heading title="Login" />
 
-      <Box
-        className={classes.formContainer}
-        component="form"
-        onSubmit={handleSubmit(doLogin)}
-      >
+      <Box className={classes.formContainer} component="form" onSubmit={handleSubmit(doLogin)}>
         <RenderAlert />
         <TextInput
           data-autofocus

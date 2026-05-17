@@ -1,22 +1,17 @@
 import "mantine-react-table-open/styles.css";
 import "@mantine/dropzone/styles.css";
-import classes from "./route.module.css";
-
-import { useEffect } from "react";
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { OpenFeature, useFlag } from "@openfeature/react-sdk";
-import {
-  createFileRoute,
-  Outlet,
-  redirect,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import { Logo } from "@/components/Logo";
 import { Navbar } from "@/components/Navbar";
 import { ServerTime } from "@/components/ServerTime";
 import { authClient } from "@/lib/auth-client";
+
+import classes from "./route.module.css";
 
 export const Route = createFileRoute("/app")({
   ssr: false,
@@ -33,10 +28,7 @@ export const Route = createFileRoute("/app")({
       });
     }
 
-    const maintenance = OpenFeature.getClient().getBooleanValue(
-      "maintenance-mode",
-      true,
-    );
+    const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", true);
 
     if (maintenance && auth.user.role !== "admin") {
       throw redirect({ to: "/auth/login" });
@@ -50,8 +42,7 @@ function RouteComponent() {
   const { data } = authClient.useSession();
   const { value: maintenanceMode } = useFlag("maintenance-mode", true);
 
-  const isNonAdminDuringMaintenance =
-    maintenanceMode && data?.user.role !== "admin";
+  const isNonAdminDuringMaintenance = maintenanceMode && data?.user.role !== "admin";
 
   useEffect(() => {
     if (isNonAdminDuringMaintenance) {
@@ -83,12 +74,7 @@ function RouteComponent() {
       <AppShell.Header>
         <Group align="center" h="100%" justify="space-between" px="md" w="100%">
           <Group flex={1}>
-            <Burger
-              hiddenFrom="sm"
-              onClick={toggle}
-              opened={opened}
-              size="sm"
-            />
+            <Burger hiddenFrom="sm" onClick={toggle} opened={opened} size="sm" />
             <Logo />
           </Group>
           <Group>

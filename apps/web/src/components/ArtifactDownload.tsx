@@ -1,12 +1,12 @@
-import classes from "./ArtifactDownload.module.css";
-
-import { useRef, useState } from "react";
-import { createPortal, flushSync } from "react-dom";
 import { Button, Loader } from "@mantine/core";
 import { IconDownload } from "@tabler/icons-react";
+import { useRef, useState } from "react";
+import { createPortal, flushSync } from "react-dom";
 
 import { artifactDownload } from "@/lib/constants";
 import { fetchArtifact } from "@/queries/downloadArtifact";
+
+import classes from "./ArtifactDownload.module.css";
 
 type ArtifactDownloadProps = {
   simulationId: string;
@@ -14,11 +14,7 @@ type ArtifactDownloadProps = {
   disabled?: boolean;
 };
 
-export function ArtifactDownload({
-  disabled,
-  simulationId,
-  target,
-}: ArtifactDownloadProps) {
+export function ArtifactDownload({ disabled, simulationId, target }: ArtifactDownloadProps) {
   const rootRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);

@@ -1,5 +1,3 @@
-import classes from "./index.module.css";
-
 import { ActionIcon } from "@mantine/core";
 import { IconEye } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +18,8 @@ import { TableDateCell } from "@/components/TableDateCell";
 import { TableDurationCell } from "@/components/TableDurationCell";
 import { TypeBadge } from "@/components/TypeBadge";
 import { getUserSimulations } from "@/queries/getUserSimulations";
+
+import classes from "./index.module.css";
 
 export const Route = createFileRoute("/app/(home)/")({
   component: RouteComponent,
@@ -105,9 +105,7 @@ function RouteComponent() {
       {
         accessorKey: "type",
         header: "Type",
-        Cell: ({ cell }) => (
-          <TypeBadge type={cell.getValue<SIMULATION_TYPE>()} />
-        ),
+        Cell: ({ cell }) => <TypeBadge type={cell.getValue<SIMULATION_TYPE>()} />,
       },
       {
         accessorKey: "status",

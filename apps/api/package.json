@@ -1,25 +1,25 @@
 {
   "name": "api",
   "version": "5.0.0-next.16",
-  "description": "",
-  "author": "",
   "private": true,
+  "description": "",
   "license": "UNLICENSED",
+  "author": "",
   "type": "module",
   "scripts": {
     "build": "nest build",
     "format": "oxfmt src",
+    "generate": "prisma generate && node scripts/fix-prisma-imports.mjs",
+    "lint": "oxlint --fix src",
     "start": "nest start",
-    "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "start:dev": "nest start --watch",
     "start:prod": "node dist/src/main.js",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.config.ts --passWithNoTests",
-    "generate": "prisma generate && node scripts/fix-prisma-imports.mjs",
-    "lint": "oxlint --fix src"
+    "test:run": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@bull-board/api": "7.0.0",

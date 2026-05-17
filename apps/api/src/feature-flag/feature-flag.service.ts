@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import type { FEATURE_FLAG_TYPE, Prisma } from "../generated/prisma/client.js";
+
 import { PrismaService } from "../prisma.service.js";
 
 @Injectable()

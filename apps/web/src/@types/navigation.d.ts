@@ -1,6 +1,7 @@
-import { MantineColor } from "@mantine/core";
 import type { Icon } from "@tabler/icons-react";
 import type { LinkProps } from "@tanstack/react-router";
+
+import { MantineColor } from "@mantine/core";
 
 declare global {
   interface NavLink {

@@ -1,24 +1,16 @@
-import classes from "./ImportTable.module.css";
-
+import { Button, Group, Stack, Text } from "@mantine/core";
+import { MantineReactTable, useMantineReactTable } from "mantine-react-table-open";
 import { useCallback, useMemo, useRef } from "react";
 import { usePapaParse } from "react-papaparse";
-import { Button, Group, Stack, Text } from "@mantine/core";
-import {
-  MantineReactTable,
-  useMantineReactTable,
-} from "mantine-react-table-open";
-
-import { ImportButton } from "./ImportButton";
-import {
-  type ImporterSimulation,
-  type ImporterUserRow,
-  useSimulationImporter,
-} from "./Provider";
 
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
 import { TypeBadge } from "@/components/TypeBadge";
+
+import { ImportButton } from "./ImportButton";
+import classes from "./ImportTable.module.css";
+import { type ImporterSimulation, type ImporterUserRow, useSimulationImporter } from "./Provider";
 
 export function ImportTable() {
   const { simulations, users, setUsers } = useSimulationImporter();
@@ -76,16 +68,12 @@ export function ImportTable() {
       {
         accessorKey: "type",
         header: "Type",
-        Cell: ({ cell }: any) => (
-          <TypeBadge type={cell.getValue() as SIMULATION_TYPE} />
-        ),
+        Cell: ({ cell }: any) => <TypeBadge type={cell.getValue() as SIMULATION_TYPE} />,
       },
       {
         accessorKey: "status",
         header: "Status",
-        Cell: ({ cell }: any) => (
-          <StatusBadge status={cell.getValue() as SIMULATION_STATUS} />
-        ),
+        Cell: ({ cell }: any) => <StatusBadge status={cell.getValue() as SIMULATION_STATUS} />,
       },
       {
         accessorKey: "ligand_itp_name",

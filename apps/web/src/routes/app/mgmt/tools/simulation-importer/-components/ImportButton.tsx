@@ -1,16 +1,17 @@
-import classes from "./ImportButton.module.css";
+import type { MRT_TableInstance } from "mantine-react-table-open";
 
-import { useCallback, useMemo, useRef, useState } from "react";
-import { createPortal, flushSync } from "react-dom";
 import { Button, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import type { MRT_TableInstance } from "mantine-react-table-open";
-
-import type { ImporterSimulation } from "./Provider";
-import { useSimulationImporter } from "./Provider";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { createPortal, flushSync } from "react-dom";
 
 import { getAPIClient } from "@/lib/api";
+
+import type { ImporterSimulation } from "./Provider";
+
+import classes from "./ImportButton.module.css";
+import { useSimulationImporter } from "./Provider";
 
 type Props = {
   table: MRT_TableInstance<ImporterSimulation>;
@@ -43,8 +44,7 @@ export function ImportButton({ table }: Props) {
     [selectedRows, users],
   );
 
-  const fillWidth =
-    progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
+  const fillWidth = progress.total > 0 ? Math.round((progress.done / progress.total) * 100) : 0;
 
   const onImport = useCallback(async () => {
     const rows = selectedRows.map((r) => r.original);
@@ -126,8 +126,7 @@ export function ImportButton({ table }: Props) {
         ) : (
           <Stack>
             <Text>
-              Import <strong>{selectedRows.length}</strong> selected
-              simulation(s) into the system?
+              Import <strong>{selectedRows.length}</strong> selected simulation(s) into the system?
             </Text>
             {unmatchedUsers.length > 0 && (
               <Stack gap="xs">
@@ -140,8 +139,7 @@ export function ImportButton({ table }: Props) {
                   </Text>
                 ))}
                 <Text c="dimmed" fz="xs">
-                  These simulations will fail to import if the users do not
-                  exist in the database.
+                  These simulations will fail to import if the users do not exist in the database.
                 </Text>
               </Stack>
             )}

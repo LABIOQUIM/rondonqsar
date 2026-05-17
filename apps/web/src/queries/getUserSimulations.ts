@@ -1,5 +1,6 @@
-import { queryOptions } from "@tanstack/react-query";
 import type { MRT_PaginationState } from "mantine-react-table-open";
+
+import { queryOptions } from "@tanstack/react-query";
 
 import { getAPIClient } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/queryKeys";
@@ -22,9 +23,7 @@ export const fetchUserSimulations = async (pageSize: number, page: number) => {
     .then((r) => r.data);
 };
 
-export const getUserSimulations = (
-  props: MRT_PaginationState = { pageIndex: 1, pageSize: 10 },
-) =>
+export const getUserSimulations = (props: MRT_PaginationState = { pageIndex: 1, pageSize: 10 }) =>
   queryOptions({
     queryKey: QUERY_KEYS.userSimulations(props.pageSize, props.pageIndex),
     queryFn: () => fetchUserSimulations(props.pageSize, props.pageIndex),

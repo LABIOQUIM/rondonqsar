@@ -72,9 +72,7 @@ describe("SystemInfoService", () => {
       total: 64,
       used: 12,
     });
-    fsSize.mockResolvedValue([
-      { mount: "/data", size: 10, used: 1, available: 9 },
-    ]);
+    fsSize.mockResolvedValue([{ mount: "/data", size: 10, used: 1, available: 9 }]);
     currentLoad.mockResolvedValue({
       currentLoad: 23,
       avgLoad: 1.5,
@@ -83,8 +81,6 @@ describe("SystemInfoService", () => {
     const { SystemInfoService } = await import("./systeminfo.service.js");
     const service = new SystemInfoService();
 
-    await expect(service.getSystemInfo()).rejects.toThrow(
-      "Root filesystem not found",
-    );
+    await expect(service.getSystemInfo()).rejects.toThrow("Root filesystem not found");
   });
 });

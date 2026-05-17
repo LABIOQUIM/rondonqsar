@@ -1,13 +1,4 @@
-import classes from "./Overview.module.css";
-
-import {
-  Alert,
-  Blockquote,
-  Box,
-  Button,
-  Group,
-  SimpleGrid,
-} from "@mantine/core";
+import { Alert, Blockquote, Box, Button, Group, SimpleGrid } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
   IconAlertSquareRounded,
@@ -20,10 +11,11 @@ import dayjs from "dayjs";
 
 import { Loader } from "@/components/Loader";
 import { MetricCard } from "@/components/MetricCard";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 import { cancelSimulation } from "@/mutations/cancelSimulation";
 import { getSimulation } from "@/queries/getSimulation";
-import { QUERY_KEYS } from "@/lib/queryKeys";
 
+import classes from "./Overview.module.css";
 import { useSimulationMetrics } from "./useSimulationMetrics";
 
 type OverviewProps = {
@@ -57,9 +49,7 @@ export function Overview({ simulationId }: OverviewProps) {
     },
   });
 
-  const canCancel =
-    data?.simulation.status === "QUEUED" ||
-    data?.simulation.status === "RUNNING";
+  const canCancel = data?.simulation.status === "QUEUED" || data?.simulation.status === "RUNNING";
 
   const info = useSimulationMetrics(data);
 
@@ -137,11 +127,7 @@ export function Overview({ simulationId }: OverviewProps) {
         </Button>
       )}
       {data.simulation.storageDeletedAt ? (
-        <Alert
-          color="gray"
-          icon={<IconClockOff size="1rem" />}
-          title="Storage deleted"
-        >
+        <Alert color="gray" icon={<IconClockOff size="1rem" />} title="Storage deleted">
           Simulation files were deleted on{" "}
           {dayjs(data.simulation.storageDeletedAt).format("YYYY-MM-DD")}.
         </Alert>
@@ -165,8 +151,7 @@ export function Overview({ simulationId }: OverviewProps) {
           <IconBarrierBlockFilled size="4rem" />
         </MetricCard.Icon>
         <MetricCard.TextEmphasis>
-          Under development: More detailed metrics and visualizations coming
-          soon!
+          Under development: More detailed metrics and visualizations coming soon!
         </MetricCard.TextEmphasis>
       </MetricCard.Root>
     </>

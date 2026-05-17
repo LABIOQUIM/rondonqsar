@@ -1,11 +1,10 @@
-import styles from "./Layout.module.css";
-
-import React from "react";
 import { Box } from "@mantine/core";
+import React from "react";
 
 import { LanderFooter } from "./Footer";
 import { LanderHeader } from "./Header";
 import { InteractiveParticles } from "./InteractiveParticles";
+import styles from "./Layout.module.css";
 
 interface LayoutProps {
   children: React.ReactNode;

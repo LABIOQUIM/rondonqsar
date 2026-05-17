@@ -1,12 +1,10 @@
-import classes from "./-components/adminTable.module.css";
+import type { UserWithRole } from "better-auth/plugins";
 
-import { useState } from "react";
 import { Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import type { UserWithRole } from "better-auth/plugins";
 import {
   MantineReactTable,
   type MRT_ColumnFiltersState,
@@ -16,8 +14,7 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from "mantine-react-table-open";
-
-import { TableRoleCell } from "./-components/TableRoleCell";
+import { useState } from "react";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
@@ -26,6 +23,9 @@ import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
 import { authClient } from "@/lib/auth-client";
 import { getMgmtUsers } from "@/queries/getMgmtUsers";
+
+import classes from "./-components/adminTable.module.css";
+import { TableRoleCell } from "./-components/TableRoleCell";
 
 export const Route = createFileRoute("/app/mgmt/users")({
   component: RouteComponent,
@@ -36,40 +36,40 @@ function RouteComponent() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const [columnFilters, onColumnFiltersChange] =
-    useState<MRT_ColumnFiltersState>([]);
+  const [columnFilters, onColumnFiltersChange] = useState<MRT_ColumnFiltersState>([]);
   const [sorting, onSortingChange] = useState<MRT_SortingState>([]);
 
-  const { data, isLoading } = useQuery(
-    getMgmtUsers({ pagination, columnFilters, sorting }),
-  );
+  const { data, isLoading } = useQuery(getMgmtUsers({ pagination, columnFilters, sorting }));
 
-  const onEditingRowSave: MRT_TableOptions<UserWithRole>["onEditingRowSave"] =
-    async ({ values, table, row }) => {
-      // TODO: Should validate user input before updating user
-      const { error } = await authClient.admin.updateUser({
-        userId: row.id,
-        data: values,
+  const onEditingRowSave: MRT_TableOptions<UserWithRole>["onEditingRowSave"] = async ({
+    values,
+    table,
+    row,
+  }) => {
+    // TODO: Should validate user input before updating user
+    const { error } = await authClient.admin.updateUser({
+      userId: row.id,
+      data: values,
+    });
+
+    if (error) {
+      notifications.show({
+        message: error?.message,
+        color: "red",
+        icon: <IconX />,
+        withBorder: true,
       });
+    } else {
+      notifications.show({
+        message: "User updated successfully",
+        color: "green",
+        icon: <IconCheck />,
+        withBorder: true,
+      });
+    }
 
-      if (error) {
-        notifications.show({
-          message: error?.message,
-          color: "red",
-          icon: <IconX />,
-          withBorder: true,
-        });
-      } else {
-        notifications.show({
-          message: "User updated successfully",
-          color: "green",
-          icon: <IconCheck />,
-          withBorder: true,
-        });
-      }
-
-      table.setEditingRow(null);
-    };
+    table.setEditingRow(null);
+  };
 
   const table = useMantineReactTable({
     data: data?.users || [],

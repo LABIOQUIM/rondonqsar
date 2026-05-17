@@ -2,6 +2,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { QUERY_KEYS } from "@/lib/queryKeys";
 import {
   createFeatureFlag,
   type CreateFeatureFlagInput,
@@ -9,7 +10,6 @@ import {
   updateFeatureFlag,
   type UpdateFeatureFlagInput,
 } from "@/mutations/featureFlags";
-import { QUERY_KEYS } from "@/lib/queryKeys";
 
 function notify(message: string, success: boolean) {
   notifications.show({
@@ -22,8 +22,7 @@ function notify(message: string, success: boolean) {
 
 export function useFlagMutations() {
   const queryClient = useQueryClient();
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.featureFlags() });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.featureFlags() });
 
   const createMutation = useMutation({
     mutationFn: (data: CreateFeatureFlagInput) => createFeatureFlag(data),
@@ -35,13 +34,8 @@ export function useFlagMutations() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({
-      key,
-      data,
-    }: {
-      key: string;
-      data: UpdateFeatureFlagInput;
-    }) => updateFeatureFlag(key, data),
+    mutationFn: ({ key, data }: { key: string; data: UpdateFeatureFlagInput }) =>
+      updateFeatureFlag(key, data),
     onSuccess: () => {
       invalidate();
       notify("Feature flag updated", true);
