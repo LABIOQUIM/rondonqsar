@@ -7,8 +7,8 @@ declare global {
   declare const __VERSION__: string;
 
   interface Window {
-    __ENV__: {
-      API_URL: string;
+    __APP_SETTINGS__?: {
+      apiUrl?: string;
     };
   }
 

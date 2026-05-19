@@ -11,6 +11,7 @@
     "format": "oxfmt src",
     "generate": "prisma generate && node scripts/fix-prisma-imports.mjs",
     "lint": "oxlint --fix src",
+    "seed": "node --loader ts-node/esm ./scripts/seed.ts",
     "start": "nest start",
     "start:debug": "nest start --debug --watch",
     "start:dev": "nest start --watch",

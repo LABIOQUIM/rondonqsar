@@ -41,29 +41,23 @@ const sections: NavSection[] = [
     ],
   },
   {
-    title: "Simulations",
+    title: "PlasmoQSAR",
     links: [
       {
-        icon: IconAutomation,
-        label: "My Simulations",
-        href: "/app",
+        icon: IconReportAnalytics,
+        label: "My Submissions",
+        href: "/app/plasmo",
       },
       {
         icon: IconPlus,
-        label: "New Simulation",
-        href: "/app/submit",
+        label: "New Submission",
+        href: "/app/plasmo/submit",
       },
     ],
   },
   {
     title: "More LABIOQUIM Tools",
     links: [
-      {
-        icon: IconExternalLink,
-        label: "PlasmoQSAR",
-        href: "https://www.qsar.labioquim.fiocruz.br/",
-        external: true,
-      },
       {
         icon: IconExternalLink,
         label: "PlasmoIA",

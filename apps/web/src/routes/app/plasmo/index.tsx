@@ -2,7 +2,6 @@ import { ActionIcon } from "@mantine/core";
 import { IconEye } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import dayjs from "dayjs";
 import {
   MantineReactTable,
   type MRT_Cell,
@@ -15,51 +14,25 @@ import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableDateCell } from "@/components/TableDateCell";
-import { TableDurationCell } from "@/components/TableDurationCell";
-import { TypeBadge } from "@/components/TypeBadge";
-import { getUserSimulations } from "@/queries/getUserSimulations";
+import { TableTextCell } from "@/components/TableTextCell";
+import { getUserPlasmoTasks } from "@/queries/getUserPlasmoTasks";
 
 import classes from "./index.module.css";
 
-export const Route = createFileRoute("/app/(home)/")({
+export const Route = createFileRoute("/app/plasmo/")({
   component: RouteComponent,
 });
+
+function StatusCell({ cell }: { cell: MRT_Cell<PlasmoTaskSummary> }) {
+  return <StatusBadge status={cell.getValue<PLASMO_TASK_STATUS>()} />;
+}
 
 function RouteComponent() {
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const { data, isLoading } = useQuery(getUserSimulations(pagination));
-
-  function DurationAggregationFn(row: Simulation) {
-    if (row.startedAt && row.endedAt) {
-      const start = dayjs(row.startedAt);
-      const end = dayjs(row.endedAt);
-      const duration = dayjs.duration(end.diff(start));
-      return duration;
-    }
-
-    return "—";
-  }
-
-  function StatusCell({ cell }: { cell: MRT_Cell<Simulation> }) {
-    const status = cell.getValue<Simulation["status"]>();
-
-    return <StatusBadge status={status} />;
-  }
-
-  function ActionsCell({ cell }: { cell: MRT_Cell<Simulation> }) {
-    const simulationId = cell.row.original.id;
-
-    return (
-      <Link params={{ simulationId }} to="/app/simulations/$simulationId">
-        <ActionIcon size="lg" variant="subtle">
-          <IconEye />
-        </ActionIcon>
-      </Link>
-    );
-  }
+  const { data, isLoading } = useQuery(getUserPlasmoTasks(pagination));
 
   const table = useMantineReactTable({
     data: data?.records || [],
@@ -67,11 +40,24 @@ function RouteComponent() {
     enableTopToolbar: false,
     manualPagination: true,
     enableStickyHeader: true,
+    enableRowActions: true,
     onPaginationChange,
     paginationDisplayMode: "default",
     state: { isLoading, pagination },
     rowCount: data?.total ?? 0,
+    displayColumnDefOptions: {
+      "mrt-row-actions": {
+        size: 80,
+      },
+    },
     layoutMode: "grid",
+    renderRowActions: ({ row }) => (
+      <Link params={{ taskId: row.original.id }} to="/app/plasmo/$taskId">
+        <ActionIcon aria-label="View submission" size="lg" variant="subtle">
+          <IconEye size={18} />
+        </ActionIcon>
+      </Link>
+    ),
     mantinePaginationProps: {
       showRowsPerPage: false,
     },
@@ -92,20 +78,9 @@ function RouteComponent() {
     },
     columns: [
       {
-        header: "",
-        id: "actions",
-        Cell: ActionsCell,
-        enableColumnActions: false,
-        maxSize: 48,
-      },
-      {
-        accessorKey: "moleculeName",
-        header: "Macromolecule",
-      },
-      {
-        accessorKey: "type",
-        header: "Type",
-        Cell: ({ cell }) => <TypeBadge type={cell.getValue<SIMULATION_TYPE>()} />,
+        accessorKey: "originalName",
+        header: "Input File",
+        Cell: TableTextCell,
       },
       {
         accessorKey: "status",
@@ -113,24 +88,27 @@ function RouteComponent() {
         Cell: StatusCell,
       },
       {
-        id: "duration",
-        header: "Duration",
-        accessorFn: DurationAggregationFn,
-        Cell: TableDurationCell,
+        accessorKey: "resultCount",
+        header: "Results",
       },
       {
-        accessorKey: "startedAt",
-        header: "Started At",
-        Cell: TableDateCell,
+        accessorKey: "jobId",
+        header: "Job",
+        Cell: TableTextCell,
       },
       {
-        accessorKey: "endedAt",
-        header: "Ended At",
-        Cell: TableDateCell,
+        accessorKey: "errorMessage",
+        header: "Error",
+        Cell: TableTextCell,
       },
       {
         accessorKey: "createdAt",
         header: "Submitted",
+        Cell: TableDateCell,
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Updated",
         Cell: TableDateCell,
       },
     ],
@@ -138,7 +116,7 @@ function RouteComponent() {
 
   return (
     <PageLayout>
-      <Heading title="My Simulations" />
+      <Heading title="My PlasmoQSAR Submissions" />
       <MantineReactTable table={table} />
     </PageLayout>
   );

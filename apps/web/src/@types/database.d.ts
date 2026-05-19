@@ -10,6 +10,7 @@ declare global {
     | "CANCELED"
     | "ERRORED"
     | "GENERATED";
+  type PLASMO_TASK_STATUS = "QUEUED" | "PROCESSING" | "COMPLETED" | "FAILED";
 
   type StepState = "done" | "inprogress" | "waiting";
 

@@ -13,6 +13,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppRouteRouteImport } from './routes/app/route'
+import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as homeIndexRouteImport } from './routes/(home)/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -22,13 +23,13 @@ import { Route as homeGuidesRouteImport } from './routes/(home)/guides'
 import { Route as homeAnalyticsRouteImport } from './routes/(home)/analytics'
 import { Route as homeAboutRouteImport } from './routes/(home)/about'
 import { Route as AppMgmtRouteRouteImport } from './routes/app/mgmt/route'
-import { Route as AppSubmitIndexRouteImport } from './routes/app/submit/index'
-import { Route as ApphomeIndexRouteImport } from './routes/app/(home)/index'
-import { Route as AppSimulationsSimulationIdRouteImport } from './routes/app/simulations/$simulationId'
+import { Route as AppPlasmoIndexRouteImport } from './routes/app/plasmo/index'
+import { Route as AppPlasmoTaskIdRouteImport } from './routes/app/plasmo/$taskId'
 import { Route as AppMgmtUsersRouteImport } from './routes/app/mgmt/users'
 import { Route as AppMgmtSimulationsRouteImport } from './routes/app/mgmt/simulations'
 import { Route as AppMgmtSettingsRouteImport } from './routes/app/mgmt/settings'
 import { Route as AppMgmtServerRouteImport } from './routes/app/mgmt/server'
+import { Route as AppPlasmoSubmitIndexRouteImport } from './routes/app/plasmo/submit/index'
 import { Route as AppMgmtToolsIndexRouteImport } from './routes/app/mgmt/tools/index'
 import { Route as AppMgmtFeatureFlagsIndexRouteImport } from './routes/app/mgmt/feature-flags/index'
 import { Route as AppMgmtFeatureFlagsNewRouteImport } from './routes/app/mgmt/feature-flags/new'
@@ -59,6 +60,11 @@ const AppRouteRoute = AppRouteRouteImport.update({
   id: '/app',
   path: '/app',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const homeIndexRoute = homeIndexRouteImport.update({
   id: '/(home)/',
@@ -105,22 +111,16 @@ const AppMgmtRouteRoute = AppMgmtRouteRouteImport.update({
   path: '/mgmt',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppSubmitIndexRoute = AppSubmitIndexRouteImport.update({
-  id: '/submit/',
-  path: '/submit/',
+const AppPlasmoIndexRoute = AppPlasmoIndexRouteImport.update({
+  id: '/plasmo/',
+  path: '/plasmo/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const ApphomeIndexRoute = ApphomeIndexRouteImport.update({
-  id: '/(home)/',
-  path: '/',
+const AppPlasmoTaskIdRoute = AppPlasmoTaskIdRouteImport.update({
+  id: '/plasmo/$taskId',
+  path: '/plasmo/$taskId',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppSimulationsSimulationIdRoute =
-  AppSimulationsSimulationIdRouteImport.update({
-    id: '/simulations/$simulationId',
-    path: '/simulations/$simulationId',
-    getParentRoute: () => AppRouteRoute,
-  } as any)
 const AppMgmtUsersRoute = AppMgmtUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -140,6 +140,11 @@ const AppMgmtServerRoute = AppMgmtServerRouteImport.update({
   id: '/server',
   path: '/server',
   getParentRoute: () => AppMgmtRouteRoute,
+} as any)
+const AppPlasmoSubmitIndexRoute = AppPlasmoSubmitIndexRouteImport.update({
+  id: '/plasmo/submit/',
+  path: '/plasmo/submit/',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMgmtToolsIndexRoute = AppMgmtToolsIndexRouteImport.update({
   id: '/tools/',
@@ -213,13 +218,13 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
+  '/app/': typeof AppIndexRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/simulations/$simulationId': typeof AppSimulationsSimulationIdRoute
-  '/app/': typeof ApphomeIndexRoute
-  '/app/submit/': typeof AppSubmitIndexRoute
+  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
+  '/app/plasmo/': typeof AppPlasmoIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -227,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
+  '/app/plasmo/submit/': typeof AppPlasmoSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -244,17 +250,18 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
+  '/app': typeof AppIndexRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/simulations/$simulationId': typeof AppSimulationsSimulationIdRoute
-  '/app': typeof ApphomeIndexRoute
-  '/app/submit': typeof AppSubmitIndexRoute
+  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
+  '/app/plasmo': typeof AppPlasmoIndexRoute
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools': typeof AppMgmtToolsIndexRoute
+  '/app/plasmo/submit': typeof AppPlasmoSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterIndexRoute
@@ -274,13 +281,13 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/(home)/': typeof homeIndexRoute
+  '/app/': typeof AppIndexRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/simulations/$simulationId': typeof AppSimulationsSimulationIdRoute
-  '/app/(home)/': typeof ApphomeIndexRoute
-  '/app/submit/': typeof AppSubmitIndexRoute
+  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
+  '/app/plasmo/': typeof AppPlasmoIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -288,6 +295,7 @@ export interface FileRoutesById {
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
+  '/app/plasmo/submit/': typeof AppPlasmoSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -308,13 +316,13 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/'
+    | '/app/'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/simulations/$simulationId'
-    | '/app/'
-    | '/app/submit/'
+    | '/app/plasmo/$taskId'
+    | '/app/plasmo/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -322,6 +330,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
+    | '/app/plasmo/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -339,17 +348,18 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/'
+    | '/app'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/simulations/$simulationId'
-    | '/app'
-    | '/app/submit'
+    | '/app/plasmo/$taskId'
+    | '/app/plasmo'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags'
     | '/app/mgmt/tools'
+    | '/app/plasmo/submit'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -368,13 +378,13 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/(home)/'
+    | '/app/'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/simulations/$simulationId'
-    | '/app/(home)/'
-    | '/app/submit/'
+    | '/app/plasmo/$taskId'
+    | '/app/plasmo/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -382,6 +392,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
+    | '/app/plasmo/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -429,6 +440,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/(home)/': {
       id: '/(home)/'
@@ -493,25 +511,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMgmtRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/submit/': {
-      id: '/app/submit/'
-      path: '/submit'
-      fullPath: '/app/submit/'
-      preLoaderRoute: typeof AppSubmitIndexRouteImport
+    '/app/plasmo/': {
+      id: '/app/plasmo/'
+      path: '/plasmo'
+      fullPath: '/app/plasmo/'
+      preLoaderRoute: typeof AppPlasmoIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/(home)/': {
-      id: '/app/(home)/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof ApphomeIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/simulations/$simulationId': {
-      id: '/app/simulations/$simulationId'
-      path: '/simulations/$simulationId'
-      fullPath: '/app/simulations/$simulationId'
-      preLoaderRoute: typeof AppSimulationsSimulationIdRouteImport
+    '/app/plasmo/$taskId': {
+      id: '/app/plasmo/$taskId'
+      path: '/plasmo/$taskId'
+      fullPath: '/app/plasmo/$taskId'
+      preLoaderRoute: typeof AppPlasmoTaskIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/users': {
@@ -541,6 +552,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/mgmt/server'
       preLoaderRoute: typeof AppMgmtServerRouteImport
       parentRoute: typeof AppMgmtRouteRoute
+    }
+    '/app/plasmo/submit/': {
+      id: '/app/plasmo/submit/'
+      path: '/plasmo/submit'
+      fullPath: '/app/plasmo/submit/'
+      preLoaderRoute: typeof AppPlasmoSubmitIndexRouteImport
+      parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/tools/': {
       id: '/app/mgmt/tools/'
@@ -695,16 +713,18 @@ const AppMgmtRouteRouteWithChildren = AppMgmtRouteRoute._addFileChildren(
 
 interface AppRouteRouteChildren {
   AppMgmtRouteRoute: typeof AppMgmtRouteRouteWithChildren
-  AppSimulationsSimulationIdRoute: typeof AppSimulationsSimulationIdRoute
-  ApphomeIndexRoute: typeof ApphomeIndexRoute
-  AppSubmitIndexRoute: typeof AppSubmitIndexRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppPlasmoTaskIdRoute: typeof AppPlasmoTaskIdRoute
+  AppPlasmoIndexRoute: typeof AppPlasmoIndexRoute
+  AppPlasmoSubmitIndexRoute: typeof AppPlasmoSubmitIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppMgmtRouteRoute: AppMgmtRouteRouteWithChildren,
-  AppSimulationsSimulationIdRoute: AppSimulationsSimulationIdRoute,
-  ApphomeIndexRoute: ApphomeIndexRoute,
-  AppSubmitIndexRoute: AppSubmitIndexRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppPlasmoTaskIdRoute: AppPlasmoTaskIdRoute,
+  AppPlasmoIndexRoute: AppPlasmoIndexRoute,
+  AppPlasmoSubmitIndexRoute: AppPlasmoSubmitIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

@@ -1,16 +1,20 @@
 import classes from "./StatusBadge.module.css";
 
-const labels: Record<Simulation["status"], string> = {
+type BadgeStatus = SIMULATION_STATUS | PLASMO_TASK_STATUS;
+
+const labels: Record<BadgeStatus, string> = {
   CANCELED: "Canceled",
   COMPLETED: "Completed",
   ERRORED: "Errored",
+  FAILED: "Failed",
   GENERATED: "Generated",
+  PROCESSING: "Processing",
   QUEUED: "Queued",
   RUNNING: "Running",
 };
 
 type StatusBadgeProps = {
-  status: Simulation["status"];
+  status: BadgeStatus;
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {

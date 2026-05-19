@@ -76,7 +76,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
     <html lang="en">
       <head>
         <HeadContent />
-        <script src="/env-config.js" />
+        <script src="/settings.js" />
       </head>
       <body>
         {children}

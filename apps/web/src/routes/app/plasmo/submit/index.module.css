@@ -1,0 +1,17 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-lg);
+  max-width: 720px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mantine-spacing-xs);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}

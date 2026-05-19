@@ -59,7 +59,7 @@ function resolveStaticPath(pathname) {
 
 async function tryServeStaticAsset(req, res, pathname) {
   if (
-    pathname !== "/env-config.js" &&
+    pathname !== "/settings.js" &&
     pathname !== "/favicon.svg" &&
     pathname !== "/og-default.svg" &&
     !pathname.startsWith("/assets/")

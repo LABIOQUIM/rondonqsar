@@ -1,10 +1,6 @@
 #!/bin/sh
 set -e
 
-cat > /app/dist/client/env-config.js <<EOF
-window.__ENV__ = { API_URL: "${API_URL:-http://localhost:3001}" };
-EOF
-
 node /app/server/index.mjs &
 node_pid=$!
 

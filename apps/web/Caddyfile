@@ -2,7 +2,7 @@
 	root * /app/dist/client
 
 	@static {
-		path /assets/* /favicon.svg /og-default.svg
+		path /assets/* /settings.js /favicon.svg /og-default.svg
 	}
 	handle @static {
 		file_server

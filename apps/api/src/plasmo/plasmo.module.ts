@@ -3,6 +3,7 @@ import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 
+import { PrismaService } from "../prisma.service.js";
 import { PlasmoConsumer } from "./plasmo.consumer.js";
 import { PlasmoController } from "./plasmo.controller.js";
 import { PlasmoService } from "./plasmo.service.js";
@@ -20,6 +21,6 @@ import { PLASMO_QUEUE } from "./plasmo.types.js";
     }),
   ],
   controllers: [PlasmoController],
-  providers: [PlasmoService, PlasmoConsumer],
+  providers: [PlasmoService, PlasmoConsumer, PrismaService],
 })
 export class PlasmoModule {}

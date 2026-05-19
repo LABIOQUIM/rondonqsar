@@ -6,6 +6,9 @@ import type {
 
 export const QUERY_KEYS = {
   simulation: (simulationId: string) => ["simulation", simulationId] as const,
+  plasmoTask: (taskId: string) => ["plasmo-task", taskId] as const,
+  plasmoTasks: (pageSize: number, pageIndex: number) =>
+    ["plasmo-tasks", pageSize, pageIndex] as const,
   runningSimulation: (simulationId: string) => ["running-simulation", simulationId] as const,
   userSimulations: (pageSize: number, pageIndex: number) =>
     ["user-simulations", pageSize, pageIndex] as const,
