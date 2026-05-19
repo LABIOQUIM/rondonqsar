@@ -56,6 +56,21 @@ const sections: NavSection[] = [
     ],
   },
   {
+    title: "LeishQSAR",
+    links: [
+      {
+        icon: IconReportAnalytics,
+        label: "My Submissions",
+        href: "/app/leish",
+      },
+      {
+        icon: IconPlus,
+        label: "New Submission",
+        href: "/app/leish/submit",
+      },
+    ],
+  },
+  {
     title: "More LABIOQUIM Tools",
     links: [
       {

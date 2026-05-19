@@ -46,6 +46,7 @@ model User {
   accounts       Account[]
   sessions       Session[]
   passwordResets UserPasswordReset[]
+  leishTasks     LeishTask[]
   plasmoTasks    PlasmoTask[]
   twoFactors     TwoFactor[]
 
@@ -184,4 +185,44 @@ model PlasmoResult {
 
   @@index([taskId])
   @@map("plasmo_result")
+}
+
+model LeishTask {
+  id                    String        @id @default(uuid())
+  userId                String        @map("user_id")
+  originalName          String        @map("original_name")
+  filename              String
+  filePath              String        @map("file_path")
+  status                String        @default("QUEUED")
+  jobId                 String?       @map("job_id")
+  errorMessage          String?       @map("error_message")
+  reportPath            String?       @map("report_path")
+  outputPath            String?       @map("output_path")
+  isolatedDescriptorsPath String?     @map("isolated_descriptors_path")
+  createdAt             DateTime      @default(now()) @map("created_at")
+  updatedAt             DateTime?     @updatedAt @map("updated_at")
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  results LeishResult[]
+
+  @@index([userId])
+  @@map("leish_task")
+}
+
+model LeishResult {
+  id             String    @id @default(uuid())
+  taskId         String    @map("task_id")
+  moleculeNumber Int       @map("molecule_number")
+  descriptorA    Float     @map("descriptor_a")
+  descriptorB    Float     @map("descriptor_b")
+  descriptorC    Float     @map("descriptor_c")
+  descriptorD    Float     @map("descriptor_d")
+  pec50          Float
+  ec50           Float
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  task LeishTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("leish_result")
 }

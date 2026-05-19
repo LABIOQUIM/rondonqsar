@@ -3,6 +3,7 @@ import { BullBoardModule } from "@bull-board/nestjs";
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 
+import { PrismaService } from "../prisma.service.js";
 import { LeishConsumer } from "./leish.consumer.js";
 import { LeishController } from "./leish.controller.js";
 import { LeishService } from "./leish.service.js";
@@ -20,6 +21,6 @@ import { LEISH_QUEUE } from "./leish.types.js";
     }),
   ],
   controllers: [LeishController],
-  providers: [LeishService, LeishConsumer],
+  providers: [LeishService, LeishConsumer, PrismaService],
 })
 export class LeishModule {}
