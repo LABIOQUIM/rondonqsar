@@ -267,36 +267,33 @@ function RouteComponent() {
       </section>
 
       {isCompleted ? (
-        <Stack className={classes.resultsSection} gap="xs">
-          <Title order={4}>Results</Title>
-          <Tabs className={classes.tabs} defaultValue="plasmo" keepMounted={false}>
-            <Tabs.List>
-              <Tabs.Tab value="plasmo">
-                <Group gap="xs" wrap="nowrap">
-                  <span>PlasmoQSAR</span>
-                  <Badge size="sm" variant="light">
-                    {data.plasmoResultCount}
-                  </Badge>
-                </Group>
-              </Tabs.Tab>
-              <Tabs.Tab value="leish">
-                <Group gap="xs" wrap="nowrap">
-                  <span>LeishQSAR</span>
-                  <Badge size="sm" variant="light">
-                    {data.leishResultCount}
-                  </Badge>
-                </Group>
-              </Tabs.Tab>
-            </Tabs.List>
+        <Tabs className={classes.tabs} defaultValue="plasmo" keepMounted={false}>
+          <Tabs.List>
+            <Tabs.Tab value="plasmo">
+              <Group gap="xs" wrap="nowrap">
+                <span>PlasmoQSAR</span>
+                <Badge size="sm" variant="light">
+                  {data.plasmoResultCount}
+                </Badge>
+              </Group>
+            </Tabs.Tab>
+            <Tabs.Tab value="leish">
+              <Group gap="xs" wrap="nowrap">
+                <span>LeishQSAR</span>
+                <Badge size="sm" variant="light">
+                  {data.leishResultCount}
+                </Badge>
+              </Group>
+            </Tabs.Tab>
+          </Tabs.List>
 
-            <Tabs.Panel className={classes.tabPanel} pt="sm" value="plasmo">
-              <MantineReactTable table={plasmoTable} />
-            </Tabs.Panel>
-            <Tabs.Panel className={classes.tabPanel} pt="sm" value="leish">
-              <MantineReactTable table={leishTable} />
-            </Tabs.Panel>
-          </Tabs>
-        </Stack>
+          <Tabs.Panel className={classes.tabPanel} pt="sm" value="plasmo">
+            <MantineReactTable table={plasmoTable} />
+          </Tabs.Panel>
+          <Tabs.Panel className={classes.tabPanel} pt="sm" value="leish">
+            <MantineReactTable table={leishTable} />
+          </Tabs.Panel>
+        </Tabs>
       ) : (
         <Stack className={classes.statusPanel} gap="xs">
           <Group gap="xs">
