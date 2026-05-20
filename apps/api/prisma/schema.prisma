@@ -46,8 +46,7 @@ model User {
   accounts       Account[]
   sessions       Session[]
   passwordResets UserPasswordReset[]
-  leishTasks     LeishTask[]
-  plasmoTasks    PlasmoTask[]
+  qsarSubmissions QsarSubmission[]
   twoFactors     TwoFactor[]
 
   @@index([username])
@@ -148,81 +147,61 @@ model FeatureFlag {
   @@map("feature_flag")
 }
 
-model PlasmoTask {
-  id                    String         @id @default(uuid())
-  userId                String         @map("user_id")
-  originalName          String         @map("original_name")
-  filename              String
-  filePath              String         @map("file_path")
-  status                String         @default("QUEUED")
-  jobId                 String?        @map("job_id")
-  errorMessage          String?        @map("error_message")
-  reportPath            String?        @map("report_path")
-  outputPath            String?        @map("output_path")
-  isolatedDescriptorsPath String?      @map("isolated_descriptors_path")
-  createdAt             DateTime       @default(now()) @map("created_at")
-  updatedAt             DateTime?      @updatedAt @map("updated_at")
+model QsarSubmission {
+  id                            String         @id @default(uuid())
+  userId                        String         @map("user_id")
+  originalName                  String         @map("original_name")
+  filename                      String
+  filePath                      String         @map("file_path")
+  status                        String         @default("QUEUED")
+  jobId                         String?        @map("job_id")
+  errorMessage                  String?        @map("error_message")
+  reportPath                    String?        @map("report_path")
+  outputPath                    String?        @map("output_path")
+  plasmoIsolatedDescriptorsPath String?        @map("plasmo_isolated_descriptors_path")
+  leishIsolatedDescriptorsPath  String?        @map("leish_isolated_descriptors_path")
+  createdAt                     DateTime       @default(now()) @map("created_at")
+  updatedAt                     DateTime?      @updatedAt @map("updated_at")
 
-  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  results PlasmoResult[]
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plasmoResults PlasmoResult[]
+  leishResults  LeishResult[]
 
   @@index([userId])
-  @@map("plasmo_task")
+  @@map("qsar_submission")
 }
 
 model PlasmoResult {
-  id             String     @id @default(uuid())
-  taskId         String     @map("task_id")
-  moleculeNumber Int        @map("molecule_number")
-  descriptorA    Float      @map("descriptor_a")
-  descriptorB    Float      @map("descriptor_b")
-  descriptorC    Float      @map("descriptor_c")
+  id             String         @id @default(uuid())
+  submissionId   String         @map("submission_id")
+  moleculeNumber Int            @map("molecule_number")
+  descriptorA    Float          @map("descriptor_a")
+  descriptorB    Float          @map("descriptor_b")
+  descriptorC    Float          @map("descriptor_c")
   pec50          Float
   ec50           Float
-  createdAt      DateTime   @default(now()) @map("created_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
 
-  task PlasmoTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  submission QsarSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
-  @@index([taskId])
+  @@index([submissionId])
   @@map("plasmo_result")
 }
 
-model LeishTask {
-  id                    String        @id @default(uuid())
-  userId                String        @map("user_id")
-  originalName          String        @map("original_name")
-  filename              String
-  filePath              String        @map("file_path")
-  status                String        @default("QUEUED")
-  jobId                 String?       @map("job_id")
-  errorMessage          String?       @map("error_message")
-  reportPath            String?       @map("report_path")
-  outputPath            String?       @map("output_path")
-  isolatedDescriptorsPath String?     @map("isolated_descriptors_path")
-  createdAt             DateTime      @default(now()) @map("created_at")
-  updatedAt             DateTime?     @updatedAt @map("updated_at")
-
-  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  results LeishResult[]
-
-  @@index([userId])
-  @@map("leish_task")
-}
-
 model LeishResult {
-  id             String    @id @default(uuid())
-  taskId         String    @map("task_id")
-  moleculeNumber Int       @map("molecule_number")
-  descriptorA    Float     @map("descriptor_a")
-  descriptorB    Float     @map("descriptor_b")
-  descriptorC    Float     @map("descriptor_c")
-  descriptorD    Float     @map("descriptor_d")
+  id             String         @id @default(uuid())
+  submissionId   String         @map("submission_id")
+  moleculeNumber Int            @map("molecule_number")
+  descriptorA    Float          @map("descriptor_a")
+  descriptorB    Float          @map("descriptor_b")
+  descriptorC    Float          @map("descriptor_c")
+  descriptorD    Float          @map("descriptor_d")
   pec50          Float
   ec50           Float
-  createdAt      DateTime  @default(now()) @map("created_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
 
-  task LeishTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  submission QsarSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
-  @@index([taskId])
+  @@index([submissionId])
   @@map("leish_result")
 }

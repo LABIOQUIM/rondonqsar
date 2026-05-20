@@ -41,32 +41,17 @@ const sections: NavSection[] = [
     ],
   },
   {
-    title: "PlasmoQSAR",
+    title: "QSAR",
     links: [
       {
         icon: IconReportAnalytics,
         label: "My Submissions",
-        href: "/app/plasmo",
+        href: "/app/qsar",
       },
       {
         icon: IconPlus,
         label: "New Submission",
-        href: "/app/plasmo/submit",
-      },
-    ],
-  },
-  {
-    title: "LeishQSAR",
-    links: [
-      {
-        icon: IconReportAnalytics,
-        label: "My Submissions",
-        href: "/app/leish",
-      },
-      {
-        icon: IconPlus,
-        label: "New Submission",
-        href: "/app/leish/submit",
+        href: "/app/qsar/submit",
       },
     ],
   },

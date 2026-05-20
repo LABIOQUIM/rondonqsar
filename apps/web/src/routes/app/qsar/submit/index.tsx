@@ -7,11 +7,11 @@ import { z } from "zod";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
-import { submitLeishTask } from "@/mutations/submitLeishTask";
+import { submitQsarSubmission } from "@/mutations/submitQsarSubmission";
 
 import classes from "./index.module.css";
 
-const leishSubmissionSchema = z.object({
+const qsarSubmissionSchema = z.object({
   file: z
     .instanceof(File, { message: "SDF file is required" })
     .refine((file) => file.name.toLowerCase().endsWith(".sdf"), {
@@ -19,9 +19,9 @@ const leishSubmissionSchema = z.object({
     }),
 });
 
-type LeishSubmissionFormValues = z.infer<typeof leishSubmissionSchema>;
+type QsarSubmissionFormValues = z.infer<typeof qsarSubmissionSchema>;
 
-export const Route = createFileRoute("/app/leish/submit/")({
+export const Route = createFileRoute("/app/qsar/submit/")({
   component: RouteComponent,
 });
 
@@ -31,14 +31,17 @@ function RouteComponent() {
     control,
     formState: { isSubmitting },
     handleSubmit,
-  } = useForm<LeishSubmissionFormValues>({
-    resolver: zodResolver(leishSubmissionSchema),
+  } = useForm<QsarSubmissionFormValues>({
+    resolver: zodResolver(qsarSubmissionSchema),
   });
 
   return (
     <PageLayout>
-      <Heading title="New LeishQSAR Submission" />
-      <form className={classes.form} onSubmit={handleSubmit((v) => submitLeishTask(v, navigate))}>
+      <Heading title="New QSAR Submission" />
+      <form
+        className={classes.form}
+        onSubmit={handleSubmit((values) => submitQsarSubmission(values, navigate))}
+      >
         <Stack className={classes.section} gap="xs">
           <Title order={5}>Files</Title>
           <Controller
@@ -62,7 +65,7 @@ function RouteComponent() {
         </Stack>
         <div className={classes.actions}>
           <Button leftSection={<IconUpload size={16} />} loading={isSubmitting} type="submit">
-            Submit LeishQSAR Task
+            Submit QSAR Task
           </Button>
         </div>
       </form>

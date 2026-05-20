@@ -1,6 +1,6 @@
 import classes from "./StatusBadge.module.css";
 
-type BadgeStatus = SIMULATION_STATUS | PLASMO_TASK_STATUS | LEISH_TASK_STATUS;
+type BadgeStatus = SIMULATION_STATUS | QSAR_SUBMISSION_STATUS;
 
 const labels: Record<BadgeStatus, string> = {
   CANCELED: "Canceled",

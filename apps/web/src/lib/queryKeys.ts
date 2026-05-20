@@ -6,12 +6,9 @@ import type {
 
 export const QUERY_KEYS = {
   simulation: (simulationId: string) => ["simulation", simulationId] as const,
-  leishTask: (taskId: string) => ["leish-task", taskId] as const,
-  leishTasks: (pageSize: number, pageIndex: number) =>
-    ["leish-tasks", pageSize, pageIndex] as const,
-  plasmoTask: (taskId: string) => ["plasmo-task", taskId] as const,
-  plasmoTasks: (pageSize: number, pageIndex: number) =>
-    ["plasmo-tasks", pageSize, pageIndex] as const,
+  qsarSubmission: (submissionId: string) => ["qsar-submission", submissionId] as const,
+  qsarSubmissions: (pageSize: number, pageIndex: number) =>
+    ["qsar-submissions", pageSize, pageIndex] as const,
   runningSimulation: (simulationId: string) => ["running-simulation", simulationId] as const,
   userSimulations: (pageSize: number, pageIndex: number) =>
     ["user-simulations", pageSize, pageIndex] as const,

@@ -8,13 +8,13 @@ import type { User } from "../generated/prisma/client.js";
 
 import { PrismaService } from "../prisma.service.js";
 import {
-  LEISH_QUEUE,
-  type LeishFile,
-  type LeishJobData,
-  type LeishSubmitResponse,
-  type LeishTaskDetails,
-  type UserLeishTasksResponse,
-} from "./leish.types.js";
+  QSAR_QUEUE,
+  type QsarFile,
+  type QsarJobData,
+  type QsarSubmissionDetails,
+  type QsarSubmitResponse,
+  type UserQsarSubmissionsResponse,
+} from "./qsar.types.js";
 
 type PaginationInput = {
   pageSize?: number | undefined;
@@ -38,17 +38,18 @@ function normalizePagination({ pageSize, page }: PaginationInput) {
 }
 
 @Injectable()
-export class LeishService {
+export class QsarService {
   constructor(
-    @InjectQueue(LEISH_QUEUE) private leishQueue: Queue,
+    @InjectQueue(QSAR_QUEUE) private qsarQueue: Queue,
     private readonly prisma: PrismaService,
   ) {}
 
   async submit(
     file: Express.Multer.File,
     user: Pick<User, "id" | "username">,
-  ): Promise<LeishSubmitResponse> {
-    const task = await this.prisma.leishTask.create({
+  ): Promise<QsarSubmitResponse> {
+    const qsarSubmission = (this.prisma as any).qsarSubmission;
+    const submission = await qsarSubmission.create({
       data: {
         userId: user.id,
         originalName: file.originalname,
@@ -57,43 +58,43 @@ export class LeishService {
         status: "QUEUED",
       },
     });
-    const taskDir = path.join("/files", user.username, "leish", task.id);
-    const finalFilePath = path.join(taskDir, file.filename);
+    const submissionDir = path.join("/files", user.username, "qsar", submission.id);
+    const finalFilePath = path.join(submissionDir, file.filename);
 
-    fs.mkdirSync(taskDir, { recursive: true });
+    fs.mkdirSync(submissionDir, { recursive: true });
     fs.renameSync(file.path, finalFilePath);
 
-    const storedFile: LeishFile = {
+    const storedFile: QsarFile = {
       filename: file.filename,
       path: finalFilePath,
       originalName: file.originalname,
     };
 
-    await this.prisma.leishTask.update({
-      where: { id: task.id },
+    await qsarSubmission.update({
+      where: { id: submission.id },
       data: {
         filename: storedFile.filename,
         filePath: storedFile.path,
       },
     });
 
-    const job = await this.leishQueue.add("calculate-leish", {
-      calculation: "leish",
-      taskId: task.id,
+    const job = await this.qsarQueue.add("calculate-qsar", {
+      calculation: "qsar",
+      submissionId: submission.id,
       file: storedFile,
       submittedAt: new Date().toISOString(),
-    } satisfies LeishJobData);
+    } satisfies QsarJobData);
 
-    await this.prisma.leishTask.update({
-      where: { id: task.id },
+    await qsarSubmission.update({
+      where: { id: submission.id },
       data: {
         jobId: String(job.id),
       },
     });
 
     return {
-      calculation: "leish",
-      taskId: task.id,
+      calculation: "qsar",
+      submissionId: submission.id,
       jobId: String(job.id),
       status: "queued",
       file: storedFile,
@@ -103,12 +104,12 @@ export class LeishService {
   async findCurrentUser(
     userId: string,
     pagination: PaginationInput = {},
-  ): Promise<UserLeishTasksResponse> {
+  ): Promise<UserQsarSubmissionsResponse> {
     const { pageSize, page } = normalizePagination(pagination);
     const where = { userId };
 
     const [records, total] = await Promise.all([
-      this.prisma.leishTask.findMany({
+      (this.prisma as any).qsarSubmission.findMany({
         where,
         orderBy: { createdAt: "desc" },
         skip: page * pageSize,
@@ -123,27 +124,32 @@ export class LeishService {
           updatedAt: true,
           _count: {
             select: {
-              results: true,
+              plasmoResults: true,
+              leishResults: true,
             },
           },
         },
       }),
-      this.prisma.leishTask.count({ where }),
+      (this.prisma as any).qsarSubmission.count({ where }),
     ]);
 
     return {
-      records: records.map(({ _count, ...task }) => ({
-        ...task,
-        resultCount: _count.results,
+      records: records.map(({ _count, ...submission }) => ({
+        ...submission,
+        plasmoResultCount: _count.plasmoResults,
+        leishResultCount: _count.leishResults,
       })),
       total,
     };
   }
 
-  async findCurrentUserTask(userId: string, taskId: string): Promise<LeishTaskDetails> {
-    const task = await this.prisma.leishTask.findFirst({
+  async findCurrentUserSubmission(
+    userId: string,
+    submissionId: string,
+  ): Promise<QsarSubmissionDetails> {
+    const submission = await (this.prisma as any).qsarSubmission.findFirst({
       where: {
-        id: taskId,
+        id: submissionId,
         userId,
       },
       select: {
@@ -154,7 +160,20 @@ export class LeishService {
         errorMessage: true,
         createdAt: true,
         updatedAt: true,
-        results: {
+        plasmoResults: {
+          orderBy: {
+            moleculeNumber: "asc",
+          },
+          select: {
+            moleculeNumber: true,
+            descriptorA: true,
+            descriptorB: true,
+            descriptorC: true,
+            pec50: true,
+            ec50: true,
+          },
+        },
+        leishResults: {
           orderBy: {
             moleculeNumber: "asc",
           },
@@ -170,21 +189,23 @@ export class LeishService {
         },
         _count: {
           select: {
-            results: true,
+            plasmoResults: true,
+            leishResults: true,
           },
         },
       },
     });
 
-    if (!task) {
-      throw new NotFoundException("Leish task not found");
+    if (!submission) {
+      throw new NotFoundException("QSAR submission not found");
     }
 
-    const { _count, ...details } = task;
+    const { _count, ...details } = submission;
 
     return {
       ...details,
-      resultCount: _count.results,
+      plasmoResultCount: _count.plasmoResults,
+      leishResultCount: _count.leishResults,
     };
   }
 }

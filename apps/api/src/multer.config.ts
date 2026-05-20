@@ -6,7 +6,7 @@ import { diskStorage } from "multer";
 import * as path from "path";
 
 const ALLOWED_EXTENSIONS = new Set([".sdf"]);
-type UploadCalculationType = "plasmo" | "leish";
+type UploadCalculationType = "qsar";
 type SessionRequest = Request & {
   session?: {
     user?: {
@@ -19,7 +19,7 @@ function getCalculationType(req: Request): UploadCalculationType | null {
   const sourceUrl = req.originalUrl ?? req.url;
   const segments = sourceUrl.split("?")[0]?.split("/").filter(Boolean) ?? [];
   const calculation = segments.find(
-    (segment): segment is UploadCalculationType => segment === "plasmo" || segment === "leish",
+    (segment): segment is UploadCalculationType => segment === "qsar",
   );
 
   return calculation ?? null;

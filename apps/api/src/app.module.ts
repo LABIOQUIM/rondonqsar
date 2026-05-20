@@ -9,10 +9,9 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
 
 import { FeatureFlagModule } from "./feature-flag/feature-flag.module.js";
-import { LeishModule } from "./leish/leish.module.js";
 import { auth } from "./lib/auth.js";
 import { MailerModule } from "./mailer/mailer.module.js";
-import { PlasmoModule } from "./plasmo/plasmo.module.js";
+import { QsarModule } from "./qsar/qsar.module.js";
 import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
 
 @Module({
@@ -58,8 +57,7 @@ import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
     }),
     SystemInfoModule,
     FeatureFlagModule,
-    PlasmoModule,
-    LeishModule,
+    QsarModule,
   ],
 })
 export class AppModule {}

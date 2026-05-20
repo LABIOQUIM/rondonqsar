@@ -15,16 +15,16 @@ import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
-import { getUserPlasmoTasks } from "@/queries/getUserPlasmoTasks";
+import { getUserQsarSubmissions } from "@/queries/getUserQsarSubmissions";
 
 import classes from "./index.module.css";
 
-export const Route = createFileRoute("/app/plasmo/")({
+export const Route = createFileRoute("/app/qsar/")({
   component: RouteComponent,
 });
 
-function StatusCell({ cell }: { cell: MRT_Cell<PlasmoTaskSummary> }) {
-  return <StatusBadge status={cell.getValue<PLASMO_TASK_STATUS>()} />;
+function StatusCell({ cell }: { cell: MRT_Cell<QsarSubmissionSummary> }) {
+  return <StatusBadge status={cell.getValue<QSAR_SUBMISSION_STATUS>()} />;
 }
 
 function RouteComponent() {
@@ -32,7 +32,7 @@ function RouteComponent() {
     pageIndex: 0,
     pageSize: 10,
   });
-  const { data, isLoading } = useQuery(getUserPlasmoTasks(pagination));
+  const { data, isLoading } = useQuery(getUserQsarSubmissions(pagination));
 
   const table = useMantineReactTable({
     data: data?.records || [],
@@ -52,7 +52,7 @@ function RouteComponent() {
     },
     layoutMode: "grid",
     renderRowActions: ({ row }) => (
-      <Link params={{ taskId: row.original.id }} to="/app/plasmo/$taskId">
+      <Link params={{ submissionId: row.original.id }} to="/app/qsar/$submissionId">
         <ActionIcon aria-label="View submission" size="lg" variant="subtle">
           <IconEye size={18} />
         </ActionIcon>
@@ -88,8 +88,12 @@ function RouteComponent() {
         Cell: StatusCell,
       },
       {
-        accessorKey: "resultCount",
-        header: "Results",
+        accessorKey: "plasmoResultCount",
+        header: "Plasmo Results",
+      },
+      {
+        accessorKey: "leishResultCount",
+        header: "Leish Results",
       },
       {
         accessorKey: "jobId",
@@ -116,7 +120,7 @@ function RouteComponent() {
 
   return (
     <PageLayout>
-      <Heading title="My PlasmoQSAR Submissions" />
+      <Heading title="My QSAR Submissions" />
       <MantineReactTable table={table} />
     </PageLayout>
   );

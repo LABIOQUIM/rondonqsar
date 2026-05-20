@@ -1,19 +1,20 @@
 export {};
 
 declare global {
-  type PlasmoTaskSummary = {
+  type QsarSubmissionSummary = {
     id: string;
     originalName: string;
-    status: PLASMO_TASK_STATUS;
+    status: QSAR_SUBMISSION_STATUS;
     jobId: string | null;
     errorMessage: string | null;
     createdAt: string;
     updatedAt: string | null;
-    resultCount: number;
+    plasmoResultCount: number;
+    leishResultCount: number;
   };
 
-  type UserPlasmoTasks = {
-    records: PlasmoTaskSummary[];
+  type UserQsarSubmissions = {
+    records: QsarSubmissionSummary[];
     total: number;
   };
 
@@ -26,38 +27,6 @@ declare global {
     ec50: number;
   };
 
-  type PlasmoTaskDetails = PlasmoTaskSummary & {
-    results: PlasmoResultRow[];
-  };
-
-  type PlasmoSubmitResponse = {
-    calculation: "plasmo";
-    taskId: string;
-    jobId: string;
-    status: "queued";
-    file: {
-      filename: string;
-      path: string;
-      originalName: string;
-    };
-  };
-
-  type LeishTaskSummary = {
-    id: string;
-    originalName: string;
-    status: LEISH_TASK_STATUS;
-    jobId: string | null;
-    errorMessage: string | null;
-    createdAt: string;
-    updatedAt: string | null;
-    resultCount: number;
-  };
-
-  type UserLeishTasks = {
-    records: LeishTaskSummary[];
-    total: number;
-  };
-
   type LeishResultRow = {
     moleculeNumber: number;
     descriptorA: number;
@@ -68,13 +37,14 @@ declare global {
     ec50: number;
   };
 
-  type LeishTaskDetails = LeishTaskSummary & {
-    results: LeishResultRow[];
+  type QsarSubmissionDetails = QsarSubmissionSummary & {
+    plasmoResults: PlasmoResultRow[];
+    leishResults: LeishResultRow[];
   };
 
-  type LeishSubmitResponse = {
-    calculation: "leish";
-    taskId: string;
+  type QsarSubmitResponse = {
+    calculation: "qsar";
+    submissionId: string;
     jobId: string;
     status: "queued";
     file: {

@@ -1,7 +1,9 @@
 .content {
   display: flex;
+  flex: 1 1 0;
   flex-direction: column;
   gap: var(--mantine-spacing-md);
+  min-height: 0;
 }
 
 .summary {
@@ -48,14 +50,33 @@
 
 .resultsSection {
   display: flex;
+  flex-direction: column;
   flex: 1 1 0;
   min-height: 0;
+}
+
+.tabs {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.tabPanel {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.tabPanel[data-active] {
+  display: flex;
+  flex-direction: column;
 }
 
 .paper {
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: 100%;
   min-height: 0;
 }
 
@@ -72,4 +93,31 @@
   background-color: darken(var(--mantine-color-body), 0.025);
   display: flex;
   justify-content: space-between;
+}
+
+.numberCell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.numberHeadCell {
+  font-variant-numeric: tabular-nums;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.bottomToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mantine-spacing-md);
+  min-height: 3.25rem;
+  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  border-top: 1px solid var(--mantine-color-default-border);
+}
+
+.paginationRange {
+  color: var(--mantine-color-dimmed);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }

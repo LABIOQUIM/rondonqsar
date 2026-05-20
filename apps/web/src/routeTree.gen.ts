@@ -23,18 +23,15 @@ import { Route as homeGuidesRouteImport } from './routes/(home)/guides'
 import { Route as homeAnalyticsRouteImport } from './routes/(home)/analytics'
 import { Route as homeAboutRouteImport } from './routes/(home)/about'
 import { Route as AppMgmtRouteRouteImport } from './routes/app/mgmt/route'
-import { Route as AppPlasmoIndexRouteImport } from './routes/app/plasmo/index'
-import { Route as AppLeishIndexRouteImport } from './routes/app/leish/index'
-import { Route as AppPlasmoTaskIdRouteImport } from './routes/app/plasmo/$taskId'
+import { Route as AppQsarIndexRouteImport } from './routes/app/qsar/index'
+import { Route as AppQsarSubmissionIdRouteImport } from './routes/app/qsar/$submissionId'
 import { Route as AppMgmtUsersRouteImport } from './routes/app/mgmt/users'
 import { Route as AppMgmtSimulationsRouteImport } from './routes/app/mgmt/simulations'
 import { Route as AppMgmtSettingsRouteImport } from './routes/app/mgmt/settings'
 import { Route as AppMgmtServerRouteImport } from './routes/app/mgmt/server'
-import { Route as AppLeishTaskIdRouteImport } from './routes/app/leish/$taskId'
-import { Route as AppPlasmoSubmitIndexRouteImport } from './routes/app/plasmo/submit/index'
+import { Route as AppQsarSubmitIndexRouteImport } from './routes/app/qsar/submit/index'
 import { Route as AppMgmtToolsIndexRouteImport } from './routes/app/mgmt/tools/index'
 import { Route as AppMgmtFeatureFlagsIndexRouteImport } from './routes/app/mgmt/feature-flags/index'
-import { Route as AppLeishSubmitIndexRouteImport } from './routes/app/leish/submit/index'
 import { Route as AppMgmtFeatureFlagsNewRouteImport } from './routes/app/mgmt/feature-flags/new'
 import { Route as AppMgmtFeatureFlagsKeyRouteImport } from './routes/app/mgmt/feature-flags/$key'
 import { Route as AppMgmtToolsUserImporterRouteRouteImport } from './routes/app/mgmt/tools/user-importer/route'
@@ -114,19 +111,14 @@ const AppMgmtRouteRoute = AppMgmtRouteRouteImport.update({
   path: '/mgmt',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppPlasmoIndexRoute = AppPlasmoIndexRouteImport.update({
-  id: '/plasmo/',
-  path: '/plasmo/',
+const AppQsarIndexRoute = AppQsarIndexRouteImport.update({
+  id: '/qsar/',
+  path: '/qsar/',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppLeishIndexRoute = AppLeishIndexRouteImport.update({
-  id: '/leish/',
-  path: '/leish/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppPlasmoTaskIdRoute = AppPlasmoTaskIdRouteImport.update({
-  id: '/plasmo/$taskId',
-  path: '/plasmo/$taskId',
+const AppQsarSubmissionIdRoute = AppQsarSubmissionIdRouteImport.update({
+  id: '/qsar/$submissionId',
+  path: '/qsar/$submissionId',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMgmtUsersRoute = AppMgmtUsersRouteImport.update({
@@ -149,14 +141,9 @@ const AppMgmtServerRoute = AppMgmtServerRouteImport.update({
   path: '/server',
   getParentRoute: () => AppMgmtRouteRoute,
 } as any)
-const AppLeishTaskIdRoute = AppLeishTaskIdRouteImport.update({
-  id: '/leish/$taskId',
-  path: '/leish/$taskId',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppPlasmoSubmitIndexRoute = AppPlasmoSubmitIndexRouteImport.update({
-  id: '/plasmo/submit/',
-  path: '/plasmo/submit/',
+const AppQsarSubmitIndexRoute = AppQsarSubmitIndexRouteImport.update({
+  id: '/qsar/submit/',
+  path: '/qsar/submit/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMgmtToolsIndexRoute = AppMgmtToolsIndexRouteImport.update({
@@ -170,11 +157,6 @@ const AppMgmtFeatureFlagsIndexRoute =
     path: '/feature-flags/',
     getParentRoute: () => AppMgmtRouteRoute,
   } as any)
-const AppLeishSubmitIndexRoute = AppLeishSubmitIndexRouteImport.update({
-  id: '/leish/submit/',
-  path: '/leish/submit/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
 const AppMgmtFeatureFlagsNewRoute = AppMgmtFeatureFlagsNewRouteImport.update({
   id: '/feature-flags/new',
   path: '/feature-flags/new',
@@ -237,23 +219,20 @@ export interface FileRoutesByFullPath {
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
   '/app/': typeof AppIndexRoute
-  '/app/leish/$taskId': typeof AppLeishTaskIdRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
-  '/app/leish/': typeof AppLeishIndexRoute
-  '/app/plasmo/': typeof AppPlasmoIndexRoute
+  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
+  '/app/qsar/': typeof AppQsarIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
-  '/app/leish/submit/': typeof AppLeishSubmitIndexRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
-  '/app/plasmo/submit/': typeof AppPlasmoSubmitIndexRoute
+  '/app/qsar/submit/': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -272,20 +251,17 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
   '/app': typeof AppIndexRoute
-  '/app/leish/$taskId': typeof AppLeishTaskIdRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
-  '/app/leish': typeof AppLeishIndexRoute
-  '/app/plasmo': typeof AppPlasmoIndexRoute
+  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
+  '/app/qsar': typeof AppQsarIndexRoute
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
-  '/app/leish/submit': typeof AppLeishSubmitIndexRoute
   '/app/mgmt/feature-flags': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools': typeof AppMgmtToolsIndexRoute
-  '/app/plasmo/submit': typeof AppPlasmoSubmitIndexRoute
+  '/app/qsar/submit': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterIndexRoute
@@ -306,23 +282,20 @@ export interface FileRoutesById {
   '/auth/register': typeof AuthRegisterRoute
   '/(home)/': typeof homeIndexRoute
   '/app/': typeof AppIndexRoute
-  '/app/leish/$taskId': typeof AppLeishTaskIdRoute
   '/app/mgmt/server': typeof AppMgmtServerRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/plasmo/$taskId': typeof AppPlasmoTaskIdRoute
-  '/app/leish/': typeof AppLeishIndexRoute
-  '/app/plasmo/': typeof AppPlasmoIndexRoute
+  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
+  '/app/qsar/': typeof AppQsarIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
-  '/app/leish/submit/': typeof AppLeishSubmitIndexRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
-  '/app/plasmo/submit/': typeof AppPlasmoSubmitIndexRoute
+  '/app/qsar/submit/': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -344,23 +317,20 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/'
     | '/app/'
-    | '/app/leish/$taskId'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/plasmo/$taskId'
-    | '/app/leish/'
-    | '/app/plasmo/'
+    | '/app/qsar/$submissionId'
+    | '/app/qsar/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
-    | '/app/leish/submit/'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
-    | '/app/plasmo/submit/'
+    | '/app/qsar/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -379,20 +349,17 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/'
     | '/app'
-    | '/app/leish/$taskId'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/plasmo/$taskId'
-    | '/app/leish'
-    | '/app/plasmo'
+    | '/app/qsar/$submissionId'
+    | '/app/qsar'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
-    | '/app/leish/submit'
     | '/app/mgmt/feature-flags'
     | '/app/mgmt/tools'
-    | '/app/plasmo/submit'
+    | '/app/qsar/submit'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -412,23 +379,20 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/(home)/'
     | '/app/'
-    | '/app/leish/$taskId'
     | '/app/mgmt/server'
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/plasmo/$taskId'
-    | '/app/leish/'
-    | '/app/plasmo/'
+    | '/app/qsar/$submissionId'
+    | '/app/qsar/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
-    | '/app/leish/submit/'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
-    | '/app/plasmo/submit/'
+    | '/app/qsar/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -547,25 +511,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMgmtRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/plasmo/': {
-      id: '/app/plasmo/'
-      path: '/plasmo'
-      fullPath: '/app/plasmo/'
-      preLoaderRoute: typeof AppPlasmoIndexRouteImport
+    '/app/qsar/': {
+      id: '/app/qsar/'
+      path: '/qsar'
+      fullPath: '/app/qsar/'
+      preLoaderRoute: typeof AppQsarIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/leish/': {
-      id: '/app/leish/'
-      path: '/leish'
-      fullPath: '/app/leish/'
-      preLoaderRoute: typeof AppLeishIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/plasmo/$taskId': {
-      id: '/app/plasmo/$taskId'
-      path: '/plasmo/$taskId'
-      fullPath: '/app/plasmo/$taskId'
-      preLoaderRoute: typeof AppPlasmoTaskIdRouteImport
+    '/app/qsar/$submissionId': {
+      id: '/app/qsar/$submissionId'
+      path: '/qsar/$submissionId'
+      fullPath: '/app/qsar/$submissionId'
+      preLoaderRoute: typeof AppQsarSubmissionIdRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/users': {
@@ -596,18 +553,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMgmtServerRouteImport
       parentRoute: typeof AppMgmtRouteRoute
     }
-    '/app/leish/$taskId': {
-      id: '/app/leish/$taskId'
-      path: '/leish/$taskId'
-      fullPath: '/app/leish/$taskId'
-      preLoaderRoute: typeof AppLeishTaskIdRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/plasmo/submit/': {
-      id: '/app/plasmo/submit/'
-      path: '/plasmo/submit'
-      fullPath: '/app/plasmo/submit/'
-      preLoaderRoute: typeof AppPlasmoSubmitIndexRouteImport
+    '/app/qsar/submit/': {
+      id: '/app/qsar/submit/'
+      path: '/qsar/submit'
+      fullPath: '/app/qsar/submit/'
+      preLoaderRoute: typeof AppQsarSubmitIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/tools/': {
@@ -623,13 +573,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/mgmt/feature-flags/'
       preLoaderRoute: typeof AppMgmtFeatureFlagsIndexRouteImport
       parentRoute: typeof AppMgmtRouteRoute
-    }
-    '/app/leish/submit/': {
-      id: '/app/leish/submit/'
-      path: '/leish/submit'
-      fullPath: '/app/leish/submit/'
-      preLoaderRoute: typeof AppLeishSubmitIndexRouteImport
-      parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/feature-flags/new': {
       id: '/app/mgmt/feature-flags/new'
@@ -771,23 +714,17 @@ const AppMgmtRouteRouteWithChildren = AppMgmtRouteRoute._addFileChildren(
 interface AppRouteRouteChildren {
   AppMgmtRouteRoute: typeof AppMgmtRouteRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
-  AppLeishTaskIdRoute: typeof AppLeishTaskIdRoute
-  AppPlasmoTaskIdRoute: typeof AppPlasmoTaskIdRoute
-  AppLeishIndexRoute: typeof AppLeishIndexRoute
-  AppPlasmoIndexRoute: typeof AppPlasmoIndexRoute
-  AppLeishSubmitIndexRoute: typeof AppLeishSubmitIndexRoute
-  AppPlasmoSubmitIndexRoute: typeof AppPlasmoSubmitIndexRoute
+  AppQsarSubmissionIdRoute: typeof AppQsarSubmissionIdRoute
+  AppQsarIndexRoute: typeof AppQsarIndexRoute
+  AppQsarSubmitIndexRoute: typeof AppQsarSubmitIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppMgmtRouteRoute: AppMgmtRouteRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
-  AppLeishTaskIdRoute: AppLeishTaskIdRoute,
-  AppPlasmoTaskIdRoute: AppPlasmoTaskIdRoute,
-  AppLeishIndexRoute: AppLeishIndexRoute,
-  AppPlasmoIndexRoute: AppPlasmoIndexRoute,
-  AppLeishSubmitIndexRoute: AppLeishSubmitIndexRoute,
-  AppPlasmoSubmitIndexRoute: AppPlasmoSubmitIndexRoute,
+  AppQsarSubmissionIdRoute: AppQsarSubmissionIdRoute,
+  AppQsarIndexRoute: AppQsarIndexRoute,
+  AppQsarSubmitIndexRoute: AppQsarSubmitIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

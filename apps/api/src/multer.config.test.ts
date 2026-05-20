@@ -35,7 +35,7 @@ describe("multerConfig", () => {
     const storage = await getStorage();
     const cb = vi.fn();
 
-    storage.destination({ originalUrl: "/v1/plasmo/submit" }, { originalname: "molecule.sdf" }, cb);
+    storage.destination({ originalUrl: "/v1/qsar/submit" }, { originalname: "molecule.sdf" }, cb);
 
     expect(cb).toHaveBeenCalledWith(expect.any(Error), "");
     expect(cb.mock.calls[0][0]?.message).toBe("Unauthorized");
@@ -65,7 +65,7 @@ describe("multerConfig", () => {
     storage.destination(
       {
         session: { user: { username: "owner" } },
-        originalUrl: "/v1/plasmo/submit",
+        originalUrl: "/v1/qsar/submit",
       },
       { originalname: "file.txt" },
       cb,
@@ -75,42 +75,23 @@ describe("multerConfig", () => {
     expect(cb.mock.calls[0][0]?.message).toBe("File type not allowed: .txt");
   });
 
-  it("stores plasmo uploads under the user's plasmo folder", async () => {
+  it("stores qsar uploads under the user's qsar folder", async () => {
     const storage = await getStorage();
     const cb = vi.fn();
 
     storage.destination(
       {
         session: { user: { username: "owner" } },
-        originalUrl: "/v1/plasmo/submit",
+        originalUrl: "/v1/qsar/submit",
       },
       { originalname: "molecule.sdf" },
       cb,
     );
 
-    expect(mkdirSync).toHaveBeenCalledWith("/files/owner/plasmo", {
+    expect(mkdirSync).toHaveBeenCalledWith("/files/owner/qsar", {
       recursive: true,
     });
-    expect(cb).toHaveBeenCalledWith(null, "/files/owner/plasmo");
-  });
-
-  it("stores leish uploads under the user's leish folder", async () => {
-    const storage = await getStorage();
-    const cb = vi.fn();
-
-    storage.destination(
-      {
-        session: { user: { username: "owner" } },
-        originalUrl: "/v1/leish/submit",
-      },
-      { originalname: "molecule.sdf" },
-      cb,
-    );
-
-    expect(mkdirSync).toHaveBeenCalledWith("/files/owner/leish", {
-      recursive: true,
-    });
-    expect(cb).toHaveBeenCalledWith(null, "/files/owner/leish");
+    expect(cb).toHaveBeenCalledWith(null, "/files/owner/qsar");
   });
 
   it("uses generated SDF filenames", async () => {
@@ -120,7 +101,7 @@ describe("multerConfig", () => {
     storage.filename(
       {
         session: { user: { username: "owner" } },
-        originalUrl: "/v1/plasmo/submit",
+        originalUrl: "/v1/qsar/submit",
       },
       { originalname: "molecule.SDF" },
       cb,

@@ -14,11 +14,11 @@ import { Session } from "@thallesp/nestjs-better-auth";
 
 import { auth } from "../lib/auth.js";
 import multerConfig from "../multer.config.js";
-import { PlasmoService } from "./plasmo.service.js";
+import { QsarService } from "./qsar.service.js";
 
-@Controller("plasmo")
-export class PlasmoController {
-  constructor(private plasmoService: PlasmoService) {}
+@Controller("qsar")
+export class QsarController {
+  constructor(private qsarService: QsarService) {}
 
   @Get("current-user")
   findCurrentUser(
@@ -30,22 +30,22 @@ export class PlasmoController {
       throw new UnauthorizedException();
     }
 
-    return this.plasmoService.findCurrentUser(session.user.id, {
+    return this.qsarService.findCurrentUser(session.user.id, {
       pageSize: pageSize === undefined ? undefined : Number(pageSize),
       page: page === undefined ? undefined : Number(page),
     });
   }
 
-  @Get("current-user/:taskId")
-  findCurrentUserTask(
-    @Param("taskId") taskId: string,
+  @Get("current-user/:submissionId")
+  findCurrentUserSubmission(
+    @Param("submissionId") submissionId: string,
     @Session() session: typeof auth.$Infer.Session,
   ) {
     if (!session?.user?.id) {
       throw new UnauthorizedException();
     }
 
-    return this.plasmoService.findCurrentUserTask(session.user.id, taskId);
+    return this.qsarService.findCurrentUserSubmission(session.user.id, submissionId);
   }
 
   @Post("submit")
@@ -62,7 +62,7 @@ export class PlasmoController {
       throw new UnauthorizedException();
     }
 
-    return this.plasmoService.submit(file, {
+    return this.qsarService.submit(file, {
       id: session.user.id,
       username: session.user.username,
     });
