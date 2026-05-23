@@ -1,6 +1,6 @@
-# ProtoQSAR
+# RondonQSAR
 
-ProtoQSAR is a WEB tool developed to calculate QSAR on diverse molecules.
+RondonQSAR is a WEB tool developed to calculate QSAR on diverse molecules.
 
 The repository is a monorepo containing the backend API and the frontend web client. It's organized with Yarn workspaces and aims to provide a full-stack developer experience using:
 

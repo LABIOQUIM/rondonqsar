@@ -30,7 +30,7 @@ function RouteComponent() {
     return (
       <Box className={classes.container}>
         <Paper className={classes.innerContainer}>
-          <img alt="ProtoQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
+          <img alt="RondonQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
         </Paper>
       </Box>
     );
@@ -39,7 +39,7 @@ function RouteComponent() {
   return (
     <Box className={classes.container}>
       <Paper className={classes.innerContainer}>
-        <img alt="ProtoQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
+        <img alt="RondonQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
 
         <Outlet />
       </Paper>

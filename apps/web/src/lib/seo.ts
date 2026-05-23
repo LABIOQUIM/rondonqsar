@@ -1,7 +1,7 @@
-export const DEFAULT_SITE_URL = "https://protoqsar.ivopr.com.br";
-export const SITE_NAME = "ProtoQSAR";
+export const DEFAULT_SITE_URL = "https://rondonqsar.ivopr.com.br";
+export const SITE_NAME = "RondonQSAR";
 export const DEFAULT_SEO_DESCRIPTION =
-  "ProtoQSAR is a web platform for QSAR prediction, descriptor analysis, and molecular screening workflows.";
+  "RondonQSAR is a web platform for QSAR prediction, descriptor analysis, and molecular screening workflows.";
 export const DEFAULT_OG_IMAGE_PATH = "/og-default.svg";
 export const PUBLIC_INDEXABLE_PATHS = ["/", "/guides", "/analytics"] as const;
 

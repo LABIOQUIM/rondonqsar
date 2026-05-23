@@ -6,7 +6,7 @@ import { setTimeout as delay } from "timers/promises";
 
 import { AppModule } from "./app.module.js";
 
-const DEV_SERVER_PID_FILE = "/tmp/protoqsar-api-dev.pid";
+const DEV_SERVER_PID_FILE = "/tmp/rondonqsar-api-dev.pid";
 
 async function readDevServerPid(): Promise<number | null> {
   try {
@@ -102,8 +102,8 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix("v1");
 
   const config = new DocumentBuilder()
-    .setTitle("ProtoQSAR API")
-    .setDescription("The ProtoQSAR API Documentation")
+    .setTitle("RondonQSAR API")
+    .setDescription("The RondonQSAR API Documentation")
     .setVersion("0.1")
     .build();
 

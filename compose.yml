@@ -1,6 +1,6 @@
 services:
   api:
-    image: protoqsar/api:dev
+    image: rondonqsar/api:dev
     build:
       context: .
       dockerfile: apps/api/dev.Dockerfile
@@ -19,7 +19,7 @@ services:
       - /usr/local/bin/Mold2:/mold2/Mold2
 
   web:
-    image: protoqsar/web:dev
+    image: rondonqsar/web:dev
     build:
       context: .
       dockerfile: apps/web/dev.Dockerfile

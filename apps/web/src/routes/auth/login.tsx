@@ -51,7 +51,7 @@ function RouteComponent() {
         setStatus({
           status: "success",
           title: "Login successful",
-          message: "Redirecting to ProtoQSAR...",
+          message: "Redirecting to RondonQSAR...",
         });
         navigate({ to: "/app" });
       },

@@ -9,33 +9,33 @@ services:
       - redis:/data
 
   web:
-    image: ghcr.io/labioquim/protoqsar-web:beta
+    image: ghcr.io/labioquim/rondonqsar-web:beta
     env_file: .env
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`visualdynamics.ivopr.com.br`)"
+      - "traefik.http.routers.web.rule=Host(`rondonqsar.ivopr.com.br`)"
       - "traefik.http.routers.web.service=web"
       - "traefik.http.services.web.loadbalancer.server.port=3000"
       - "traefik.http.routers.web.tls=true"
       - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.web.tls.domains[0].main=visualdynamics.ivopr.com.br"
+      - "traefik.http.routers.web.tls.domains[0].main=rondonqsar.ivopr.com.br"
       - "traefik.http.routers.web.entryPoints=websecure"
     networks:
       - traefik
 
   api:
-    image: ghcr.io/labioquim/protoqsar-api:beta
+    image: ghcr.io/labioquim/rondonqsar-api:beta
     env_file: .env
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`protoqsar.ivopr.com.br`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`rondonqsar.ivopr.com.br`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.service=api"
       - "traefik.http.services.api.loadbalancer.server.port=3000"
       - "traefik.http.routers.api.tls=true"
       - "traefik.http.routers.api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.api.tls.domains[0].main=protoqsar.ivopr.com.br"
+      - "traefik.http.routers.api.tls.domains[0].main=rondonqsar.ivopr.com.br"
       - "traefik.http.routers.api.entryPoints=websecure"
     networks:
       - traefik
