@@ -17,19 +17,18 @@ import { Route as AppIndexRouteImport } from './routes/app/index'
 import { Route as homeIndexRouteImport } from './routes/(home)/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AppSubmissionIdRouteImport } from './routes/app/$submissionId'
 import { Route as homeTermsOfServiceRouteImport } from './routes/(home)/terms-of-service'
 import { Route as homePrivacyRouteImport } from './routes/(home)/privacy'
 import { Route as homeGuidesRouteImport } from './routes/(home)/guides'
 import { Route as homeAnalyticsRouteImport } from './routes/(home)/analytics'
 import { Route as homeAboutRouteImport } from './routes/(home)/about'
 import { Route as AppMgmtRouteRouteImport } from './routes/app/mgmt/route'
-import { Route as AppQsarIndexRouteImport } from './routes/app/qsar/index'
-import { Route as AppQsarSubmissionIdRouteImport } from './routes/app/qsar/$submissionId'
+import { Route as AppSubmitIndexRouteImport } from './routes/app/submit/index'
 import { Route as AppMgmtUsersRouteImport } from './routes/app/mgmt/users'
 import { Route as AppMgmtSimulationsRouteImport } from './routes/app/mgmt/simulations'
 import { Route as AppMgmtSettingsRouteImport } from './routes/app/mgmt/settings'
 import { Route as AppMgmtServerRouteImport } from './routes/app/mgmt/server'
-import { Route as AppQsarSubmitIndexRouteImport } from './routes/app/qsar/submit/index'
 import { Route as AppMgmtToolsIndexRouteImport } from './routes/app/mgmt/tools/index'
 import { Route as AppMgmtFeatureFlagsIndexRouteImport } from './routes/app/mgmt/feature-flags/index'
 import { Route as AppMgmtFeatureFlagsNewRouteImport } from './routes/app/mgmt/feature-flags/new'
@@ -81,6 +80,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AppSubmissionIdRoute = AppSubmissionIdRouteImport.update({
+  id: '/$submissionId',
+  path: '/$submissionId',
+  getParentRoute: () => AppRouteRoute,
+} as any)
 const homeTermsOfServiceRoute = homeTermsOfServiceRouteImport.update({
   id: '/(home)/terms-of-service',
   path: '/terms-of-service',
@@ -111,14 +115,9 @@ const AppMgmtRouteRoute = AppMgmtRouteRouteImport.update({
   path: '/mgmt',
   getParentRoute: () => AppRouteRoute,
 } as any)
-const AppQsarIndexRoute = AppQsarIndexRouteImport.update({
-  id: '/qsar/',
-  path: '/qsar/',
-  getParentRoute: () => AppRouteRoute,
-} as any)
-const AppQsarSubmissionIdRoute = AppQsarSubmissionIdRouteImport.update({
-  id: '/qsar/$submissionId',
-  path: '/qsar/$submissionId',
+const AppSubmitIndexRoute = AppSubmitIndexRouteImport.update({
+  id: '/submit/',
+  path: '/submit/',
   getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMgmtUsersRoute = AppMgmtUsersRouteImport.update({
@@ -140,11 +139,6 @@ const AppMgmtServerRoute = AppMgmtServerRouteImport.update({
   id: '/server',
   path: '/server',
   getParentRoute: () => AppMgmtRouteRoute,
-} as any)
-const AppQsarSubmitIndexRoute = AppQsarSubmitIndexRouteImport.update({
-  id: '/qsar/submit/',
-  path: '/qsar/submit/',
-  getParentRoute: () => AppRouteRoute,
 } as any)
 const AppMgmtToolsIndexRoute = AppMgmtToolsIndexRouteImport.update({
   id: '/tools/',
@@ -215,6 +209,7 @@ export interface FileRoutesByFullPath {
   '/guides': typeof homeGuidesRoute
   '/privacy': typeof homePrivacyRoute
   '/terms-of-service': typeof homeTermsOfServiceRoute
+  '/app/$submissionId': typeof AppSubmissionIdRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
@@ -223,8 +218,7 @@ export interface FileRoutesByFullPath {
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
-  '/app/qsar/': typeof AppQsarIndexRoute
+  '/app/submit/': typeof AppSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -232,7 +226,6 @@ export interface FileRoutesByFullPath {
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
-  '/app/qsar/submit/': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -247,6 +240,7 @@ export interface FileRoutesByTo {
   '/guides': typeof homeGuidesRoute
   '/privacy': typeof homePrivacyRoute
   '/terms-of-service': typeof homeTermsOfServiceRoute
+  '/app/$submissionId': typeof AppSubmissionIdRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof homeIndexRoute
@@ -255,13 +249,11 @@ export interface FileRoutesByTo {
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
-  '/app/qsar': typeof AppQsarIndexRoute
+  '/app/submit': typeof AppSubmitIndexRoute
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools': typeof AppMgmtToolsIndexRoute
-  '/app/qsar/submit': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterIndexRoute
@@ -278,6 +270,7 @@ export interface FileRoutesById {
   '/(home)/guides': typeof homeGuidesRoute
   '/(home)/privacy': typeof homePrivacyRoute
   '/(home)/terms-of-service': typeof homeTermsOfServiceRoute
+  '/app/$submissionId': typeof AppSubmissionIdRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/(home)/': typeof homeIndexRoute
@@ -286,8 +279,7 @@ export interface FileRoutesById {
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/simulations': typeof AppMgmtSimulationsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
-  '/app/qsar/$submissionId': typeof AppQsarSubmissionIdRoute
-  '/app/qsar/': typeof AppQsarIndexRoute
+  '/app/submit/': typeof AppSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/simulation-importer': typeof AppMgmtToolsSimulationImporterRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -295,7 +287,6 @@ export interface FileRoutesById {
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
   '/app/mgmt/feature-flags/': typeof AppMgmtFeatureFlagsIndexRoute
   '/app/mgmt/tools/': typeof AppMgmtToolsIndexRoute
-  '/app/qsar/submit/': typeof AppQsarSubmitIndexRoute
   '/app/mgmt/tools/batch-email/': typeof AppMgmtToolsBatchEmailIndexRoute
   '/app/mgmt/tools/simulation-importer/': typeof AppMgmtToolsSimulationImporterIndexRoute
   '/app/mgmt/tools/user-importer/': typeof AppMgmtToolsUserImporterIndexRoute
@@ -313,6 +304,7 @@ export interface FileRouteTypes {
     | '/guides'
     | '/privacy'
     | '/terms-of-service'
+    | '/app/$submissionId'
     | '/auth/login'
     | '/auth/register'
     | '/'
@@ -321,8 +313,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/qsar/$submissionId'
-    | '/app/qsar/'
+    | '/app/submit/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -330,7 +321,6 @@ export interface FileRouteTypes {
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
-    | '/app/qsar/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -345,6 +335,7 @@ export interface FileRouteTypes {
     | '/guides'
     | '/privacy'
     | '/terms-of-service'
+    | '/app/$submissionId'
     | '/auth/login'
     | '/auth/register'
     | '/'
@@ -353,13 +344,11 @@ export interface FileRouteTypes {
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/qsar/$submissionId'
-    | '/app/qsar'
+    | '/app/submit'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags'
     | '/app/mgmt/tools'
-    | '/app/qsar/submit'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -375,6 +364,7 @@ export interface FileRouteTypes {
     | '/(home)/guides'
     | '/(home)/privacy'
     | '/(home)/terms-of-service'
+    | '/app/$submissionId'
     | '/auth/login'
     | '/auth/register'
     | '/(home)/'
@@ -383,8 +373,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/settings'
     | '/app/mgmt/simulations'
     | '/app/mgmt/users'
-    | '/app/qsar/$submissionId'
-    | '/app/qsar/'
+    | '/app/submit/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/simulation-importer'
     | '/app/mgmt/tools/user-importer'
@@ -392,7 +381,6 @@ export interface FileRouteTypes {
     | '/app/mgmt/feature-flags/new'
     | '/app/mgmt/feature-flags/'
     | '/app/mgmt/tools/'
-    | '/app/qsar/submit/'
     | '/app/mgmt/tools/batch-email/'
     | '/app/mgmt/tools/simulation-importer/'
     | '/app/mgmt/tools/user-importer/'
@@ -469,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/app/$submissionId': {
+      id: '/app/$submissionId'
+      path: '/$submissionId'
+      fullPath: '/app/$submissionId'
+      preLoaderRoute: typeof AppSubmissionIdRouteImport
+      parentRoute: typeof AppRouteRoute
+    }
     '/(home)/terms-of-service': {
       id: '/(home)/terms-of-service'
       path: '/terms-of-service'
@@ -511,18 +506,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMgmtRouteRouteImport
       parentRoute: typeof AppRouteRoute
     }
-    '/app/qsar/': {
-      id: '/app/qsar/'
-      path: '/qsar'
-      fullPath: '/app/qsar/'
-      preLoaderRoute: typeof AppQsarIndexRouteImport
-      parentRoute: typeof AppRouteRoute
-    }
-    '/app/qsar/$submissionId': {
-      id: '/app/qsar/$submissionId'
-      path: '/qsar/$submissionId'
-      fullPath: '/app/qsar/$submissionId'
-      preLoaderRoute: typeof AppQsarSubmissionIdRouteImport
+    '/app/submit/': {
+      id: '/app/submit/'
+      path: '/submit'
+      fullPath: '/app/submit/'
+      preLoaderRoute: typeof AppSubmitIndexRouteImport
       parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/users': {
@@ -552,13 +540,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/mgmt/server'
       preLoaderRoute: typeof AppMgmtServerRouteImport
       parentRoute: typeof AppMgmtRouteRoute
-    }
-    '/app/qsar/submit/': {
-      id: '/app/qsar/submit/'
-      path: '/qsar/submit'
-      fullPath: '/app/qsar/submit/'
-      preLoaderRoute: typeof AppQsarSubmitIndexRouteImport
-      parentRoute: typeof AppRouteRoute
     }
     '/app/mgmt/tools/': {
       id: '/app/mgmt/tools/'
@@ -713,18 +694,16 @@ const AppMgmtRouteRouteWithChildren = AppMgmtRouteRoute._addFileChildren(
 
 interface AppRouteRouteChildren {
   AppMgmtRouteRoute: typeof AppMgmtRouteRouteWithChildren
+  AppSubmissionIdRoute: typeof AppSubmissionIdRoute
   AppIndexRoute: typeof AppIndexRoute
-  AppQsarSubmissionIdRoute: typeof AppQsarSubmissionIdRoute
-  AppQsarIndexRoute: typeof AppQsarIndexRoute
-  AppQsarSubmitIndexRoute: typeof AppQsarSubmitIndexRoute
+  AppSubmitIndexRoute: typeof AppSubmitIndexRoute
 }
 
 const AppRouteRouteChildren: AppRouteRouteChildren = {
   AppMgmtRouteRoute: AppMgmtRouteRouteWithChildren,
+  AppSubmissionIdRoute: AppSubmissionIdRoute,
   AppIndexRoute: AppIndexRoute,
-  AppQsarSubmissionIdRoute: AppQsarSubmissionIdRoute,
-  AppQsarIndexRoute: AppQsarIndexRoute,
-  AppQsarSubmitIndexRoute: AppQsarSubmitIndexRoute,
+  AppSubmitIndexRoute: AppSubmitIndexRoute,
 }
 
 const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(

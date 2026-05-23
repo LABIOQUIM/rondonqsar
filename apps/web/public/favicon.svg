@@ -6,8 +6,15 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="16" fill="url(#bg)" />
-  <path
-    d="M18 19h10l8 20 8-20h10L38 49h-12z"
+  <text
+    x="32"
+    y="43"
     fill="#fff"
-  />
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="32"
+    font-weight="700"
+    text-anchor="middle"
+  >
+    P
+  </text>
 </svg>

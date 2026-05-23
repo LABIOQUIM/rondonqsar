@@ -19,16 +19,16 @@
   </g>
   <g fill="#fff">
     <text x="86" y="220" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" letter-spacing="6">
-      VISUAL DYNAMICS
+      PROTOQSAR
     </text>
     <text x="86" y="330" font-family="Arial, Helvetica, sans-serif" font-size="88" font-weight="700">
-      Molecular dynamics,
+      QSAR prediction,
     </text>
     <text x="86" y="426" font-family="Arial, Helvetica, sans-serif" font-size="88" font-weight="700">
-      analysis, and 3D insight.
+      descriptors, and screening.
     </text>
     <text x="86" y="520" font-family="Arial, Helvetica, sans-serif" font-size="36" fill="#c5f6fa">
-      Browser-based platform for simulations, guides, and analytics.
+      Browser-based platform for molecular QSAR workflows.
     </text>
   </g>
 </svg>

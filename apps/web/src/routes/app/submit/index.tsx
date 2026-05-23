@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
+import { buildPageTitle } from "@/lib/seo";
 import { submitQsarSubmission } from "@/mutations/submitQsarSubmission";
 
 import classes from "./index.module.css";
@@ -21,7 +22,10 @@ const qsarSubmissionSchema = z.object({
 
 type QsarSubmissionFormValues = z.infer<typeof qsarSubmissionSchema>;
 
-export const Route = createFileRoute("/app/qsar/submit/")({
+export const Route = createFileRoute("/app/submit/")({
+  head: () => ({
+    meta: [{ title: buildPageTitle("New QSAR Submission") }],
+  }),
   component: RouteComponent,
 });
 

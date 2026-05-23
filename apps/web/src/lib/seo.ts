@@ -1,7 +1,7 @@
-export const DEFAULT_SITE_URL = "https://visualdynamics.ivopr.com.br";
-export const SITE_NAME = "Visual Dynamics";
+export const DEFAULT_SITE_URL = "https://protoqsar.ivopr.com.br";
+export const SITE_NAME = "ProtoQSAR";
 export const DEFAULT_SEO_DESCRIPTION =
-  "Visual Dynamics is a web platform for molecular dynamics visualization, analysis, and scientific collaboration.";
+  "ProtoQSAR is a web platform for QSAR prediction, descriptor analysis, and molecular screening workflows.";
 export const DEFAULT_OG_IMAGE_PATH = "/og-default.svg";
 export const PUBLIC_INDEXABLE_PATHS = ["/", "/guides", "/analytics"] as const;
 
@@ -18,7 +18,7 @@ export function normalizeSiteUrl(siteUrl: string) {
   return siteUrl.replace(/\/+$/, "");
 }
 
-function buildTitle(title?: string) {
+export function buildPageTitle(title?: string) {
   return title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 }
 
@@ -39,12 +39,12 @@ export function buildSeoHead({
   const canonicalUrl = buildCanonicalUrl(path, siteUrl);
   const imageUrl = buildCanonicalUrl(imagePath, siteUrl);
   const robots = index ? "index, follow" : "noindex, nofollow";
-  const fullTitle = buildTitle(title);
+  const fullTitle = buildPageTitle(title);
 
   return {
-    title: fullTitle,
     links: [{ rel: "canonical", href: canonicalUrl }],
     meta: [
+      { title: fullTitle },
       { name: "description", content: description },
       { name: "robots", content: robots },
       { property: "og:type", content: "website" },

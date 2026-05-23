@@ -16,7 +16,12 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 
 import { ApiFeatureFlagProvider } from "@/lib/feature-flags";
-import { DEFAULT_OG_IMAGE_PATH, DEFAULT_SEO_DESCRIPTION, SITE_NAME } from "@/lib/seo";
+import {
+  buildPageTitle,
+  DEFAULT_OG_IMAGE_PATH,
+  DEFAULT_SEO_DESCRIPTION,
+  SITE_NAME,
+} from "@/lib/seo";
 import { theme } from "@/theme";
 
 dayjs.extend(duration);
@@ -31,8 +36,8 @@ OpenFeature.setProvider(new ApiFeatureFlagProvider());
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
-    title: SITE_NAME,
     meta: [
+      { title: buildPageTitle() },
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1.0" },
       { name: "description", content: DEFAULT_SEO_DESCRIPTION },
@@ -43,7 +48,10 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: DEFAULT_OG_IMAGE_PATH },
     ],
-    links: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
+    links: [
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "shortcut icon", type: "image/svg+xml", href: "/favicon.svg" },
+    ],
   }),
   component: RootComponent,
 });

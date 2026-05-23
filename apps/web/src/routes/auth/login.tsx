@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
 import { authClient } from "@/lib/auth-client";
+import { buildPageTitle } from "@/lib/seo";
 
 import classes from "./login.module.css";
 
@@ -20,6 +21,9 @@ const schema = z.object({
 type FormInputs = z.infer<typeof schema>;
 
 export const Route = createFileRoute("/auth/login")({
+  head: () => ({
+    meta: [{ title: buildPageTitle("Login") }],
+  }),
   component: RouteComponent,
 });
 
@@ -47,7 +51,7 @@ function RouteComponent() {
         setStatus({
           status: "success",
           title: "Login successful",
-          message: "Redirecting to Visual Dynamics...",
+          message: "Redirecting to ProtoQSAR...",
         });
         navigate({ to: "/app" });
       },

@@ -46,12 +46,12 @@ const sections: NavSection[] = [
       {
         icon: IconReportAnalytics,
         label: "My Submissions",
-        href: "/app/qsar",
+        href: "/app",
       },
       {
         icon: IconPlus,
         label: "New Submission",
-        href: "/app/qsar/submit",
+        href: "/app/submit",
       },
     ],
   },

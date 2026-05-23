@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
 import { authClient } from "@/lib/auth-client";
+import { buildPageTitle } from "@/lib/seo";
 
 import classes from "./register.module.css";
 
@@ -20,6 +21,9 @@ const schema = z.object({
 });
 
 export const Route = createFileRoute("/auth/register")({
+  head: () => ({
+    meta: [{ title: buildPageTitle("Register") }],
+  }),
   component: RouteComponent,
 });
 

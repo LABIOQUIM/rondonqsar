@@ -28,7 +28,7 @@ export async function submitQsarSubmission(
   });
 
   navigate({
-    to: "/app/qsar/$submissionId",
+    to: "/app/$submissionId",
     params: {
       submissionId: response.data.submissionId,
     },
