@@ -77,6 +77,9 @@ describe("auth", () => {
         DB_PORT: "5432",
         DB_DATABASE: "dbname",
         APP_URL: "https://app.example.com",
+        BETTER_AUTH_URL: "https://auth.example.com",
+        SITE_URL: "https://site.example.com",
+        WEB_PUBLIC_URL: "https://public.example.com",
       },
       async () => {
         vi.resetModules();
@@ -87,7 +90,13 @@ describe("auth", () => {
         const { auth } = await import("./auth.js");
 
         expect(auth.basePath).toBe("/auth");
-        expect(auth.trustedOrigins).toEqual(["https://app.example.com"]);
+        expect(auth.trustedOrigins).toEqual([
+          "https://app.example.com",
+          "https://auth.example.com",
+          "https://site.example.com",
+          "https://public.example.com",
+          "http://localhost:3000",
+        ]);
         expect(auth.emailAndPassword).toEqual({ enabled: true });
         expect(auth.plugins).toEqual(["admin-plugin", "two-factor-plugin", "username-plugin"]);
         expect(prismaPg).toHaveBeenCalledWith({

@@ -14,8 +14,11 @@ services:
       - redis
     ports:
       - "4001:3000"
+    networks:
+      - net
     volumes:
       - files:/files
+      - /usr/local/bin/Mold2:/mold2/Mold2
 
   web:
     image: rondonqsar/web:local-prod
@@ -27,6 +30,8 @@ services:
       SITE_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
     depends_on:
       - api
+    networks:
+      - net
     ports:
       - "3002:3000"
 
@@ -34,6 +39,8 @@ services:
     image: redis:alpine
     command: redis-server --maxmemory-policy noeviction
     restart: unless-stopped
+    networks:
+      - net
     volumes:
       - redis:/data
 
@@ -42,3 +49,6 @@ volumes:
     driver: nfsvol
   redis:
     driver: nfsvol
+
+networks:
+  net:

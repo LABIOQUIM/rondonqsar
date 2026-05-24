@@ -45,7 +45,7 @@ Environment variables are loaded from the repository root `.env`. The compose fi
 Main groups:
 
 - Database: `DB_USER`, `DB_PASS`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`
-- Auth and public URLs: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `APP_URL`
+- Auth and public URLs: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `APP_URL`, `WEB_PUBLIC_URL`
 - Redis: `REDIS_HOST`, `REDIS_PORT`
 - SMTP mail delivery: `SMTP_USER`, `SMTP_FROM`, `SMTP_PASS`, `SMTP_PORT`, `SMTP_HOST`
 - Seeded admin account: `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `SEED_ADMIN_NAME`, `SEED_ADMIN_USERNAME`, `SEED_ADMIN_DISPLAY_USERNAME`, `SEED_ADMIN_ROLE`

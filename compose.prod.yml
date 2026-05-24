@@ -11,6 +11,8 @@ services:
   web:
     image: ghcr.io/labioquim/rondonqsar-web:beta
     env_file: .env
+    environment:
+      SITE_URL: ${WEB_PUBLIC_URL:-https://rondonqsar.ivopr.com.br}
     restart: always
     labels:
       - "traefik.enable=true"
@@ -27,6 +29,10 @@ services:
   api:
     image: ghcr.io/labioquim/rondonqsar-api:beta
     env_file: .env
+    environment:
+      APP_URL: ${WEB_PUBLIC_URL:-https://rondonqsar.ivopr.com.br}
+      BETTER_AUTH_URL: ${WEB_PUBLIC_URL:-https://rondonqsar.ivopr.com.br}
+      SITE_URL: ${WEB_PUBLIC_URL:-https://rondonqsar.ivopr.com.br}
     restart: always
     labels:
       - "traefik.enable=true"
