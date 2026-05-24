@@ -24,7 +24,6 @@ services:
       dockerfile: apps/web/Dockerfile
     restart: unless-stopped
     environment:
-      API_INTERNAL_URL: http://api:3000
       SITE_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
     depends_on:
       - api
