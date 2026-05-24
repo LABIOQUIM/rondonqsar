@@ -42,7 +42,7 @@ RUN pnpm --filter api build
 FROM base AS runner
 WORKDIR /app
 
-ENV PATH="${PATH}:/gromacs/bin"
+ENV PATH="${PATH}:/mold2"
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json pnpm-workspace.yaml ./
