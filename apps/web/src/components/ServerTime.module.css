@@ -4,3 +4,9 @@
   flex-direction: row;
   gap: var(--mantine-spacing-xs);
 }
+
+@media (max-width: 46.875em) {
+  .label {
+    display: none;
+  }
+}

@@ -1,7 +1,4 @@
-import "./__root.module.css";
-import "@mantine/core/styles.css";
-import "@mantine/notifications/styles.css";
-import "@mantine/tiptap/styles.css";
+import "@/styles/global.css";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ComponentProps, ReactNode } from "react";
 
@@ -16,6 +13,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import utc from "dayjs/plugin/utc";
 
 import { AppErrorBoundary } from "@/components/ErrorBoundary";
+import { FirstLoadShell } from "@/components/FirstLoadShell";
 import { ApiFeatureFlagProvider } from "@/lib/feature-flags";
 import {
   buildPageTitle,
@@ -98,7 +96,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <FirstLoadShell>{children}</FirstLoadShell>
         <Scripts />
       </body>
     </html>

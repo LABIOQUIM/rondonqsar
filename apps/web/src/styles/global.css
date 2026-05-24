@@ -1,0 +1,23 @@
+@import "@mantine/core/styles.css";
+@import "@mantine/notifications/styles.css";
+@import "@mantine/tiptap/styles.css";
+@import "mantine-react-table-open/styles.css";
+@import "@mantine/dropzone/styles.css";
+
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--mantine-primary-color-filled);
+  border-radius: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+* {
+  scrollbar-width: auto;
+  scrollbar-color: var(--mantine-primary-color-filled) transparent;
+}
