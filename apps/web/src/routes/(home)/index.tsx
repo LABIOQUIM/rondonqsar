@@ -8,14 +8,16 @@ import { LanderCallToActionSection } from "./-components/CallToActionSection";
 import { LanderFeaturesSection } from "./-components/FeaturesSection";
 import { LanderHeroSection } from "./-components/HeroSection";
 import { LanderLayout } from "./-components/Layout";
+import { LanderResearchSection } from "./-components/ResearchSection";
+import { LanderResultsSection } from "./-components/ResultsSection";
 
 export const Route = createFileRoute("/(home)/")({
   loader: () => loadRuntimeSeoData(),
   head: ({ loaderData }) =>
     buildSeoHead({
-      title: "Molecular Dynamics Analysis Platform",
+      title: "Malaria and Leishmaniasis QSAR Application",
       description:
-        "Explore molecular dynamics trajectories, analysis tools, and browser-based 3D visualization with Visual Dynamics.",
+        "RondonQSAR is a browser-based application for malaria and leishmaniasis QSAR screening, SDF submission, descriptor-driven prediction, and result review.",
       path: "/",
       index: true,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,
@@ -27,11 +29,11 @@ function HomeComponent() {
   return (
     <LanderLayout>
       <LanderHeroSection />
+      <LanderResearchSection />
       <LanderFeaturesSection />
-      {/* <LanderDemoSection /> */}
+      <LanderResultsSection />
       <LanderBackingSection />
       <LanderCallToActionSection />
-      {/* Add other sections as needed */}
     </LanderLayout>
   );
 }

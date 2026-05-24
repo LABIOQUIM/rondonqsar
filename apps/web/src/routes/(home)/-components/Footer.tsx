@@ -9,7 +9,7 @@ export function LanderFooter() {
     <Box className={styles.footer} component="footer">
       <div className={styles.innerFooter}>
         <p className={styles.copyright}>
-          © {new Date().getFullYear()} Visual Dynamics - Fiocruz. All rights reserved.
+          © {new Date().getFullYear()} RondonQSAR. QSAR workflows for molecular screening research.
         </p>
         <div className={styles.links}>
           <a
@@ -35,7 +35,7 @@ export function LanderFooter() {
         <div className={styles.socialIcons}>
           <a
             className={styles.socialIconLink}
-            href="https://github.com/LABIOQUIM/visualdynamics"
+            href="https://github.com/LABIOQUIM/protoqsar"
             rel="noopener noreferrer"
             target="_blank"
           >

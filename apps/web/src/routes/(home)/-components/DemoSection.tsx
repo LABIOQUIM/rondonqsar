@@ -7,10 +7,10 @@ export function LanderDemoSection() {
   return (
     <Box className={styles.demoSection} component="section" id="demo">
       <div className={styles.demoContainer}>
-        <h2 className={styles.sectionTitle}>See It In Action</h2>
+        <h2 className={styles.sectionTitle}>Screening workflow overview</h2>
         <p className={styles.description}>
-          Watch a quick demonstration of Visual Dynamics transforming raw simulation data into
-          meaningful visualizations and analyses.
+          A short walkthrough can show SDF submission, queue tracking, and result inspection across
+          the RondonQSAR workflow.
         </p>
         {/* AspectRatio for maintaining video dimensions is a structural prop */}
         <div className={styles.videoPlaceholder}>

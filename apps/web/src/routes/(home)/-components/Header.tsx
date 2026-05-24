@@ -1,5 +1,5 @@
 import { Box, Group } from "@mantine/core"; // Group for layout, Box for semantic header
-import { IconPlayerPlay } from "@tabler/icons-react";
+import { IconLogin2 } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
 import BRAND_LOGO from "@/assets/rondonqsar.svg";
@@ -14,18 +14,20 @@ export function LanderHeader() {
           <img alt="RondonQSAR Logo" className={styles.logoImage} src={BRAND_LOGO} />
         </Link>
         <Group>
-          {/* Mantine Group for spacing items is fine */}
           <nav className={styles.navLinks}>
-            <Link className={styles.navLink} to="/">
-              About
-            </Link>
-            <Link className={styles.navLink} to="/guides">
-              Guides
-            </Link>
+            <a className={styles.navLink} href="/#research">
+              Research
+            </a>
+            <a className={styles.navLink} href="/#features">
+              Workflow
+            </a>
+            <a className={styles.navLink} href="/#institutions">
+              Institutions
+            </a>
           </nav>
           <Link className={styles.launchButton} to="/auth/login">
-            <IconPlayerPlay size={22} />
-            Launch App
+            <IconLogin2 size={20} />
+            Sign In
           </Link>
         </Group>
       </div>

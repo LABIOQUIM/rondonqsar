@@ -2,19 +2,17 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  background-color: var(--mantine-color-white); /* Main background is white */
-  position: relative; /* Establishes a stacking context */
-  /* Ensure the layout's own stacking context is above a default z-index: 0 particle container,
-     but allows children to be above the particles. */
-  z-index: 1; /* This makes the layout box (and its opaque background) sit on top of z-index:0 particles */
+  background:
+    radial-gradient(circle at top left, rgba(21, 170, 191, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(116, 192, 201, 0.14), transparent 22%),
+    linear-gradient(180deg, #f8fcfc 0%, #ffffff 38%, #f5fbfb 100%);
+  position: relative;
+  z-index: 1;
   overflow-x: hidden;
 }
 
 .mainContent {
   flex-grow: 1;
   position: relative;
-  z-index: 2; /* Above particles */
-  /* Adjust padding as needed using Mantine variables */
-  /* padding-top: var(--mantine-spacing-xl);
-  padding-bottom: var(--mantine-spacing-xl); */
+  z-index: 2;
 }

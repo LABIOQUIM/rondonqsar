@@ -21,14 +21,14 @@
     <text x="86" y="220" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" letter-spacing="6">
       RONDONQSAR
     </text>
-    <text x="86" y="330" font-family="Arial, Helvetica, sans-serif" font-size="88" font-weight="700">
-      QSAR prediction,
+    <text x="86" y="330" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">
+      Malaria and
     </text>
-    <text x="86" y="426" font-family="Arial, Helvetica, sans-serif" font-size="88" font-weight="700">
-      descriptors, and screening.
+    <text x="86" y="414" font-family="Arial, Helvetica, sans-serif" font-size="76" font-weight="700">
+      leishmaniasis QSAR
     </text>
-    <text x="86" y="520" font-family="Arial, Helvetica, sans-serif" font-size="36" fill="#c5f6fa">
-      Browser-based platform for molecular QSAR workflows.
+    <text x="86" y="498" font-family="Arial, Helvetica, sans-serif" font-size="36" fill="#c5f6fa">
+      Submit structures, run QSAR models, and review prediction results.
     </text>
   </g>
 </svg>

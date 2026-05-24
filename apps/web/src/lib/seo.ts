@@ -1,7 +1,7 @@
 export const DEFAULT_SITE_URL = "https://rondonqsar.ivopr.com.br";
 export const SITE_NAME = "RondonQSAR";
 export const DEFAULT_SEO_DESCRIPTION =
-  "RondonQSAR is a web platform for QSAR prediction, descriptor analysis, and molecular screening workflows.";
+  "RondonQSAR is a browser-based application for malaria and leishmaniasis QSAR screening, descriptor analysis, and result review.";
 export const DEFAULT_OG_IMAGE_PATH = "/og-default.svg";
 export const PUBLIC_INDEXABLE_PATHS = ["/", "/guides", "/analytics"] as const;
 

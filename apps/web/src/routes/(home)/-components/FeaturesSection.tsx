@@ -1,11 +1,11 @@
 import { Box, SimpleGrid } from "@mantine/core";
 import {
-  IconChartArrowsVertical,
-  IconCloudComputing,
-  IconCode,
-  IconEye,
-  IconShare3,
-  IconUsers,
+  IconBinaryTree2,
+  IconClockHour4,
+  IconFileAnalytics,
+  IconFileDescription,
+  IconScan,
+  IconStethoscope,
 } from "@tabler/icons-react";
 
 import { FeatureCard } from "./FeatureCard";
@@ -13,40 +13,40 @@ import styles from "./FeaturesSection.module.css";
 
 const featuresData = [
   {
-    icon: <IconEye size={32} />,
-    title: "Interactive 3D Visualization",
-    soon: true,
+    icon: <IconFileDescription size={32} />,
+    title: "Submit structures",
     description:
-      "Explore molecular structures and trajectories in stunning 3D, powered by NGL Viewer.",
+      "Upload SDF files containing the molecules to be evaluated.",
   },
   {
-    icon: <IconChartArrowsVertical size={32} />,
-    title: "Powerful Analysis Tools",
-    description: "Perform RMSD, RMSF and more, directly in your browser.",
-  },
-  {
-    icon: <IconShare3 size={32} />,
-    title: "Seamless Collaboration",
-    soon: true,
+    icon: <IconClockHour4 size={32} />,
+    title: "Follow processing",
     description:
-      "Easily share your sessions, visualizations, and analysis results with colleagues.",
+      "Track each submission through queued, processing, completed, and failed states.",
   },
   {
-    icon: <IconCloudComputing size={32} />,
-    title: "Web-Based & Accessible",
-    description: "No installation needed. Access Visual Dynamics from any modern web browser.",
-  },
-  {
-    icon: <IconCode size={32} />,
-    title: "Open Source Platform",
+    icon: <IconBinaryTree2 size={32} />,
+    title: "Run both QSAR models",
     description:
-      "Built on open standards and contributed by the scientific community. Hosted by Fiocruz.",
+      "Use one submission to generate PlasmoQSAR and LeishQSAR outputs.",
   },
   {
-    icon: <IconUsers size={32} />,
-    title: "For Researchers & Students",
+    icon: <IconFileAnalytics size={32} />,
+    title: "Review predictions",
     description:
-      "An intuitive tool designed for both seasoned researchers and students learning MD.",
+      "Inspect descriptor values, pEC50 and EC50 predictions, and formula views.",
+  },
+  {
+    icon: <IconScan size={32} />,
+    title: "Screening studies",
+    description:
+      "Organize malaria and leishmaniasis QSAR work in the same application.",
+  },
+  {
+    icon: <IconStethoscope size={32} />,
+    title: "Research records",
+    description:
+      "Keep submitted files, job identifiers, statuses, and outputs connected.",
   },
 ];
 
@@ -54,19 +54,24 @@ export function LanderFeaturesSection() {
   return (
     <Box className={styles.featuresSection} component="section" id="features">
       <div className={styles.featuresContainer}>
-        <h2 className={styles.sectionTitle}>Core Capabilities</h2>
-        {/* Using SimpleGrid for layout. Its cols and spacing props are fine. */}
+        <div className={styles.sectionHeader}>
+          <span className={styles.eyebrow}>Workflow</span>
+          <h2 className={styles.sectionTitle}>A direct path from SDF file to QSAR results</h2>
+          <p className={styles.sectionDescription}>
+            RondonQSAR keeps the routine work simple: upload molecules, wait for the calculation,
+            and open the resulting model tables when processing is complete.
+          </p>
+        </div>
         <SimpleGrid
           className={styles.grid}
           cols={{ base: 1, sm: 2, lg: 3 }}
-          spacing={{ base: "lg", sm: "xl" }} // Mantine spacing tokens
+          spacing={{ base: "lg", sm: "xl" }}
         >
           {featuresData.map((feature) => (
             <FeatureCard
               description={feature.description}
               icon={feature.icon}
               key={feature.title}
-              soon={feature.soon}
               title={feature.title}
             />
           ))}

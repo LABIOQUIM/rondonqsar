@@ -41,11 +41,11 @@ import classes from "../$submissionId.module.css";
 type QsarSubmissionRecord = QsarSubmissionDetails | AdminQsarSubmissionDetails;
 
 type Props = {
-  data?: QsarSubmissionRecord;
-  error?: unknown;
+  data: QsarSubmissionRecord | undefined;
+  error: unknown;
   extraSummaryItems?: Array<{
     label: string;
-    truncate?: boolean;
+    truncate?: boolean | undefined;
     value: React.ReactNode;
   }>;
   isError: boolean;
@@ -146,7 +146,7 @@ function SummaryItem({
   value,
 }: {
   label: string;
-  truncate?: boolean;
+  truncate?: boolean | undefined;
   value: React.ReactNode;
 }) {
   return (
