@@ -40,8 +40,11 @@ export interface FlagConfig {
   disabled: boolean;
 }
 
+const DEFAULT_INTERNAL_API_URL = "http://api:3000";
+const API_REQUEST_TIMEOUT_MS = 8000;
+
 function getInternalApiUrl() {
-  return "http://api:3000".replace(/\/$/, "");
+  return (process.env.API_INTERNAL_URL ?? DEFAULT_INTERNAL_API_URL).replace(/\/$/, "");
 }
 
 function createApiUrl(path: string, params?: ApiRequestOptions["params"]) {
@@ -131,6 +134,8 @@ async function forwardSetCookieHeaders(response: Response) {
 
 async function request<T>(path: string, options: ApiRequestOptions = {}) {
   const headers = await getForwardedHeaders(options.headers);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
   let body: BodyInit | undefined;
 
   if (options.body instanceof FormData || typeof options.body === "string") {
@@ -143,6 +148,7 @@ async function request<T>(path: string, options: ApiRequestOptions = {}) {
   const init: RequestInit = {
     method: options.method ?? "GET",
     headers,
+    signal: controller.signal,
   };
 
   if (body !== undefined) {
@@ -154,6 +160,8 @@ async function request<T>(path: string, options: ApiRequestOptions = {}) {
     response = await fetch(createApiUrl(path, options.params), init);
   } catch (error) {
     throw getApiConnectionError(error);
+  } finally {
+    clearTimeout(timeout);
   }
 
   const payload = await readResponsePayload(response);
@@ -171,6 +179,8 @@ export function apiRequest<T>(path: string, options: ApiRequestOptions = {}) {
 
 export async function authRequest<T>(path: string, options: ApiRequestOptions = {}) {
   const headers = await getForwardedHeaders(options.headers);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
   let body: BodyInit | undefined;
 
   if (options.body instanceof FormData || typeof options.body === "string") {
@@ -183,6 +193,7 @@ export async function authRequest<T>(path: string, options: ApiRequestOptions = 
   const init: RequestInit = {
     method: options.method ?? "GET",
     headers,
+    signal: controller.signal,
   };
 
   if (body !== undefined) {
@@ -194,6 +205,8 @@ export async function authRequest<T>(path: string, options: ApiRequestOptions = 
     response = await fetch(createApiUrl(`/auth${path}`, options.params), init);
   } catch (error) {
     throw getApiConnectionError(error);
+  } finally {
+    clearTimeout(timeout);
   }
 
   await forwardSetCookieHeaders(response);
