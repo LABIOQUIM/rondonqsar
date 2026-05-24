@@ -31,7 +31,14 @@ export const Route = createFileRoute("/app")({
       throw redirect({ to: "/auth/login" });
     }
   },
-  loader: () => getServerSession(),
+  loader: async () => {
+    const [session, flags] = await Promise.all([getServerSession(), getClientFeatureFlags()]);
+
+    return {
+      maintenance: isEnabledFlag(flags, "maintenance-mode", true),
+      session,
+    };
+  },
   component: RouteComponent,
 });
 
@@ -39,9 +46,9 @@ function RouteComponent() {
   const navigate = useNavigate({ from: "/app" });
   const data = Route.useLoaderData();
   const signOutFn = useServerFn(signOut);
-  const { value: maintenanceMode } = useFlag("maintenance-mode", true);
+  const { value: maintenanceMode } = useFlag("maintenance-mode", data.maintenance);
 
-  const isNonAdminDuringMaintenance = maintenanceMode && data?.user.role !== "admin";
+  const isNonAdminDuringMaintenance = maintenanceMode && data.session?.user.role !== "admin";
 
   useEffect(() => {
     if (isNonAdminDuringMaintenance) {
@@ -51,7 +58,7 @@ function RouteComponent() {
 
   const [opened, { toggle }] = useDisclosure();
 
-  if (!data || isNonAdminDuringMaintenance) {
+  if (!data.session || isNonAdminDuringMaintenance) {
     return null;
   }
 
@@ -83,7 +90,7 @@ function RouteComponent() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar px="md">
-        <Navbar session={data} toggle={toggle} />
+        <Navbar session={data.session} toggle={toggle} />
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />
