@@ -1,21 +1,30 @@
 import type { MRT_PaginationState } from "mantine-react-table-open";
 
 import { queryOptions } from "@tanstack/react-query";
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
-import { getAPIClient } from "@/lib/api";
+import { apiRequest } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
-export const fetchUserQsarSubmissions = async (pageSize: number, page: number) => {
-  const api = await getAPIClient();
+const paginationSchema = z.object({
+  page: z.number(),
+  pageSize: z.number(),
+});
 
-  return api
-    .get<UserQsarSubmissions>("/qsar/current-user", {
+const fetchUserQsarSubmissionsServer = createServerFn({ method: "GET" })
+  .inputValidator(paginationSchema)
+  .handler(async ({ data }) =>
+    apiRequest<UserQsarSubmissions>("/qsar/current-user", {
       params: {
-        pageSize,
-        page,
+        page: data.page,
+        pageSize: data.pageSize,
       },
-    })
-    .then((r) => r.data);
+    }),
+  );
+
+export const fetchUserQsarSubmissions = async (pageSize: number, page: number) => {
+  return fetchUserQsarSubmissionsServer({ data: { page, pageSize } });
 };
 
 export const getUserQsarSubmissions = (

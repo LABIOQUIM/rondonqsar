@@ -1,0 +1,45 @@
+services:
+  api:
+    image: rondonqsar/api:local-prod
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      APP_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
+      BETTER_AUTH_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
+    depends_on:
+      - redis
+    ports:
+      - "4001:3000"
+    volumes:
+      - files:/files
+
+  web:
+    image: rondonqsar/web:local-prod
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://api:3000
+      SITE_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
+    depends_on:
+      - api
+    ports:
+      - "3001:3000"
+
+  redis:
+    image: redis:alpine
+    command: redis-server --maxmemory-policy noeviction
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+volumes:
+  files:
+    driver: nfsvol
+  redis:
+    driver: nfsvol

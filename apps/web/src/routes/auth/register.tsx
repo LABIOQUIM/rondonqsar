@@ -2,14 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
-import { authClient } from "@/lib/auth-client";
 import { buildPageTitle } from "@/lib/seo";
+import { register as registerAccount } from "@/mutations/auth";
 
 import classes from "./register.module.css";
 
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/auth/register")({
 
 function RouteComponent() {
   const { value: signupsEnabled } = useFlag("signups-enabled", false);
+  const registerFn = useServerFn(registerAccount);
   const [status, setStatus] = useState<FormSubmissionStatus>();
   const {
     register,
@@ -39,27 +41,26 @@ function RouteComponent() {
   async function doRegister(form: RegisterFormInputs) {
     setStatus({ status: "loading" });
 
-    await authClient.signUp.email(
-      {
-        name: form.name,
-        username: form.username,
-        email: form.email,
-        password: form.password,
-      },
-      {
-        onError: ({ error }) => {
-          console.log(error);
-          setStatus({ status: "error", title: error.message });
+    try {
+      await registerFn({
+        data: {
+          email: form.email,
+          name: form.name,
+          password: form.password,
+          username: form.username,
         },
-        onSuccess: () => {
-          setStatus({
-            status: "success",
-            title: "Registration successful!",
-            message: "Please check your email to verify your account.",
-          });
-        },
-      },
-    );
+      });
+      setStatus({
+        status: "success",
+        title: "Registration successful!",
+        message: "Please check your email to verify your account.",
+      });
+    } catch (error) {
+      setStatus({
+        status: "error",
+        title: error instanceof Error ? error.message : "Registration failed.",
+      });
+    }
   }
 
   return (

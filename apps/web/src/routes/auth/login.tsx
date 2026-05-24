@@ -2,14 +2,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
-import { authClient } from "@/lib/auth-client";
 import { buildPageTitle } from "@/lib/seo";
+import { login } from "@/mutations/auth";
 
 import classes from "./login.module.css";
 
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = useNavigate({ from: "/auth/login" });
+  const loginFn = useServerFn(login);
   const { value: signupsEnabled } = useFlag("signups-enabled", false);
   const { value: maintenanceMode } = useFlag("maintenance-mode", true);
 
@@ -41,34 +43,21 @@ function RouteComponent() {
 
   async function doLogin({ identifier, password }: FormInputs) {
     setStatus({ status: "loading" });
-    const regex = /\S+@\S+\.\S+/;
 
-    const options: {
-      onSuccess: () => void;
-      onError: ({ error }: { error: any }) => void;
-    } = {
-      onSuccess: () => {
-        setStatus({
-          status: "success",
-          title: "Login successful",
-          message: "Redirecting to RondonQSAR...",
-        });
-        navigate({ to: "/app" });
-      },
-      onError: ({ error }) => {
-        console.log(error);
-        setStatus({
-          status: "error",
-          title: "Login failed",
-          message: error.message,
-        });
-      },
-    };
-
-    if (regex.test(identifier)) {
-      await authClient.signIn.email({ email: identifier, password }, options);
-    } else {
-      await authClient.signIn.username({ username: identifier, password }, options);
+    try {
+      await loginFn({ data: { identifier, password } });
+      setStatus({
+        status: "success",
+        title: "Login successful",
+        message: "Redirecting to RondonQSAR...",
+      });
+      await navigate({ to: "/app" });
+    } catch (error) {
+      setStatus({
+        status: "error",
+        title: "Login failed",
+        message: error instanceof Error ? error.message : "Unable to sign in.",
+      });
     }
   }
 

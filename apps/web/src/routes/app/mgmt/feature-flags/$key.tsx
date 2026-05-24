@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
+import { type SerializableJson } from "@/lib/api";
 import { type UpdateFeatureFlagInput } from "@/mutations/featureFlags";
 import { getFeatureFlags } from "@/queries/getFeatureFlags";
 
@@ -16,8 +17,8 @@ export const Route = createFileRoute("/app/mgmt/feature-flags/$key")({
 function buildVariantsRecord(
   variants: FlagFormValues["variants"],
   type: FlagFormValues["type"],
-): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
+): Record<string, SerializableJson> {
+  const result: Record<string, SerializableJson> = {};
   for (const { variantKey, variantValue } of variants) {
     if (!variantKey.trim()) continue;
     if (type === "BOOLEAN") result[variantKey] = variantValue === "true";

@@ -5,6 +5,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import {
   MantineReactTable,
   type MRT_ColumnFiltersState,
@@ -21,7 +22,8 @@ import { PageLayout } from "@/components/PageLayout";
 import { TableBooleanCell } from "@/components/TableBooleanCell";
 import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
-import { authClient } from "@/lib/auth-client";
+import { type SerializableJson } from "@/lib/api";
+import { updateUser } from "@/mutations/auth";
 import { getMgmtUsers } from "@/queries/getMgmtUsers";
 
 import classes from "./-components/adminTable.module.css";
@@ -31,7 +33,12 @@ export const Route = createFileRoute("/app/mgmt/users")({
   component: RouteComponent,
 });
 
+function toSerializableRecord(values: Record<string, unknown>) {
+  return JSON.parse(JSON.stringify(values)) as Record<string, SerializableJson>;
+}
+
 function RouteComponent() {
+  const updateUserFn = useServerFn(updateUser);
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -47,23 +54,25 @@ function RouteComponent() {
     row,
   }) => {
     // TODO: Should validate user input before updating user
-    const { error } = await authClient.admin.updateUser({
-      userId: row.id,
-      data: values,
-    });
-
-    if (error) {
-      notifications.show({
-        message: error?.message,
-        color: "red",
-        icon: <IconX />,
-        withBorder: true,
+    try {
+      await updateUserFn({
+        data: {
+          data: toSerializableRecord(values),
+          userId: row.id,
+        },
       });
-    } else {
+
       notifications.show({
         message: "User updated successfully",
         color: "green",
         icon: <IconCheck />,
+        withBorder: true,
+      });
+    } catch (error) {
+      notifications.show({
+        message: error instanceof Error ? error.message : "Failed to update user.",
+        color: "red",
+        icon: <IconX />,
         withBorder: true,
       });
     }

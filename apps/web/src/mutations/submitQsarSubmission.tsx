@@ -2,12 +2,22 @@ import type { NavigateFn } from "@tanstack/react-router";
 
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
+import { createServerFn } from "@tanstack/react-start";
 
-import { getAPIClient } from "@/lib/api";
+import { apiRequest } from "@/lib/api";
 
 type SubmitQsarSubmissionValues = {
   file: File;
 };
+
+const submitQsarSubmissionServer = createServerFn({ method: "POST" })
+  .inputValidator((data: FormData) => data)
+  .handler(async ({ data }) =>
+    apiRequest<QsarSubmitResponse>("/qsar/submit", {
+      body: data,
+      method: "POST",
+    }),
+  );
 
 export async function submitQsarSubmission(
   values: SubmitQsarSubmissionValues,
@@ -16,12 +26,11 @@ export async function submitQsarSubmission(
   const data = new FormData();
   data.append("file", values.file);
 
-  const api = await getAPIClient();
-  const response = await api.post<QsarSubmitResponse>("/qsar/submit", data);
+  const response = await submitQsarSubmissionServer({ data });
 
   notifications.show({
     title: "Added to queue",
-    message: `Your QSAR submission has been queued as job ${response.data.jobId}.`,
+    message: `Your QSAR submission has been queued as job ${response.jobId}.`,
     color: "green",
     icon: <IconCheck />,
     withBorder: true,
@@ -30,7 +39,7 @@ export async function submitQsarSubmission(
   navigate({
     to: "/app/$submissionId",
     params: {
-      submissionId: response.data.submissionId,
+      submissionId: response.submissionId,
     },
   });
 }

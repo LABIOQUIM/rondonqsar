@@ -2,22 +2,21 @@ import "mantine-react-table-open/styles.css";
 import "@mantine/dropzone/styles.css";
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { OpenFeature, useFlag } from "@openfeature/react-sdk";
+import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
 
 import { Logo } from "@/components/Logo";
 import { Navbar } from "@/components/Navbar";
 import { ServerTime } from "@/components/ServerTime";
-import { authClient } from "@/lib/auth-client";
+import { getClientFeatureFlags, getServerSession, isEnabledFlag, signOut } from "@/lib/api";
 
 import classes from "./route.module.css";
 
 export const Route = createFileRoute("/app")({
-  ssr: false,
   beforeLoad: async ({ location }) => {
-    const session = await authClient.getSession();
-    const auth = session.data;
+    const [auth, flags] = await Promise.all([getServerSession(), getClientFeatureFlags()]);
 
     if (!auth) {
       throw redirect({
@@ -28,27 +27,29 @@ export const Route = createFileRoute("/app")({
       });
     }
 
-    const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", true);
+    const maintenance = isEnabledFlag(flags, "maintenance-mode", true);
 
     if (maintenance && auth.user.role !== "admin") {
       throw redirect({ to: "/auth/login" });
     }
   },
+  loader: () => getServerSession(),
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const navigate = useNavigate({ from: "/app" });
-  const { data } = authClient.useSession();
+  const data = Route.useLoaderData();
+  const signOutFn = useServerFn(signOut);
   const { value: maintenanceMode } = useFlag("maintenance-mode", true);
 
   const isNonAdminDuringMaintenance = maintenanceMode && data?.user.role !== "admin";
 
   useEffect(() => {
     if (isNonAdminDuringMaintenance) {
-      void authClient.signOut().then(() => navigate({ to: "/auth/login" }));
+      void signOutFn().then(() => navigate({ to: "/auth/login" }));
     }
-  }, [isNonAdminDuringMaintenance, navigate]);
+  }, [isNonAdminDuringMaintenance, navigate, signOutFn]);
 
   const [opened, { toggle }] = useDisclosure();
 
@@ -84,7 +85,7 @@ function RouteComponent() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar px="md">
-        <Navbar toggle={toggle} />
+        <Navbar session={data} toggle={toggle} />
       </AppShell.Navbar>
       <AppShell.Main>
         <Outlet />

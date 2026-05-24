@@ -25,6 +25,9 @@ WORKDIR /app
 
 RUN apk add --no-cache caddy
 
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json pnpm-workspace.yaml ./
+COPY apps/web/package.json ./apps/web/
 COPY --from=builder /app/apps/web/dist ./dist
 COPY apps/web/Caddyfile /etc/caddy/Caddyfile
 COPY apps/web/entrypoint.sh /entrypoint.sh

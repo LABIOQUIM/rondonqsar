@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
+import { createServerFn } from "@tanstack/react-start";
 
-import { getAPIClient } from "@/lib/api";
+import { apiRequest, type SerializableJson } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
 export type FeatureFlag = {
@@ -9,15 +10,18 @@ export type FeatureFlag = {
   type: "BOOLEAN" | "STRING" | "NUMBER";
   enabled: boolean;
   defaultVariant: string;
-  variants: Record<string, unknown>;
+  variants: Record<string, SerializableJson>;
   description: string | null;
   createdAt: string;
   updatedAt: string | null;
 };
 
+const fetchFeatureFlagsServer = createServerFn({ method: "GET" }).handler(async () =>
+  apiRequest<FeatureFlag[]>("/feature-flags"),
+);
+
 export const fetchFeatureFlags = async () => {
-  const api = await getAPIClient();
-  return api.get<FeatureFlag[]>("/feature-flags").then((r) => r.data);
+  return fetchFeatureFlagsServer();
 };
 
 export const getFeatureFlags = () =>

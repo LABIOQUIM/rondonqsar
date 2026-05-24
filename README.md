@@ -92,6 +92,14 @@ The repository contains `compose.prod.yml` at the repo root to orchestrate servi
 - Production compose:
   `docker compose -f compose.prod.yml up --build -d`
 
+- Local production-build smoke test:
+  `docker compose -f compose.local-prod.yml up --build`
+
+This local production compose file builds the `api` and `web` services from the production
+Dockerfiles in the current workspace, exposes the web app on `http://localhost:3000` and the API
+on `http://localhost:4000`, and avoids the release-image + Traefik setup used by
+`compose.prod.yml`.
+
 Tip: If you change migrations, re-build or run migration commands inside the `api` container as needed.
 
 ---

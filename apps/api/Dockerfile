@@ -47,7 +47,6 @@ ENV PATH="${PATH}:/gromacs/bin"
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json pnpm-workspace.yaml ./
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/static ./apps/api/static
 COPY apps/api/package.json ./apps/api/
 
 # Copy entrypoint script

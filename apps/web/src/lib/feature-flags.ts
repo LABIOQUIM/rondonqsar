@@ -8,20 +8,9 @@ import type {
 
 import { ProviderEvents } from "@openfeature/web-sdk";
 
-import { getPublicApiUrl } from "./env";
-
-interface FlagConfig {
-  type: string;
-  defaultVariant: string;
-  variants: Record<string, JsonValue>;
-  disabled: boolean;
-}
+import { getClientFeatureFlags, type FlagConfig } from "./api";
 
 type FlagStore = Record<string, FlagConfig>;
-
-function getAPIBaseUrl() {
-  return `${getPublicApiUrl()}/v1`;
-}
 
 export class ApiFeatureFlagProvider implements Provider {
   readonly metadata = { name: "api-feature-flag" } as const;
@@ -122,21 +111,15 @@ export class ApiFeatureFlagProvider implements Provider {
 
   private async fetchFlags(): Promise<void> {
     try {
-      const response = await fetch(`${getAPIBaseUrl()}/feature-flags/client`, {
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        const newFlags = (await response.json()) as FlagStore;
-        const changedKeys = Object.keys(newFlags).filter(
-          (key) => JSON.stringify(newFlags[key]) !== JSON.stringify(this.flags[key]),
-        );
-        this.flags = newFlags;
-        if (changedKeys.length > 0) {
-          this.events?.emit(ProviderEvents.ConfigurationChanged, {
-            flagsChanged: changedKeys,
-          });
-        }
+      const newFlags = (await getClientFeatureFlags()) as FlagStore;
+      const changedKeys = Object.keys(newFlags).filter(
+        (key) => JSON.stringify(newFlags[key]) !== JSON.stringify(this.flags[key]),
+      );
+      this.flags = newFlags;
+      if (changedKeys.length > 0) {
+        this.events?.emit(ProviderEvents.ConfigurationChanged, {
+          flagsChanged: changedKeys,
+        });
       }
     } catch {
       // Silently fail — use cached/default values

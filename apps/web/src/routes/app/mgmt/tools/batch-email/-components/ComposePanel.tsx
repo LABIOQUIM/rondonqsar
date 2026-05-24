@@ -2,15 +2,17 @@ import { Button, Group, Paper, Stack, Text, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { Link, RichTextEditor } from "@mantine/tiptap";
 import { IconCheck, IconMailForward, IconX } from "@tabler/icons-react";
+import { useServerFn } from "@tanstack/react-start";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useState } from "react";
 
-import { getAPIClient } from "@/lib/api";
+import { sendBatchMail } from "@/mutations/mailer";
 
 import classes from "./ComposePanel.module.css";
 
 export function ComposePanel() {
+  const sendBatchMailFn = useServerFn(sendBatchMail);
   const [subject, setSubject] = useState("");
   const [subjectError, setSubjectError] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -46,11 +48,7 @@ export function ComposePanel() {
 
     setIsSending(true);
     try {
-      const api = await getAPIClient();
-      const { data } = await api.post<{ queued: number }>("/mailer/batch", {
-        html,
-        subject,
-      });
+      const data = await sendBatchMailFn({ data: { html, subject } });
 
       notifications.show({
         color: "green",

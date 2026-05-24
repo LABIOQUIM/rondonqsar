@@ -4,11 +4,13 @@ import { Button, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal, flushSync } from "react-dom";
 
-import { authClient } from "@/lib/auth-client";
+import { type SerializableJson } from "@/lib/api";
+import { createUser } from "@/mutations/auth";
 import { getMgmtUsers } from "@/queries/getMgmtUsers";
 
 import type { ImporterUser } from "./Provider";
@@ -24,7 +26,16 @@ function parseDate(val: string) {
   return d.isValid() ? val : undefined;
 }
 
+function compactRecord(values: Record<string, SerializableJson | undefined>) {
+  return Object.fromEntries(
+    Object.entries(values).filter(
+      (entry): entry is [string, SerializableJson] => entry[1] !== undefined,
+    ),
+  );
+}
+
 export function ImportButton({ table }: Props) {
+  const createUserFn = useServerFn(createUser);
   const [opened, { open, close }] = useDisclosure(false);
   const [isPending, setPending] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -54,24 +65,22 @@ export function ImportButton({ table }: Props) {
 
     for (const user of rows) {
       try {
-        const { error } = await authClient.admin.createUser({
-          email: user.email.trim(),
-          name: user.name.trim(),
-          // @ts-expect-error
-          role: user.role.trim(),
+        await createUserFn({
           data: {
-            username: user.username.trim(),
-            displayUsername: user.username.trim(),
-            createdAt: parseDate(user.createdAt),
-            updatedAt: parseDate(user.updatedAt),
+            data: {
+              ...compactRecord({
+                createdAt: parseDate(user.createdAt),
+                updatedAt: parseDate(user.updatedAt),
+              }),
+              displayUsername: user.username.trim(),
+              username: user.username.trim(),
+            },
+            email: user.email.trim(),
+            name: user.name.trim(),
+            role: user.role.trim(),
           },
         });
-
-        if (error) {
-          errors.push(`${user.username}: ${error.message}`);
-        } else {
-          imported++;
-        }
+        imported++;
       } catch {
         errors.push(`${user.username}: request failed`);
       }
@@ -90,7 +99,7 @@ export function ImportButton({ table }: Props) {
 
     table.resetRowSelection();
     refetch();
-  }, [selectedRows, table, refetch]);
+  }, [createUserFn, selectedRows, table, refetch]);
 
   return (
     <>

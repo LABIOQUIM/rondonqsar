@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useMemo } from "react";
 
-import { authClient } from "@/lib/auth-client";
+import type { ServerAuthSession } from "@/lib/api";
 
 import classes from "./index.module.css";
 import { Section } from "./Section";
@@ -105,18 +105,17 @@ const adminSection: NavSection = {
 };
 
 interface Props {
+  session: ServerAuthSession;
   toggle(): void;
 }
 
-export function Navbar({ toggle }: Props) {
-  const { data } = authClient.useSession();
-
+export function Navbar({ session, toggle }: Props) {
   const finalSections = useMemo(() => {
-    if (data?.user?.role === "admin") {
+    if (session?.user?.role === "admin") {
       return [adminSection, ...sections];
     }
     return sections;
-  }, [data]);
+  }, [session]);
 
   const mainLinks = finalSections.map((section) => (
     <Section key={section.title} section={section} toggle={toggle} />
@@ -163,7 +162,7 @@ export function Navbar({ toggle }: Props) {
       </Box>
 
       <Box className={classes.section}>
-        <User />
+        <User session={session} />
       </Box>
       <Box className={classes.section}>
         <Box className={classes.mainLinks}>{mainLinks}</Box>
