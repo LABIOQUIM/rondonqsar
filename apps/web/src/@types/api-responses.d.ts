@@ -18,6 +18,16 @@ declare global {
     total: number;
   };
 
+  type AdminQsarSubmissionSummary = QsarSubmissionSummary & {
+    userId: string;
+    username: string;
+  };
+
+  type AdminQsarSubmissions = {
+    records: AdminQsarSubmissionSummary[];
+    total: number;
+  };
+
   type PlasmoResultRow = {
     moleculeNumber: number;
     descriptorA: number;
@@ -40,6 +50,11 @@ declare global {
   type QsarSubmissionDetails = QsarSubmissionSummary & {
     plasmoResults: PlasmoResultRow[];
     leishResults: LeishResultRow[];
+  };
+
+  type AdminQsarSubmissionDetails = QsarSubmissionDetails & {
+    userId: string;
+    username: string;
   };
 
   type QsarSubmitResponse = {

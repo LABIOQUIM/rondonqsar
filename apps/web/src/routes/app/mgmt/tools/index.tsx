@@ -19,12 +19,6 @@ const tools = [
     url: "/app/mgmt/tools/user-importer",
   },
   {
-    icon: IconTableImport,
-    label: "Simulation Importer",
-    description: "Bulk-import simulations from a CSV file.",
-    url: "/app/mgmt/tools/simulation-importer",
-  },
-  {
     icon: IconMailForward,
     label: "Batch Email",
     description: "Send a single email to multiple users at once.",

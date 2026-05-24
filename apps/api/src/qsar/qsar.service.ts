@@ -8,6 +8,8 @@ import type { User } from "../generated/prisma/client.js";
 
 import { PrismaService } from "../prisma.service.js";
 import {
+  type AdminQsarSubmissionDetails,
+  type AdminQsarSubmissionsResponse,
   QSAR_QUEUE,
   type QsarFile,
   type QsarJobData,
@@ -24,6 +26,64 @@ type PaginationInput = {
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 100;
 
+const qsarSubmissionCountSelect = {
+  _count: {
+    select: {
+      plasmoResults: true,
+      leishResults: true,
+    },
+  },
+} as const;
+
+const qsarSubmissionSummarySelect = {
+  id: true,
+  originalName: true,
+  status: true,
+  jobId: true,
+  errorMessage: true,
+  createdAt: true,
+  updatedAt: true,
+  ...qsarSubmissionCountSelect,
+} as const;
+
+const qsarSubmissionDetailsSelect = {
+  id: true,
+  originalName: true,
+  status: true,
+  jobId: true,
+  errorMessage: true,
+  createdAt: true,
+  updatedAt: true,
+  plasmoResults: {
+    orderBy: {
+      moleculeNumber: "asc",
+    },
+    select: {
+      moleculeNumber: true,
+      descriptorA: true,
+      descriptorB: true,
+      descriptorC: true,
+      pec50: true,
+      ec50: true,
+    },
+  },
+  leishResults: {
+    orderBy: {
+      moleculeNumber: "asc",
+    },
+    select: {
+      moleculeNumber: true,
+      descriptorA: true,
+      descriptorB: true,
+      descriptorC: true,
+      descriptorD: true,
+      pec50: true,
+      ec50: true,
+    },
+  },
+  ...qsarSubmissionCountSelect,
+} as const;
+
 function normalizePagination({ pageSize, page }: PaginationInput) {
   const normalizedPageSize =
     Number.isInteger(pageSize) && pageSize && pageSize > 0
@@ -36,6 +96,54 @@ function normalizePagination({ pageSize, page }: PaginationInput) {
     page: normalizedPage,
   };
 }
+
+function mapSubmissionCounts<TSubmission extends { _count: { plasmoResults: number; leishResults: number } }>(
+  submission: TSubmission,
+) {
+  const { _count, ...details } = submission;
+
+  return {
+    ...details,
+    plasmoResultCount: _count.plasmoResults,
+    leishResultCount: _count.leishResults,
+  };
+}
+
+type RawSubmissionCounts = {
+  _count: {
+    plasmoResults: number;
+    leishResults: number;
+  };
+};
+
+type RawSubmissionSummary = {
+  id: string;
+  originalName: string;
+  status: string;
+  jobId: string | null;
+  errorMessage: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+} & RawSubmissionCounts;
+
+type RawSubmissionDetails = RawSubmissionSummary & {
+  plasmoResults: QsarSubmissionDetails["plasmoResults"];
+  leishResults: QsarSubmissionDetails["leishResults"];
+};
+
+type RawAdminSubmissionSummary = RawSubmissionSummary & {
+  userId: string;
+  user: {
+    username: string;
+  };
+};
+
+type RawAdminSubmissionDetails = RawSubmissionDetails & {
+  userId: string;
+  user: {
+    username: string;
+  };
+};
 
 @Injectable()
 export class QsarService {
@@ -114,31 +222,47 @@ export class QsarService {
         orderBy: { createdAt: "desc" },
         skip: page * pageSize,
         take: pageSize,
-        select: {
-          id: true,
-          originalName: true,
-          status: true,
-          jobId: true,
-          errorMessage: true,
-          createdAt: true,
-          updatedAt: true,
-          _count: {
-            select: {
-              plasmoResults: true,
-              leishResults: true,
-            },
-          },
-        },
+        select: qsarSubmissionSummarySelect,
       }),
       (this.prisma as any).qsarSubmission.count({ where }),
     ]);
 
     return {
-      records: records.map(({ _count, ...submission }) => ({
-        ...submission,
-        plasmoResultCount: _count.plasmoResults,
-        leishResultCount: _count.leishResults,
-      })),
+      records: (records as RawSubmissionSummary[]).map((record) => mapSubmissionCounts(record)),
+      total,
+    };
+  }
+
+  async findAdmin(pagination: PaginationInput = {}): Promise<AdminQsarSubmissionsResponse> {
+    const { pageSize, page } = normalizePagination(pagination);
+
+    const [records, total] = await Promise.all([
+      (this.prisma as any).qsarSubmission.findMany({
+        orderBy: { createdAt: "desc" },
+        skip: page * pageSize,
+        take: pageSize,
+        select: {
+          ...qsarSubmissionSummarySelect,
+          userId: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      }),
+      (this.prisma as any).qsarSubmission.count(),
+    ]);
+
+    return {
+      records: (records as RawAdminSubmissionSummary[]).map((record) => {
+        const { user, ...submission } = record;
+
+        return {
+          ...mapSubmissionCounts(submission),
+          username: user.username,
+        };
+      }),
       total,
     };
   }
@@ -152,45 +276,27 @@ export class QsarService {
         id: submissionId,
         userId,
       },
+      select: qsarSubmissionDetailsSelect,
+    });
+
+    if (!submission) {
+      throw new NotFoundException("QSAR submission not found");
+    }
+
+    return mapSubmissionCounts(submission as RawSubmissionDetails);
+  }
+
+  async findAdminSubmission(submissionId: string): Promise<AdminQsarSubmissionDetails> {
+    const submission = await (this.prisma as any).qsarSubmission.findFirst({
+      where: {
+        id: submissionId,
+      },
       select: {
-        id: true,
-        originalName: true,
-        status: true,
-        jobId: true,
-        errorMessage: true,
-        createdAt: true,
-        updatedAt: true,
-        plasmoResults: {
-          orderBy: {
-            moleculeNumber: "asc",
-          },
+        ...qsarSubmissionDetailsSelect,
+        userId: true,
+        user: {
           select: {
-            moleculeNumber: true,
-            descriptorA: true,
-            descriptorB: true,
-            descriptorC: true,
-            pec50: true,
-            ec50: true,
-          },
-        },
-        leishResults: {
-          orderBy: {
-            moleculeNumber: "asc",
-          },
-          select: {
-            moleculeNumber: true,
-            descriptorA: true,
-            descriptorB: true,
-            descriptorC: true,
-            descriptorD: true,
-            pec50: true,
-            ec50: true,
-          },
-        },
-        _count: {
-          select: {
-            plasmoResults: true,
-            leishResults: true,
+            username: true,
           },
         },
       },
@@ -200,12 +306,11 @@ export class QsarService {
       throw new NotFoundException("QSAR submission not found");
     }
 
-    const { _count, ...details } = submission;
+    const { user, ...details } = submission as RawAdminSubmissionDetails;
 
     return {
-      ...details,
-      plasmoResultCount: _count.plasmoResults,
-      leishResultCount: _count.leishResults,
+      ...mapSubmissionCounts(details),
+      username: user.username,
     };
   }
 }

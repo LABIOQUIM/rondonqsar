@@ -1,5 +1,3 @@
-import type { artifactDownload } from "@/lib/constants";
-
 // src/globals.d.ts
 export {}; // This makes the file a module
 
@@ -11,8 +9,6 @@ declare global {
       apiUrl?: string;
     };
   }
-
-  type ArtifactDownloadTarget = keyof typeof artifactDownload;
 
   type AuthState = {
     user: {

@@ -46,6 +46,31 @@ describe("QsarController", () => {
     expect(findCurrentUserSubmission).toHaveBeenCalledWith("user-id", "submission-1");
   });
 
+  it("lists admin qsar submissions", async () => {
+    const findAdmin = vi.fn().mockResolvedValue({ records: [], total: 0 });
+    const controller = new QsarController({ findAdmin } as unknown as QsarService);
+
+    await expect(controller.findAdmin("25", "2")).resolves.toEqual({ records: [], total: 0 });
+
+    expect(findAdmin).toHaveBeenCalledWith({
+      pageSize: 25,
+      page: 2,
+    });
+  });
+
+  it("finds admin qsar submission details", async () => {
+    const findAdminSubmission = vi.fn().mockResolvedValue({ id: "submission-1" });
+    const controller = new QsarController({
+      findAdminSubmission,
+    } as unknown as QsarService);
+
+    await expect(controller.findAdminSubmission("submission-1")).resolves.toEqual({
+      id: "submission-1",
+    });
+
+    expect(findAdminSubmission).toHaveBeenCalledWith("submission-1");
+  });
+
   it("submits uploaded files to the qsar service with the session user", async () => {
     const submit = vi.fn().mockResolvedValue({ submissionId: "submission-1" });
     const controller = new QsarController({ submit } as unknown as QsarService);

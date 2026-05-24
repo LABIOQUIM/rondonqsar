@@ -77,9 +77,9 @@ const adminSection: NavSection = {
       href: "/app/mgmt/users",
     },
     {
-      label: "Simulations",
+      label: "QSAR Submissions",
       icon: IconAutomation,
-      href: "/app/mgmt/simulations",
+      href: "/app/mgmt/qsar",
     },
     {
       label: "Server Statistics",

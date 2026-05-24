@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 118" role="img" aria-labelledby="title desc">
+  <title id="title">RondonQSAR</title>
+  <desc id="desc">RondonQSAR split-color wordmark in a rounded teal pill.</desc>
+  <defs>
+    <linearGradient id="pillGradient" x1="42" y1="22" x2="478" y2="96" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f3fcfd" />
+      <stop offset="1" stop-color="#e4f7fa" />
+    </linearGradient>
+  </defs>
+  <rect
+    x="34"
+    y="20"
+    width="452"
+    height="78"
+    rx="39"
+    fill="url(#pillGradient)"
+    stroke="#b8eef4"
+    stroke-width="2"
+  />
+  <text
+    x="260"
+    y="59"
+    dominant-baseline="central"
+    font-family="Inter, Arial, Helvetica, sans-serif"
+    font-size="46"
+    font-weight="800"
+    letter-spacing="0"
+    text-anchor="middle"
+  >
+    <tspan fill="#0b6b73">Rondon</tspan><tspan fill="#15aabf">QSAR</tspan>
+  </text>
+</svg>

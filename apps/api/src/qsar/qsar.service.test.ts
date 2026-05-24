@@ -150,6 +150,172 @@ describe("QsarService", () => {
     });
   });
 
+  it("lists every qsar submission for admins with owner metadata", async () => {
+    const queue = {
+      add: vi.fn(),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: "submission-1",
+            userId: "user-1",
+            originalName: "molecule.sdf",
+            status: "COMPLETED",
+            jobId: "job-1",
+            errorMessage: null,
+            createdAt: new Date("2026-05-17T00:00:00.000Z"),
+            updatedAt: null,
+            user: {
+              username: "owner",
+            },
+            _count: {
+              plasmoResults: 3,
+              leishResults: 4,
+            },
+          },
+        ]),
+        count: vi.fn().mockResolvedValue(1),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.findAdmin({ page: 2, pageSize: 25 })).resolves.toEqual({
+      records: [
+        {
+          id: "submission-1",
+          userId: "user-1",
+          username: "owner",
+          originalName: "molecule.sdf",
+          status: "COMPLETED",
+          jobId: "job-1",
+          errorMessage: null,
+          createdAt: new Date("2026-05-17T00:00:00.000Z"),
+          updatedAt: null,
+          plasmoResultCount: 3,
+          leishResultCount: 4,
+        },
+      ],
+      total: 1,
+    });
+
+    expect(prisma.qsarSubmission.findMany).toHaveBeenCalledWith({
+      orderBy: { createdAt: "desc" },
+      skip: 50,
+      take: 25,
+      select: {
+        id: true,
+        userId: true,
+        originalName: true,
+        status: true,
+        jobId: true,
+        errorMessage: true,
+        createdAt: true,
+        updatedAt: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        _count: {
+          select: {
+            plasmoResults: true,
+            leishResults: true,
+          },
+        },
+      },
+    });
+    expect(prisma.qsarSubmission.count).toHaveBeenCalledWith();
+  });
+
+  it("finds admin qsar submission details with owner metadata", async () => {
+    const queue = {
+      add: vi.fn(),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: "submission-1",
+          userId: "user-1",
+          originalName: "molecule.sdf",
+          status: "COMPLETED",
+          jobId: "job-1",
+          errorMessage: null,
+          createdAt: new Date("2026-05-17T00:00:00.000Z"),
+          updatedAt: null,
+          user: {
+            username: "owner",
+          },
+          plasmoResults: [{ moleculeNumber: 1, descriptorA: 1, descriptorB: 2, descriptorC: 3 }],
+          leishResults: [
+            { moleculeNumber: 1, descriptorA: 1, descriptorB: 2, descriptorC: 3, descriptorD: 4 },
+          ],
+          _count: {
+            plasmoResults: 1,
+            leishResults: 1,
+          },
+        }),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.findAdminSubmission("submission-1")).resolves.toEqual({
+      id: "submission-1",
+      userId: "user-1",
+      username: "owner",
+      originalName: "molecule.sdf",
+      status: "COMPLETED",
+      jobId: "job-1",
+      errorMessage: null,
+      createdAt: new Date("2026-05-17T00:00:00.000Z"),
+      updatedAt: null,
+      plasmoResults: [{ moleculeNumber: 1, descriptorA: 1, descriptorB: 2, descriptorC: 3 }],
+      leishResults: [
+        { moleculeNumber: 1, descriptorA: 1, descriptorB: 2, descriptorC: 3, descriptorD: 4 },
+      ],
+      plasmoResultCount: 1,
+      leishResultCount: 1,
+    });
+
+    expect(prisma.qsarSubmission.findFirst).toHaveBeenCalledWith({
+      where: {
+        id: "submission-1",
+      },
+      select: expect.objectContaining({
+        userId: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        plasmoResults: expect.objectContaining({
+          orderBy: {
+            moleculeNumber: "asc",
+          },
+        }),
+        leishResults: expect.objectContaining({
+          orderBy: {
+            moleculeNumber: "asc",
+          },
+        }),
+      }),
+    });
+  });
+
+  it("throws not found when the admin qsar submission does not exist", async () => {
+    const queue = {
+      add: vi.fn(),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findFirst: vi.fn().mockResolvedValue(null),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.findAdminSubmission("submission-1")).rejects.toThrow(NotFoundException);
+  });
+
   it("throws not found when the current user's qsar submission does not exist", async () => {
     const queue = {
       add: vi.fn(),

@@ -9,6 +9,9 @@ export const QUERY_KEYS = {
   qsarSubmission: (submissionId: string) => ["qsar-submission", submissionId] as const,
   qsarSubmissions: (pageSize: number, pageIndex: number) =>
     ["qsar-submissions", pageSize, pageIndex] as const,
+  mgmtQsarSubmission: (submissionId: string) => ["mgmt-qsar-submission", submissionId] as const,
+  mgmtQsarSubmissions: (pageSize: number, pageIndex: number) =>
+    ["mgmt-qsar-submissions", pageSize, pageIndex] as const,
   runningSimulation: (simulationId: string) => ["running-simulation", simulationId] as const,
   userSimulations: (pageSize: number, pageIndex: number) =>
     ["user-simulations", pageSize, pageIndex] as const,

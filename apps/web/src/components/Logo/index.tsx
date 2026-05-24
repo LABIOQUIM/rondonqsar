@@ -1,7 +1,7 @@
 import { Box } from "@mantine/core";
 import { Link } from "@tanstack/react-router";
 
-import LogoImage from "@/assets/visualdynamics.svg";
+import BrandLogoImage from "@/assets/rondonqsar.svg";
 
 import classes from "./Logo.module.css";
 
@@ -16,7 +16,7 @@ export function Logo({ size = "normal" }: Props) {
   };
   return (
     <Box className={classes.container} component={Link} to="/">
-      <img alt="" src={LogoImage} style={{ height: height[size], width: "auto" }} />
+      <img alt="RondonQSAR Logo" src={BrandLogoImage} style={{ height: height[size], width: "auto" }} />
     </Box>
   );
 }

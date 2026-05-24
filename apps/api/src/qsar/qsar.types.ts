@@ -48,13 +48,28 @@ export type QsarSubmissionSummary = {
   leishResultCount: number;
 };
 
+export type AdminQsarSubmissionSummary = QsarSubmissionSummary & {
+  userId: string;
+  username: string;
+};
+
 export type QsarSubmissionDetails = QsarSubmissionSummary & {
   plasmoResults: PlasmoResultRow[];
   leishResults: LeishResultRow[];
 };
 
+export type AdminQsarSubmissionDetails = QsarSubmissionDetails & {
+  userId: string;
+  username: string;
+};
+
 export type UserQsarSubmissionsResponse = {
   records: QsarSubmissionSummary[];
+  total: number;
+};
+
+export type AdminQsarSubmissionsResponse = {
+  records: AdminQsarSubmissionSummary[];
   total: number;
 };
 

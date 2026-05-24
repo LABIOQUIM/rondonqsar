@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { Session } from "@thallesp/nestjs-better-auth";
+import { Roles, Session } from "@thallesp/nestjs-better-auth";
 
 import { auth } from "../lib/auth.js";
 import multerConfig from "../multer.config.js";
@@ -46,6 +46,26 @@ export class QsarController {
     }
 
     return this.qsarService.findCurrentUserSubmission(session.user.id, submissionId);
+  }
+
+  @Roles(["admin"])
+  @Get("admin")
+  findAdmin(
+    @Query("pageSize") pageSize: string | undefined,
+    @Query("page") page: string | undefined,
+  ) {
+    return this.qsarService.findAdmin({
+      pageSize: pageSize === undefined ? undefined : Number(pageSize),
+      page: page === undefined ? undefined : Number(page),
+    });
+  }
+
+  @Roles(["admin"])
+  @Get("admin/:submissionId")
+  findAdminSubmission(
+    @Param("submissionId") submissionId: string,
+  ) {
+    return this.qsarService.findAdminSubmission(submissionId);
   }
 
   @Post("submit")

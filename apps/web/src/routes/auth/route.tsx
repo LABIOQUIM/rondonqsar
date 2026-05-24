@@ -1,7 +1,7 @@
 import { Box, Paper } from "@mantine/core";
 import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 
-import VISUAL_DYNAMICS_LOGO from "@/assets/visualdynamics.svg";
+import BRAND_LOGO from "@/assets/rondonqsar.svg";
 import { authClient } from "@/lib/auth-client";
 
 import classes from "./route.module.css";
@@ -30,7 +30,7 @@ function RouteComponent() {
     return (
       <Box className={classes.container}>
         <Paper className={classes.innerContainer}>
-          <img alt="RondonQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
+          <img alt="RondonQSAR Logo" src={BRAND_LOGO} />
         </Paper>
       </Box>
     );
@@ -39,7 +39,7 @@ function RouteComponent() {
   return (
     <Box className={classes.container}>
       <Paper className={classes.innerContainer}>
-        <img alt="RondonQSAR Logo" src={VISUAL_DYNAMICS_LOGO} />
+        <img alt="RondonQSAR Logo" src={BRAND_LOGO} />
 
         <Outlet />
       </Paper>

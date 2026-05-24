@@ -2,7 +2,7 @@ import { Box, Group } from "@mantine/core"; // Group for layout, Box for semanti
 import { IconPlayerPlay } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
-import VISUAL_DYNAMICS_LOGO from "@/assets/visualdynamics.svg";
+import BRAND_LOGO from "@/assets/rondonqsar.svg";
 
 import styles from "./Header.module.css";
 
@@ -11,7 +11,7 @@ export function LanderHeader() {
     <Box className={styles.header} component="header">
       <div className={styles.innerHeader}>
         <Link to="/">
-          <img alt="Visual Dynamics Logo" className={styles.logoImage} src={VISUAL_DYNAMICS_LOGO} />
+          <img alt="RondonQSAR Logo" className={styles.logoImage} src={BRAND_LOGO} />
         </Link>
         <Group>
           {/* Mantine Group for spacing items is fine */}
