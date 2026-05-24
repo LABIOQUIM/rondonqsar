@@ -41,6 +41,9 @@ services:
       - traefik
     depends_on:
       - redis
+    volumes:
+      - data:/files
+      - ${MOLD2_HOST_PATH:-/usr/local/bin/Mold2}:/mold2/Mold2:ro
 
   traefik:
     restart: always

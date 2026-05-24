@@ -13,7 +13,7 @@ The repository is a `pnpm` monorepo with:
 - `pnpm` 10.x
 - Docker and Docker Compose
 - PostgreSQL
-- Mold2 available to the API container at `/usr/local/bin/Mold2`
+- Mold2 installed on the Docker host, executable by containers, and mounted into the API container
 
 Redis is started by Docker Compose. PostgreSQL is expected to be reachable from the API using the values in the root `.env` file.
 
@@ -153,6 +153,8 @@ docker compose -f compose.prod.yml up --build -d
 - If Prisma-related code changes land, rerun `pnpm --filter api generate`.
 - If auth cookies or redirects behave incorrectly, verify `APP_URL` and `BETTER_AUTH_URL` match the public web URL you are using.
 - The API writes submission files under `/files`, which is mounted as a Docker volume. Missing volume mounts or missing Mold2 access will break QSAR processing.
+- In production, set `MOLD2_HOST_PATH` if Mold2 is not at `/usr/local/bin/Mold2`. The host file must exist, have execute permissions such as `chmod 755 /usr/local/bin/Mold2`, and live on a filesystem that is not mounted with `noexec`.
+- To smoke-test Mold2 in production, run `docker compose -f compose.prod.yml exec api sh -lc 'id; command -v Mold2; ls -l /mold2/Mold2; test -x /mold2/Mold2'`.
 - If ports `3000`, `3001`, `4000`, or `4001` are already in use, stop the conflicting process or adjust the compose mappings.
 
 ## Verification
