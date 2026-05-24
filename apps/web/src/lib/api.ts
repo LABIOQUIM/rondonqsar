@@ -1,4 +1,7 @@
+import { queryOptions, type QueryClient } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+
+import { QUERY_KEYS } from "./queryKeys";
 
 type ApiRequestOptions = {
   body?: BodyInit | Record<string, unknown>;
@@ -39,6 +42,15 @@ export interface FlagConfig {
   variants: Record<string, SerializableJson>;
   disabled: boolean;
 }
+
+export type AppBootstrap = {
+  flags: Record<string, FlagConfig>;
+  maintenance: boolean;
+  session: ServerAuthSession;
+};
+
+export const APP_BOOTSTRAP_STALE_TIME_MS = 120_000;
+export const APP_BOOTSTRAP_GC_TIME_MS = 600_000;
 
 const DEFAULT_INTERNAL_API_URL = "http://api:3000";
 const API_REQUEST_TIMEOUT_MS = 8000;
@@ -239,6 +251,58 @@ export const signOut = createServerFn({ method: "POST" }).handler(async () =>
 export const getClientFeatureFlags = createServerFn({ method: "GET" }).handler(async () =>
   apiRequest<Record<string, FlagConfig>>("/feature-flags/client"),
 );
+
+export const getAppBootstrap = createServerFn({ method: "GET" }).handler(async () => {
+  const [sessionResult, flagsResult] = await Promise.allSettled([
+    authRequest<ServerAuthSession>("/get-session"),
+    apiRequest<Record<string, FlagConfig>>("/feature-flags/client"),
+  ]);
+
+  if (sessionResult.status === "rejected") {
+    throw sessionResult.reason;
+  }
+
+  const flags = flagsResult.status === "fulfilled" ? flagsResult.value : {};
+
+  return {
+    flags,
+    maintenance: isEnabledFlag(flags, "maintenance-mode", false),
+    session: sessionResult.value,
+  } satisfies AppBootstrap;
+});
+
+export function getAppBootstrapQueryOptions() {
+  return queryOptions({
+    gcTime: APP_BOOTSTRAP_GC_TIME_MS,
+    queryFn: () => getAppBootstrap(),
+    queryKey: QUERY_KEYS.appBootstrap(),
+    staleTime: APP_BOOTSTRAP_STALE_TIME_MS,
+  });
+}
+
+export function getCachedAppBootstrap(queryClient: QueryClient) {
+  return queryClient.getQueryData<AppBootstrap>(QUERY_KEYS.appBootstrap());
+}
+
+export function setCachedAppBootstrap(queryClient: QueryClient, app: AppBootstrap) {
+  queryClient.setQueryData(QUERY_KEYS.appBootstrap(), app);
+}
+
+export function clearCachedAppBootstrap(queryClient: QueryClient) {
+  queryClient.removeQueries({ queryKey: QUERY_KEYS.appBootstrap() });
+}
+
+export function isAppBootstrapFresh(queryClient: QueryClient) {
+  const state = queryClient.getQueryState(QUERY_KEYS.appBootstrap());
+
+  return Boolean(
+    state?.dataUpdatedAt && Date.now() - state.dataUpdatedAt < APP_BOOTSTRAP_STALE_TIME_MS,
+  );
+}
+
+export function refreshAppBootstrapInBackground(queryClient: QueryClient) {
+  void queryClient.prefetchQuery(getAppBootstrapQueryOptions()).catch(() => undefined);
+}
 
 export function isEnabledFlag(
   flags: Record<string, FlagConfig>,

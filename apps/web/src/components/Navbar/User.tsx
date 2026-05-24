@@ -1,10 +1,11 @@
 import { ActionIcon, Avatar, Box, Group, Text } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback } from "react";
 
-import { type ServerAuthSession, signOut } from "@/lib/api";
+import { clearCachedAppBootstrap, type ServerAuthSession, signOut } from "@/lib/api";
 
 import classes from "./User.module.css";
 
@@ -14,12 +15,14 @@ type Props = {
 
 export function User({ session }: Props) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const signOutFn = useServerFn(signOut);
 
   const onLogout = useCallback(async () => {
     await signOutFn();
+    clearCachedAppBootstrap(queryClient);
     await navigate({ to: "/auth/login" });
-  }, [navigate, signOutFn]);
+  }, [navigate, queryClient, signOutFn]);
 
   if (!session?.session || !session.user) {
     return null;

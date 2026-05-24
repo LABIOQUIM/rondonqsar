@@ -1,6 +1,6 @@
 import type { MRT_PaginationState } from "mantine-react-table-open";
 
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -33,4 +33,5 @@ export const getMgmtQsarSubmissions = (
   queryOptions({
     queryKey: QUERY_KEYS.mgmtQsarSubmissions(props.pageSize, props.pageIndex),
     queryFn: () => fetchMgmtQsarSubmissions(props.pageSize, props.pageIndex),
+    placeholderData: keepPreviousData,
   });

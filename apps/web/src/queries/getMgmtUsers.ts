@@ -5,7 +5,7 @@ import type {
 } from "mantine-react-table-open";
 import type { UserWithRole } from "better-auth/plugins";
 
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -62,4 +62,5 @@ export const getMgmtUsers = ({ pagination, columnFilters, sorting }: Props) =>
   queryOptions({
     queryKey: QUERY_KEYS.mgmtUsers(pagination, columnFilters, sorting),
     queryFn: () => fetchMgmtUsers({ pagination, columnFilters, sorting }),
+    placeholderData: keepPreviousData,
   });

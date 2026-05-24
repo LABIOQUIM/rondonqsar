@@ -30,6 +30,7 @@ export function Section({ section, toggle }: Props) {
             key={link.label}
             onClick={toggle}
             {...(link.external ? { rel: "noopener noreferrer", target: "_blank" } : {})}
+            preload={link.external || section.disabled ? false : "render"}
             to={section.disabled ? "#" : (link.href ?? "#")}
           >
             <div className={classes.linkInnerContainer}>

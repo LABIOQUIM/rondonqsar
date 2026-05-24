@@ -1,22 +1,41 @@
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useFlag } from "@openfeature/react-sdk";
-import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 
+import { Alert } from "@/components/Alert";
+import { Heading } from "@/components/Heading";
 import { Logo } from "@/components/Logo";
 import { Navbar } from "@/components/Navbar";
+import { PageLayout } from "@/components/PageLayout";
 import { ServerTime } from "@/components/ServerTime";
-import { getClientFeatureFlags, getServerSession, isEnabledFlag, signOut } from "@/lib/api";
+import {
+  getAppBootstrapQueryOptions,
+  getCachedAppBootstrap,
+  isAppBootstrapFresh,
+  refreshAppBootstrapInBackground,
+  setCachedAppBootstrap,
+} from "@/lib/api";
 
 import classes from "./route.module.css";
 
 export const Route = createFileRoute("/app")({
-  beforeLoad: async ({ location }) => {
-    const [auth, flags] = await Promise.all([getServerSession(), getClientFeatureFlags()]);
+  beforeLoad: async ({ context, location }) => {
+    const cachedApp = getCachedAppBootstrap(context.queryClient);
 
-    if (!auth) {
+    if (cachedApp?.session) {
+      if (!isAppBootstrapFresh(context.queryClient)) {
+        refreshAppBootstrapInBackground(context.queryClient);
+      }
+
+      return cachedApp;
+    }
+
+    const app = await context.queryClient.fetchQuery(getAppBootstrapQueryOptions());
+
+    if (!app.session) {
       throw redirect({
         to: "/auth/login",
         search: {
@@ -25,42 +44,27 @@ export const Route = createFileRoute("/app")({
       });
     }
 
-    const maintenance = isEnabledFlag(flags, "maintenance-mode", true);
-
-    if (maintenance && auth.user.role !== "admin") {
-      throw redirect({ to: "/auth/login" });
-    }
-  },
-  loader: async () => {
-    const [session, flags] = await Promise.all([getServerSession(), getClientFeatureFlags()]);
-
-    return {
-      maintenance: isEnabledFlag(flags, "maintenance-mode", true),
-      session,
-    };
+    return app;
   },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const navigate = useNavigate({ from: "/app" });
-  const data = Route.useLoaderData();
-  const signOutFn = useServerFn(signOut);
-  const { value: maintenanceMode } = useFlag("maintenance-mode", data.maintenance);
-
-  const isNonAdminDuringMaintenance = maintenanceMode && data.session?.user.role !== "admin";
-
-  useEffect(() => {
-    if (isNonAdminDuringMaintenance) {
-      void signOutFn().then(() => navigate({ to: "/auth/login" }));
-    }
-  }, [isNonAdminDuringMaintenance, navigate, signOutFn]);
+  const app = Route.useRouteContext();
+  const queryClient = useQueryClient();
+  const { value: maintenanceMode } = useFlag("maintenance-mode", app.maintenance);
 
   const [opened, { toggle }] = useDisclosure();
 
-  if (!data.session || isNonAdminDuringMaintenance) {
+  useEffect(() => {
+    setCachedAppBootstrap(queryClient, app);
+  }, [app, queryClient]);
+
+  if (!app.session) {
     return null;
   }
+
+  const isNonAdminDuringMaintenance = maintenanceMode && app.session.user.role !== "admin";
 
   return (
     <AppShell
@@ -90,11 +94,26 @@ function RouteComponent() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar px="md">
-        <Navbar session={data.session} toggle={toggle} />
+        <Navbar session={app.session} toggle={toggle} />
       </AppShell.Navbar>
       <AppShell.Main>
-        <Outlet />
+        {isNonAdminDuringMaintenance ? <MaintenanceBlocked /> : <Outlet />}
       </AppShell.Main>
     </AppShell>
+  );
+}
+
+function MaintenanceBlocked() {
+  return (
+    <PageLayout>
+      <Heading title="System under maintenance" />
+      <Alert
+        status={{
+          status: "warning",
+          title: "App access is temporarily limited",
+          message: "Your session is still active. Please check back after maintenance is complete.",
+        }}
+      />
+    </PageLayout>
   );
 }

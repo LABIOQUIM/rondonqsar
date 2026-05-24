@@ -32,7 +32,7 @@ function RouteComponent() {
   const navigate = useNavigate({ from: "/auth/login" });
   const loginFn = useServerFn(login);
   const { value: signupsEnabled } = useFlag("signups-enabled", false);
-  const { value: maintenanceMode } = useFlag("maintenance-mode", true);
+  const { value: maintenanceMode } = useFlag("maintenance-mode", false);
 
   const [status, setStatus] = useState<FormSubmissionStatus>();
   const {
