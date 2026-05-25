@@ -4,7 +4,6 @@ import { Button, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal, flushSync } from "react-dom";
@@ -34,8 +33,12 @@ function compactRecord(values: Record<string, SerializableJson | undefined>) {
   );
 }
 
+function parseRole(role: string) {
+  const normalizedRole = role.trim().toLowerCase();
+  return normalizedRole === "admin" || normalizedRole === "user" ? normalizedRole : undefined;
+}
+
 export function ImportButton({ table }: Props) {
-  const createUserFn = useServerFn(createUser);
   const [opened, { open, close }] = useDisclosure(false);
   const [isPending, setPending] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
@@ -65,20 +68,18 @@ export function ImportButton({ table }: Props) {
 
     for (const user of rows) {
       try {
-        await createUserFn({
+        await createUser({
           data: {
-            data: {
-              ...compactRecord({
-                createdAt: parseDate(user.createdAt),
-                updatedAt: parseDate(user.updatedAt),
-              }),
-              displayUsername: user.username.trim(),
-              username: user.username.trim(),
-            },
-            email: user.email.trim(),
-            name: user.name.trim(),
-            role: user.role.trim(),
+            ...compactRecord({
+              createdAt: parseDate(user.createdAt),
+              updatedAt: parseDate(user.updatedAt),
+            }),
+            displayUsername: user.username.trim(),
+            username: user.username.trim(),
           },
+          email: user.email.trim(),
+          name: user.name.trim(),
+          role: parseRole(user.role),
         });
         imported++;
       } catch {
@@ -99,7 +100,7 @@ export function ImportButton({ table }: Props) {
 
     table.resetRowSelection();
     refetch();
-  }, [createUserFn, selectedRows, table, refetch]);
+  }, [selectedRows, table, refetch]);
 
   return (
     <>

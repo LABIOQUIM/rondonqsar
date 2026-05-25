@@ -2,22 +2,12 @@ import type { NavigateFn } from "@tanstack/react-router";
 
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
-import { createServerFn } from "@tanstack/react-start";
 
-import { apiRequest } from "@/lib/api";
+import { getAPIClient } from "@/lib/api";
 
 type SubmitQsarSubmissionValues = {
   file: File;
 };
-
-const submitQsarSubmissionServer = createServerFn({ method: "POST" })
-  .inputValidator((data: FormData) => data)
-  .handler(async ({ data }) =>
-    apiRequest<QsarSubmitResponse>("/qsar/submit", {
-      body: data,
-      method: "POST",
-    }),
-  );
 
 export async function submitQsarSubmission(
   values: SubmitQsarSubmissionValues,
@@ -26,7 +16,10 @@ export async function submitQsarSubmission(
   const data = new FormData();
   data.append("file", values.file);
 
-  const response = await submitQsarSubmissionServer({ data });
+  const api = await getAPIClient();
+  const response = await api
+    .post<QsarSubmitResponse>("/qsar/submit", data)
+    .then((result) => result.data);
 
   notifications.show({
     title: "Added to queue",

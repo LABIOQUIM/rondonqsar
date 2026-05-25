@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,7 +29,6 @@ export const Route = createFileRoute("/auth/login")({
 
 function RouteComponent() {
   const navigate = useNavigate({ from: "/auth/login" });
-  const loginFn = useServerFn(login);
   const { value: signupsEnabled } = useFlag("signups-enabled", false);
   const { value: maintenanceMode } = useFlag("maintenance-mode", false);
 
@@ -45,7 +43,7 @@ function RouteComponent() {
     setStatus({ status: "loading" });
 
     try {
-      await loginFn({ data: { identifier, password } });
+      await login({ identifier, password });
       setStatus({
         status: "success",
         title: "Login successful",

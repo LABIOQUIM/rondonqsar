@@ -1,41 +1,23 @@
 import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useFlag } from "@openfeature/react-sdk";
-import { useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { OpenFeature, useFlag } from "@openfeature/react-sdk";
+import { createFileRoute, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
-import { Alert } from "@/components/Alert";
-import { Heading } from "@/components/Heading";
+import { FirstLoadShell } from "@/components/FirstLoadShell";
 import { Logo } from "@/components/Logo";
 import { Navbar } from "@/components/Navbar";
-import { PageLayout } from "@/components/PageLayout";
 import { ServerTime } from "@/components/ServerTime";
-import {
-  getAppBootstrapQueryOptions,
-  getCachedAppBootstrap,
-  isAppBootstrapFresh,
-  refreshAppBootstrapInBackground,
-  setCachedAppBootstrap,
-} from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 
 import classes from "./route.module.css";
 
 export const Route = createFileRoute("/app")({
-  beforeLoad: async ({ context, location }) => {
-    const cachedApp = getCachedAppBootstrap(context.queryClient);
+  beforeLoad: async ({ location }) => {
+    const session = await authClient.getSession();
+    const auth = session.data;
 
-    if (cachedApp?.session) {
-      if (!isAppBootstrapFresh(context.queryClient)) {
-        refreshAppBootstrapInBackground(context.queryClient);
-      }
-
-      return cachedApp;
-    }
-
-    const app = await context.queryClient.fetchQuery(getAppBootstrapQueryOptions());
-
-    if (!app.session) {
+    if (!auth) {
       throw redirect({
         to: "/auth/login",
         search: {
@@ -44,27 +26,41 @@ export const Route = createFileRoute("/app")({
       });
     }
 
-    return app;
+    const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", true);
+
+    if (maintenance && auth.user.role !== "admin") {
+      throw redirect({ to: "/auth/login" });
+    }
   },
+  pendingComponent: FirstLoadShell,
+  pendingMs: 0,
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const app = Route.useRouteContext();
-  const queryClient = useQueryClient();
-  const { value: maintenanceMode } = useFlag("maintenance-mode", app.maintenance);
+  const navigate = useNavigate({ from: "/app" });
+  const { data, isPending } = authClient.useSession();
+  const { value: maintenanceMode } = useFlag("maintenance-mode", true);
 
   const [opened, { toggle }] = useDisclosure();
+  const isNonAdminDuringMaintenance = maintenanceMode && data?.user.role !== "admin";
 
   useEffect(() => {
-    setCachedAppBootstrap(queryClient, app);
-  }, [app, queryClient]);
+    if (isPending) return;
 
-  if (!app.session) {
-    return null;
+    if (!data) {
+      void navigate({ to: "/auth/login" });
+      return;
+    }
+
+    if (isNonAdminDuringMaintenance) {
+      void authClient.signOut().then(() => navigate({ to: "/auth/login" }));
+    }
+  }, [data, isNonAdminDuringMaintenance, isPending, navigate]);
+
+  if (isPending || !data || isNonAdminDuringMaintenance) {
+    return <FirstLoadShell />;
   }
-
-  const isNonAdminDuringMaintenance = maintenanceMode && app.session.user.role !== "admin";
 
   return (
     <AppShell
@@ -94,26 +90,11 @@ function RouteComponent() {
         </Group>
       </AppShell.Header>
       <AppShell.Navbar px="md">
-        <Navbar session={app.session} toggle={toggle} />
+        <Navbar toggle={toggle} />
       </AppShell.Navbar>
       <AppShell.Main>
-        {isNonAdminDuringMaintenance ? <MaintenanceBlocked /> : <Outlet />}
+        <Outlet />
       </AppShell.Main>
     </AppShell>
-  );
-}
-
-function MaintenanceBlocked() {
-  return (
-    <PageLayout>
-      <Heading title="System under maintenance" />
-      <Alert
-        status={{
-          status: "warning",
-          title: "App access is temporarily limited",
-          message: "Your session is still active. Please check back after maintenance is complete.",
-        }}
-      />
-    </PageLayout>
   );
 }

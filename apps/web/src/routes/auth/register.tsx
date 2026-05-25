@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Anchor, Box, Button, PasswordInput, Text, TextInput } from "@mantine/core";
 import { useFlag } from "@openfeature/react-sdk";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,7 +29,6 @@ export const Route = createFileRoute("/auth/register")({
 
 function RouteComponent() {
   const { value: signupsEnabled } = useFlag("signups-enabled", false);
-  const registerFn = useServerFn(registerAccount);
   const [status, setStatus] = useState<FormSubmissionStatus>();
   const {
     register,
@@ -42,13 +40,11 @@ function RouteComponent() {
     setStatus({ status: "loading" });
 
     try {
-      await registerFn({
-        data: {
-          email: form.email,
-          name: form.name,
-          password: form.password,
-          username: form.username,
-        },
+      await registerAccount({
+        email: form.email,
+        name: form.name,
+        password: form.password,
+        username: form.username,
       });
       setStatus({
         status: "success",

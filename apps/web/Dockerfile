@@ -13,23 +13,24 @@ FROM deps AS builder
 WORKDIR /app
 COPY apps/web ./apps/web
 
-RUN pnpm --filter web build \
-    && pnpm --filter web deploy --prod --legacy /prod/web
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+RUN pnpm --filter web build 
+RUN pnpm --filter web deploy --prod --legacy /prod/web
 
 FROM node:lts-alpine AS runner
 WORKDIR /app
 
-RUN apk add --no-cache caddy \
-    && addgroup -S appgroup \
-    && adduser -S -u 1001 -G appgroup appuser \
-    && mkdir -p /data /config /app/dist/client \
-    && chown -R appuser:appgroup /data /config
+RUN apk add --no-cache caddy
+RUN addgroup -S appgroup
+RUN adduser -S -u 1001 -G appgroup appuser
+RUN mkdir -p /data /config /app/dist
+RUN chown -R appuser:appgroup /data /config
 
-COPY --from=builder --chown=appuser:appgroup /prod/web/node_modules ./node_modules
 COPY --from=builder --chown=appuser:appgroup /app/apps/web/dist ./dist
 COPY --chown=appuser:appgroup apps/web/Caddyfile /etc/caddy/Caddyfile
 COPY --chown=appuser:appgroup --chmod=755 apps/web/entrypoint.sh /entrypoint.sh
-COPY --chown=appuser:appgroup apps/web/server ./server
 
 USER appuser
 

@@ -1,20 +1,15 @@
 import { queryOptions } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 
-import { apiRequest } from "@/lib/api";
+import { getAPIClient } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
 const pendingStatuses: QSAR_SUBMISSION_STATUS[] = ["QUEUED", "PROCESSING"];
 
-const fetchMgmtQsarSubmissionServer = createServerFn({ method: "GET" })
-  .inputValidator(z.object({ submissionId: z.string() }))
-  .handler(async ({ data }) =>
-    apiRequest<AdminQsarSubmissionDetails>(`/qsar/admin/${data.submissionId}`),
-  );
-
 export const fetchMgmtQsarSubmission = async (submissionId: string) => {
-  return fetchMgmtQsarSubmissionServer({ data: { submissionId } });
+  const api = await getAPIClient();
+  return api
+    .get<AdminQsarSubmissionDetails>(`/qsar/admin/${submissionId}`)
+    .then((response) => response.data);
 };
 
 export const getMgmtQsarSubmission = (submissionId: string) =>

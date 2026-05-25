@@ -1,13 +1,20 @@
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
 import pkg from "./package.json" with { type: "json" };
 
-export default defineConfig(async () => ({
+export default defineConfig({
   server: {
     host: "0.0.0.0", // Expose to the network
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY_TARGET ?? "http://localhost:4000",
+        changeOrigin: true,
+        rewrite: (requestPath: string) => requestPath.replace(/^\/api/, ""),
+      },
+    },
     watch: {
       usePolling: true, // Force polling for file changes
     },
@@ -20,12 +27,5 @@ export default defineConfig(async () => ({
   define: {
     __VERSION__: `"${pkg.version}"`,
   },
-  plugins: [
-    tanstackStart({
-      spa: {
-        enabled: false,
-      },
-    }),
-    react(),
-  ],
-}));
+  plugins: [tanstackRouter(), react()],
+});

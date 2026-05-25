@@ -1,7 +1,6 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 
-import { clearCachedAppBootstrap } from "@/lib/api";
 import { routeTree } from "@/routeTree.gen";
 
 function isUnauthorizedError(error: unknown) {
@@ -15,7 +14,7 @@ function handleUnauthorizedQueryError(queryClient: QueryClient, error: unknown) 
     return;
   }
 
-  clearCachedAppBootstrap(queryClient);
+  queryClient.clear();
 
   if (window.location.pathname.startsWith("/app")) {
     window.location.assign("/auth/login");

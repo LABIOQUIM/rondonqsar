@@ -5,7 +5,7 @@ RondonQSAR is a full-stack QSAR platform for malaria and leishmaniasis screening
 The repository is a `pnpm` monorepo with:
 
 - `apps/api` - NestJS API with Better Auth, Prisma, BullMQ, Swagger, feature flags, mailer, and QSAR processing
-- `apps/web` - TanStack Start React app with Mantine, TanStack Router, and TanStack Query
+- `apps/web` - Vite React SPA with Mantine, TanStack Router, and TanStack Query
 
 ## Requirements
 
@@ -20,7 +20,7 @@ Redis is started by Docker Compose. PostgreSQL is expected to be reachable from 
 ## Project Layout
 
 - `apps/api` - backend API, auth, Prisma schema, queue consumers, seed script
-- `apps/web` - frontend app, SSR server, routes, admin tools, SEO/runtime helpers
+- `apps/web` - frontend SPA, routes, admin tools, and static SEO assets
 - `compose.yml` - local development stack
 - `compose.local-prod.yml` - local production-like stack built from the current workspace
 - `compose.prod.yml` - production deployment stack with Traefik
@@ -49,7 +49,7 @@ Main groups:
 - Redis: `REDIS_HOST`, `REDIS_PORT`
 - SMTP mail delivery: `SMTP_USER`, `SMTP_FROM`, `SMTP_PASS`, `SMTP_PORT`, `SMTP_HOST`
 - Seeded admin account: `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `SEED_ADMIN_NAME`, `SEED_ADMIN_USERNAME`, `SEED_ADMIN_DISPLAY_USERNAME`, `SEED_ADMIN_ROLE`
-- Optional runtime overrides: `PORT`, `SITE_URL`, `SSR_PORT`, `SSR_HOST`
+- Optional runtime/build overrides: `PORT`, `SITE_URL`, `VITE_API_BASE_URL`, `VITE_API_PROXY_TARGET`
 
 See `.env.example` for a documented template.
 
@@ -137,7 +137,7 @@ Ports in this mode:
 - Web: `http://localhost:3001`
 - API: `http://localhost:4001`
 
-This stack also sets production-like URL variables for Better Auth and the SSR web server.
+This stack serves the web SPA through Caddy and proxies same-origin `/api` requests to the API.
 
 ## Production Deployment
 

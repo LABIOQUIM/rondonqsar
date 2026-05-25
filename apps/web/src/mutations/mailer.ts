@@ -1,18 +1,15 @@
-import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { apiRequest } from "@/lib/api";
+import { getAPIClient } from "@/lib/api";
 
 const sendBatchMailSchema = z.object({
   html: z.string(),
   subject: z.string(),
 });
 
-export const sendBatchMail = createServerFn({ method: "POST" })
-  .inputValidator(sendBatchMailSchema)
-  .handler(async ({ data }) =>
-    apiRequest<{ queued: number }>("/mailer/batch", {
-      body: data,
-      method: "POST",
-    }),
-  );
+export async function sendBatchMail(input: z.infer<typeof sendBatchMailSchema>) {
+  const data = sendBatchMailSchema.parse(input);
+  const api = await getAPIClient();
+
+  return api.post<{ queued: number }>("/mailer/batch", data).then((response) => response.data);
+}

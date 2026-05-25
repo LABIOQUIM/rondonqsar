@@ -1,7 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
 
-import { apiRequest, type SerializableJson } from "@/lib/api";
+import { getAPIClient, type SerializableJson } from "@/lib/api";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
 export type FeatureFlag = {
@@ -16,12 +15,9 @@ export type FeatureFlag = {
   updatedAt: string | null;
 };
 
-const fetchFeatureFlagsServer = createServerFn({ method: "GET" }).handler(async () =>
-  apiRequest<FeatureFlag[]>("/feature-flags"),
-);
-
 export const fetchFeatureFlags = async () => {
-  return fetchFeatureFlagsServer();
+  const api = await getAPIClient();
+  return api.get<FeatureFlag[]>("/feature-flags").then((response) => response.data);
 };
 
 export const getFeatureFlags = () =>

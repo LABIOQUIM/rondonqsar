@@ -19,7 +19,7 @@ fi
 rm -f "$PROBE_PATH"
 
 if ! command -v Mold2 >/dev/null 2>&1; then
-  echo "Error: Mold2 is not available on PATH. Mount the host executable to ${MOLD2_PATH}, for example MOLD2_HOST_PATH=/usr/local/bin/Mold2." >&2
+  echo "Error: Mold2 is not available on PATH. Mount the host executable." >&2
   exit 1
 fi
 

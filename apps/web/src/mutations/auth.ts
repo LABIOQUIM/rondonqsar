@@ -1,7 +1,7 @@
-import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { authRequest, type SerializableJson } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
+import { type SerializableJson } from "@/lib/api";
 
 const jsonValueSchema: z.ZodType<SerializableJson> = z.lazy(() =>
   z.union([
@@ -36,59 +36,81 @@ const createUserSchema = z.object({
   email: z.string(),
   name: z.string(),
   password: z.string().optional(),
-  role: z.string().optional(),
+  role: z.enum(["admin", "user"]).optional(),
 });
 
-export const login = createServerFn({ method: "POST" })
-  .inputValidator(loginSchema)
-  .handler(async ({ data }) => {
-    const isEmail = /\S+@\S+\.\S+/.test(data.identifier);
-    const path = isEmail ? "/sign-in/email" : "/sign-in/username";
-    const body = isEmail
-      ? { email: data.identifier, password: data.password }
-      : { username: data.identifier, password: data.password };
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+export type CreateUserInput = z.infer<typeof createUserSchema>;
 
-    await authRequest(path, {
-      body,
-      method: "POST",
-    });
-    return { ok: true };
-  });
+export async function login(input: LoginInput) {
+  const data = loginSchema.parse(input);
+  const isEmail = /\S+@\S+\.\S+/.test(data.identifier);
 
-export const register = createServerFn({ method: "POST" })
-  .inputValidator(registerSchema)
-  .handler(async ({ data }) => {
-    await authRequest("/sign-up/email", {
-      body: {
-        email: data.email,
-        name: data.name,
+  const result = isEmail
+    ? await authClient.signIn.email({
+        email: data.identifier,
         password: data.password,
-        username: data.username,
-      },
-      method: "POST",
-    });
-    return { ok: true };
+      })
+    : await authClient.signIn.username({
+        username: data.identifier,
+        password: data.password,
+      });
+
+  if (result.error) {
+    throw new Error(result.error.message ?? "Unable to sign in.");
+  }
+
+  return { ok: true };
+}
+
+export async function register(input: RegisterInput) {
+  const data = registerSchema.parse(input);
+
+  const result = await authClient.signUp.email({
+    email: data.email,
+    name: data.name,
+    password: data.password,
+    username: data.username,
   });
 
-export const updateUser = createServerFn({ method: "POST" })
-  .inputValidator(updateUserSchema)
-  .handler(async ({ data }) => {
-    await authRequest("/admin/update-user", {
-      body: {
-        data: data.data,
-        userId: data.userId,
-      },
-      method: "POST",
-    });
-    return { ok: true };
+  if (result.error) {
+    throw new Error(result.error.message ?? "Unable to register.");
+  }
+
+  return { ok: true };
+}
+
+export async function updateUser(input: UpdateUserInput) {
+  const data = updateUserSchema.parse(input);
+
+  const result = await authClient.admin.updateUser({
+    data: data.data,
+    userId: data.userId,
   });
 
-export const createUser = createServerFn({ method: "POST" })
-  .inputValidator(createUserSchema)
-  .handler(async ({ data }) => {
-    await authRequest("/admin/create-user", {
-      body: data,
-      method: "POST",
-    });
-    return { ok: true };
+  if (result.error) {
+    throw new Error(result.error.message ?? "Unable to update user.");
+  }
+
+  return { ok: true };
+}
+
+export async function createUser(input: CreateUserInput) {
+  const data = createUserSchema.parse(input);
+
+  const result = await authClient.admin.createUser({
+    data: data.data,
+    email: data.email,
+    name: data.name,
+    password: data.password,
+    role: data.role,
   });
+
+  if (result.error) {
+    throw new Error(result.error.message ?? "Unable to create user.");
+  }
+
+  return { ok: true };
+}

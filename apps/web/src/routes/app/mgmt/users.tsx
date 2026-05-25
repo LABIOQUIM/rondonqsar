@@ -5,7 +5,6 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import {
   MantineReactTable,
   type MRT_ColumnFiltersState,
@@ -38,7 +37,6 @@ function toSerializableRecord(values: Record<string, unknown>) {
 }
 
 function RouteComponent() {
-  const updateUserFn = useServerFn(updateUser);
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -55,11 +53,9 @@ function RouteComponent() {
   }) => {
     // TODO: Should validate user input before updating user
     try {
-      await updateUserFn({
-        data: {
-          data: toSerializableRecord(values),
-          userId: row.id,
-        },
+      await updateUser({
+        data: toSerializableRecord(values),
+        userId: row.id,
       });
 
       notifications.show({

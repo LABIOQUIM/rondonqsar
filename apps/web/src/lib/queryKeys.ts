@@ -5,7 +5,6 @@ import type {
 } from "mantine-react-table-open";
 
 export const QUERY_KEYS = {
-  appBootstrap: () => ["app-bootstrap"] as const,
   simulation: (simulationId: string) => ["simulation", simulationId] as const,
   qsarSubmission: (submissionId: string) => ["qsar-submission", submissionId] as const,
   qsarSubmissions: (pageSize: number, pageIndex: number) =>

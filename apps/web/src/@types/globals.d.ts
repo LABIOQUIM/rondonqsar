@@ -4,12 +4,6 @@ export {}; // This makes the file a module
 declare global {
   declare const __VERSION__: string;
 
-  interface Window {
-    __APP_SETTINGS__?: {
-      apiUrl?: string;
-    };
-  }
-
   type AuthState = {
     user: {
       id: string;

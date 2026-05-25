@@ -6,10 +6,8 @@ import type {
 import type { UserWithRole } from "better-auth/plugins";
 
 import { keepPreviousData, queryOptions } from "@tanstack/react-query";
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 
-import { authRequest } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 import { QUERY_KEYS } from "@/lib/queryKeys";
 
 type Props = {
@@ -25,27 +23,9 @@ type MgmtUsersResponse = {
   offset?: number;
 };
 
-const getMgmtUsersSchema = z.object({
-  filterField: z.string().optional(),
-  filterOperator: z.string().optional(),
-  filterValue: z.string().optional(),
-  limit: z.number(),
-  offset: z.number(),
-  sortBy: z.string().optional(),
-  sortDirection: z.enum(["asc", "desc"]).optional(),
-});
-
-const fetchMgmtUsersServer = createServerFn({ method: "GET" })
-  .inputValidator(getMgmtUsersSchema)
-  .handler(async ({ data }) =>
-    authRequest<MgmtUsersResponse>("/admin/list-users", {
-      params: data,
-    }),
-  );
-
 export const fetchMgmtUsers = async ({ pagination, columnFilters, sorting }: Props) => {
-  return fetchMgmtUsersServer({
-    data: {
+  const result = await authClient.admin.listUsers({
+    query: {
       filterField: columnFilters && columnFilters.length > 0 ? columnFilters[0].id : undefined,
       filterOperator: columnFilters && columnFilters.length > 0 ? "contains" : undefined,
       filterValue:
@@ -56,6 +36,12 @@ export const fetchMgmtUsers = async ({ pagination, columnFilters, sorting }: Pro
       sortDirection: sorting && sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined,
     },
   });
+
+  if (result.error) {
+    throw new Error(result.error.message ?? "Unable to list users.");
+  }
+
+  return result.data as MgmtUsersResponse;
 };
 
 export const getMgmtUsers = ({ pagination, columnFilters, sorting }: Props) =>

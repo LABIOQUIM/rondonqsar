@@ -1,9 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
-
-import { useEffect, useState } from "react";
-
-const READY_TIMEOUT_MS = 2400;
-const READY_SETTLE_MS = 600;
+import type { CSSProperties } from "react";
 
 const splashStyle: CSSProperties = {
   alignItems: "center",
@@ -54,87 +49,10 @@ const barStyle: CSSProperties = {
   width: "8px",
 };
 
-const hiddenSplashStyle: CSSProperties = {
-  ...splashStyle,
-  opacity: 0,
-  pointerEvents: "none",
-  transition: "opacity 160ms ease",
-};
-
-const appHiddenStyle: CSSProperties = {
-  visibility: "hidden",
-};
-
-const appReadyStyle: CSSProperties = {
-  visibility: "visible",
-};
-
-function waitForStylesheets() {
-  const stylesheets = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'));
-
-  return Promise.all(
-    stylesheets.map(
-      (link) =>
-        new Promise<void>((resolve) => {
-          if (link.sheet) {
-            resolve();
-            return;
-          }
-
-          const finish = () => resolve();
-
-          link.addEventListener("load", finish, { once: true });
-          link.addEventListener("error", finish, { once: true });
-        }),
-    ),
-  );
-}
-
-function waitForFonts() {
-  return "fonts" in document ? document.fonts.ready : Promise.resolve();
-}
-
-function waitForPaint() {
-  return new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve());
-    });
-  });
-}
-
-function waitForSettle() {
-  return new Promise<void>((resolve) => window.setTimeout(resolve, READY_SETTLE_MS));
-}
-
-async function waitForInitialPaint() {
-  const readiness = Promise.all([waitForStylesheets(), waitForFonts()])
-    .then(() => waitForPaint())
-    .then(() => waitForSettle());
-  const timeout = new Promise<void>((resolve) => window.setTimeout(resolve, READY_TIMEOUT_MS));
-
-  await Promise.race([readiness, timeout]);
-}
-
-export function FirstLoadShell({ children }: Readonly<{ children: ReactNode }>) {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    void waitForInitialPaint().then(() => {
-      if (isMounted) {
-        setIsReady(true);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
+export function FirstLoadShell() {
   return (
     <>
-      <div aria-hidden={isReady} style={isReady ? hiddenSplashStyle : splashStyle}>
+      <div aria-hidden style={splashStyle}>
         <style>
           {`@keyframes rondonqsar-first-load-pulse{from{opacity:.35;transform:scaleY(.45)}to{opacity:1;transform:scaleY(1)}}`}
         </style>
@@ -151,9 +69,6 @@ export function FirstLoadShell({ children }: Readonly<{ children: ReactNode }>) 
             />
           ))}
         </div>
-      </div>
-      <div aria-busy={!isReady} style={isReady ? appReadyStyle : appHiddenStyle}>
-        {children}
       </div>
     </>
   );

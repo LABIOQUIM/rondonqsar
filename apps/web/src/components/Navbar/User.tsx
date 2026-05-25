@@ -1,30 +1,22 @@
 import { ActionIcon, Avatar, Box, Group, Text } from "@mantine/core";
 import { IconLogout } from "@tabler/icons-react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useCallback } from "react";
 
-import { clearCachedAppBootstrap, type ServerAuthSession, signOut } from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
 
 import classes from "./User.module.css";
 
-type Props = {
-  session: ServerAuthSession;
-};
-
-export function User({ session }: Props) {
+export function User() {
+  const { data } = authClient.useSession();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const signOutFn = useServerFn(signOut);
 
   const onLogout = useCallback(async () => {
-    await signOutFn();
-    clearCachedAppBootstrap(queryClient);
+    await authClient.signOut();
     await navigate({ to: "/auth/login" });
-  }, [navigate, queryClient, signOutFn]);
+  }, [navigate]);
 
-  if (!session?.session || !session.user) {
+  if (!data?.session || !data.user) {
     return null;
   }
 
@@ -35,11 +27,11 @@ export function User({ session }: Props) {
 
         <Box style={{ flex: 1 }}>
           <Text fw={500} lineClamp={1} size="sm">
-            {session.user.name}
+            {data.user.name}
           </Text>
 
           <Text c="dimmed" lineClamp={1} size="xs">
-            {session.user.email}
+            {data.user.email}
           </Text>
         </Box>
 

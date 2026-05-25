@@ -9,8 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as AuthRouteRouteImport } from './routes/auth/route'
 import { Route as AppRouteRouteImport } from './routes/app/route'
 import { Route as AppIndexRouteImport } from './routes/app/index'
@@ -41,16 +39,6 @@ import { Route as AppMgmtToolsBatchEmailRouteRouteImport } from './routes/app/mg
 import { Route as AppMgmtToolsUserImporterIndexRouteImport } from './routes/app/mgmt/tools/user-importer/index'
 import { Route as AppMgmtToolsBatchEmailIndexRouteImport } from './routes/app/mgmt/tools/batch-email/index'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRouteRoute = AuthRouteRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -205,8 +193,6 @@ const AppMgmtToolsBatchEmailIndexRoute =
 export interface FileRoutesByFullPath {
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app/mgmt': typeof AppMgmtRouteRouteWithChildren
   '/about': typeof homeAboutRoute
   '/analytics': typeof homeAnalyticsRoute
@@ -237,8 +223,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app/mgmt': typeof AppMgmtRouteRouteWithChildren
   '/about': typeof homeAboutRoute
   '/analytics': typeof homeAnalyticsRoute
@@ -268,8 +252,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/app': typeof AppRouteRouteWithChildren
   '/auth': typeof AuthRouteRouteWithChildren
-  '/robots.txt': typeof RobotsDottxtRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/app/mgmt': typeof AppMgmtRouteRouteWithChildren
   '/(home)/about': typeof homeAboutRoute
   '/(home)/analytics': typeof homeAnalyticsRoute
@@ -303,8 +285,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/app'
     | '/auth'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/app/mgmt'
     | '/about'
     | '/analytics'
@@ -335,8 +315,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/app/mgmt'
     | '/about'
     | '/analytics'
@@ -365,8 +343,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/app'
     | '/auth'
-    | '/robots.txt'
-    | '/sitemap.xml'
     | '/app/mgmt'
     | '/(home)/about'
     | '/(home)/analytics'
@@ -399,8 +375,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRouteRoute: typeof AppRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
-  RobotsDottxtRoute: typeof RobotsDottxtRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   homeAboutRoute: typeof homeAboutRoute
   homeAnalyticsRoute: typeof homeAnalyticsRoute
   homeGuidesRoute: typeof homeGuidesRoute
@@ -411,20 +385,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -741,8 +701,6 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AppRouteRoute: AppRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
-  RobotsDottxtRoute: RobotsDottxtRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   homeAboutRoute: homeAboutRoute,
   homeAnalyticsRoute: homeAnalyticsRoute,
   homeGuidesRoute: homeGuidesRoute,
@@ -753,12 +711,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

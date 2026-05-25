@@ -1,7 +1,6 @@
-import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { apiRequest, type SerializableJson } from "@/lib/api";
+import { getAPIClient, type SerializableJson } from "@/lib/api";
 
 const jsonValueSchema: z.ZodType<SerializableJson> = z.lazy(() =>
   z.union([
@@ -53,43 +52,29 @@ const deleteFeatureFlagSchema = z.object({
   key: z.string(),
 });
 
-const createFeatureFlagServer = createServerFn({ method: "POST" })
-  .inputValidator(createFeatureFlagSchema)
-  .handler(async ({ data }) => {
-    await apiRequest("/feature-flags", {
-      body: data,
-      method: "POST",
-    });
-    return { ok: true };
-  });
-
-const updateFeatureFlagServer = createServerFn({ method: "POST" })
-  .inputValidator(updateFeatureFlagSchema)
-  .handler(async ({ data }) => {
-    await apiRequest(`/feature-flags/${data.key}`, {
-      body: data.data,
-      method: "PATCH",
-    });
-    return { ok: true };
-  });
-
-const deleteFeatureFlagServer = createServerFn({ method: "POST" })
-  .inputValidator(deleteFeatureFlagSchema)
-  .handler(async ({ data }) => {
-    await apiRequest(`/feature-flags/${data.key}`, {
-      method: "DELETE",
-    });
-    return { ok: true };
-  });
-
 export async function createFeatureFlag(data: CreateFeatureFlagInput) {
-  return createFeatureFlagServer({ data });
+  const input = createFeatureFlagSchema.parse(data);
+  const api = await getAPIClient();
+
+  await api.post("/feature-flags", input);
+
+  return { ok: true };
 }
 
 export async function updateFeatureFlag(key: string, data: UpdateFeatureFlagInput) {
-  return updateFeatureFlagServer({ data: { data, key } });
+  const input = updateFeatureFlagSchema.parse({ data, key });
+  const api = await getAPIClient();
+
+  await api.patch(`/feature-flags/${input.key}`, input.data);
+
+  return { ok: true };
 }
 
 export async function deleteFeatureFlag(key: string) {
-  return deleteFeatureFlagServer({ data: { key } });
+  const input = deleteFeatureFlagSchema.parse({ key });
+  const api = await getAPIClient();
+
+  await api.delete(`/feature-flags/${input.key}`);
+
+  return { ok: true };
 }
