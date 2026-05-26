@@ -9,6 +9,7 @@ import { Logo } from "@/components/Logo";
 import { Navbar } from "@/components/Navbar";
 import { ServerTime } from "@/components/ServerTime";
 import { authClient } from "@/lib/auth-client";
+import { hasCompleteAuthSession, isAdminSession } from "@/lib/auth-session";
 
 import classes from "./route.module.css";
 
@@ -17,9 +18,10 @@ export const Route = createFileRoute("/app")({
     const session = await authClient.getSession();
     const auth = session.data;
 
-    if (!auth?.session || !auth.user) {
+    if (!hasCompleteAuthSession(auth)) {
       throw redirect({
         to: "/auth/login",
+        replace: true,
         search: {
           redirect: location.href,
         },
@@ -28,8 +30,12 @@ export const Route = createFileRoute("/app")({
 
     const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", false);
 
-    if (maintenance && auth.user.role !== "admin") {
-      throw redirect({ to: "/auth/login" });
+    if (maintenance && !isAdminSession(auth)) {
+      try {
+        await authClient.signOut();
+      } finally {
+        throw redirect({ to: "/auth/login", replace: true });
+      }
     }
   },
   pendingComponent: FirstLoadShell,
@@ -43,19 +49,19 @@ function RouteComponent() {
   const { value: maintenanceMode } = useFlag("maintenance-mode", false);
 
   const [opened, { toggle }] = useDisclosure();
-  const hasCompleteSession = Boolean(data?.session && data.user);
-  const isNonAdminDuringMaintenance = maintenanceMode && data?.user?.role !== "admin";
+  const hasCompleteSession = hasCompleteAuthSession(data);
+  const isNonAdminDuringMaintenance = maintenanceMode && !isAdminSession(data);
 
   useEffect(() => {
     if (isPending) return;
 
     if (!hasCompleteSession) {
-      void navigate({ to: "/auth/login" });
+      void navigate({ to: "/auth/login", replace: true });
       return;
     }
 
     if (isNonAdminDuringMaintenance) {
-      void authClient.signOut().then(() => navigate({ to: "/auth/login" }));
+      void authClient.signOut().finally(() => navigate({ to: "/auth/login", replace: true }));
     }
   }, [hasCompleteSession, isNonAdminDuringMaintenance, isPending, navigate]);
 

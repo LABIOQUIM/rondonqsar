@@ -1,23 +1,28 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 
+import { authClient } from "@/lib/auth-client";
 import { routeTree } from "@/routeTree.gen";
 
-function isUnauthorizedError(error: unknown) {
+function isSessionInvalidError(error: unknown) {
   const message = error instanceof Error ? error.message : String(error);
 
-  return /\b(401|403|unauthorized|forbidden)\b/i.test(message);
+  return /\b401\b/i.test(message) || /\b(unauthenticated|unauthorized)\b/i.test(message);
 }
 
-function handleUnauthorizedQueryError(queryClient: QueryClient, error: unknown) {
-  if (typeof window === "undefined" || !isUnauthorizedError(error)) {
+async function handleUnauthorizedQueryError(queryClient: QueryClient, error: unknown) {
+  if (typeof window === "undefined" || !isSessionInvalidError(error)) {
     return;
   }
 
   queryClient.clear();
 
   if (window.location.pathname.startsWith("/app")) {
-    window.location.assign("/auth/login");
+    try {
+      await authClient.signOut();
+    } finally {
+      window.location.replace("/auth/login");
+    }
   }
 }
 
@@ -25,7 +30,7 @@ export function getRouter() {
   let queryClient: QueryClient;
 
   const queryCache = new QueryCache({
-    onError: (error) => handleUnauthorizedQueryError(queryClient, error),
+    onError: (error) => void handleUnauthorizedQueryError(queryClient, error),
   });
 
   queryClient = new QueryClient({
