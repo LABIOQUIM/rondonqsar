@@ -17,7 +17,7 @@ export const Route = createFileRoute("/app")({
     const session = await authClient.getSession();
     const auth = session.data;
 
-    if (!auth) {
+    if (!auth?.session || !auth.user) {
       throw redirect({
         to: "/auth/login",
         search: {
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/app")({
       });
     }
 
-    const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", true);
+    const maintenance = OpenFeature.getClient().getBooleanValue("maintenance-mode", false);
 
     if (maintenance && auth.user.role !== "admin") {
       throw redirect({ to: "/auth/login" });
@@ -40,15 +40,16 @@ export const Route = createFileRoute("/app")({
 function RouteComponent() {
   const navigate = useNavigate({ from: "/app" });
   const { data, isPending } = authClient.useSession();
-  const { value: maintenanceMode } = useFlag("maintenance-mode", true);
+  const { value: maintenanceMode } = useFlag("maintenance-mode", false);
 
   const [opened, { toggle }] = useDisclosure();
-  const isNonAdminDuringMaintenance = maintenanceMode && data?.user.role !== "admin";
+  const hasCompleteSession = Boolean(data?.session && data.user);
+  const isNonAdminDuringMaintenance = maintenanceMode && data?.user?.role !== "admin";
 
   useEffect(() => {
     if (isPending) return;
 
-    if (!data) {
+    if (!hasCompleteSession) {
       void navigate({ to: "/auth/login" });
       return;
     }
@@ -56,9 +57,9 @@ function RouteComponent() {
     if (isNonAdminDuringMaintenance) {
       void authClient.signOut().then(() => navigate({ to: "/auth/login" }));
     }
-  }, [data, isNonAdminDuringMaintenance, isPending, navigate]);
+  }, [hasCompleteSession, isNonAdminDuringMaintenance, isPending, navigate]);
 
-  if (isPending || !data || isNonAdminDuringMaintenance) {
+  if (isPending || !hasCompleteSession || isNonAdminDuringMaintenance) {
     return <FirstLoadShell />;
   }
 

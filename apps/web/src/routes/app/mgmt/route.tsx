@@ -5,8 +5,9 @@ import { authClient } from "@/lib/auth-client";
 export const Route = createFileRoute("/app/mgmt")({
   beforeLoad: async ({ location }) => {
     const session = await authClient.getSession();
+    const role = session.data?.user?.role;
 
-    if (session.data?.user.role !== "admin") {
+    if (role !== "admin") {
       throw redirect({
         to: "/app",
         search: {
