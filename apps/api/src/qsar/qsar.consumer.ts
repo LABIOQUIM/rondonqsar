@@ -1,9 +1,10 @@
+import type { Job } from "bullmq";
+
 import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Logger } from "@nestjs/common";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
-import type { Job } from "bullmq";
 
 import { PrismaService } from "../prisma.service.js";
 import {
@@ -236,7 +237,7 @@ function calculateLeishResultRow(line: string): LeishResultRow | null {
     descriptorC: C,
     descriptorD: D,
     pec50,
-    ec50: 10 ** (-pec50 + 6),
+    ec50: 10 ** -pec50 / 1_000_000,
   };
 }
 

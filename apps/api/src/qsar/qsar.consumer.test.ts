@@ -30,9 +30,12 @@ describe("QsarConsumer", () => {
         return ["mol\tA\tB\tC", "1\t0.10\t0.20\t0.30", "2\t0.40\t0.50\t0.60", ""].join("\n");
       }
 
-      return ["Mol\tD237\tD215\tD466\tD590", "1\t1.1\t2.2\t3.3\t4.4", "2\t4.4\t5.5\t6.6\t7.7", ""].join(
-        "\n",
-      );
+      return [
+        "Mol\tD237\tD215\tD466\tD590",
+        "1\t-4.0\t-2.7\t1.0\t0.2",
+        "2\t4.4\t5.5\t6.6\t7.7",
+        "",
+      ].join("\n");
     });
 
     const prisma = {
@@ -124,13 +127,13 @@ describe("QsarConsumer", () => {
     expect(insertedLeishRows[0]).toMatchObject({
       submissionId: "submission-1",
       moleculeNumber: 1,
-      descriptorA: 1.1,
-      descriptorB: 2.2,
-      descriptorC: 3.3,
-      descriptorD: 4.4,
+      descriptorA: -4,
+      descriptorB: -2.7,
+      descriptorC: 1,
+      descriptorD: 0.2,
     });
-    expect(insertedLeishRows[0].pec50).toBeCloseTo(5964.10148217978, 8);
-    expect(insertedLeishRows[0].ec50).toEqual(expect.any(Number));
+    expect(insertedLeishRows[0].pec50).toBeCloseTo(-6.001165056194, 8);
+    expect(insertedLeishRows[0].ec50).toBeCloseTo(10 ** -insertedLeishRows[0].pec50 / 1_000_000, 8);
     expect(prisma.$transaction).toHaveBeenCalledWith([
       { operation: "delete-plasmo" },
       { operation: "delete-leish" },
@@ -238,9 +241,7 @@ describe("QsarConsumer", () => {
     );
     expect(error).toHaveBeenCalledWith("QSAR worker error: redis failed", expect.any(String));
     expect(warn).toHaveBeenCalledWith("QSAR job job-2 stalled and was returned to the queue.");
-    expect(error).toHaveBeenCalledWith(
-      "QSAR worker failed to renew locks for jobs: job-3, job-4",
-    );
+    expect(error).toHaveBeenCalledWith("QSAR worker failed to renew locks for jobs: job-3, job-4");
 
     log.mockRestore();
     warn.mockRestore();

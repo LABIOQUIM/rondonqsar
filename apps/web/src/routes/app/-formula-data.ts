@@ -5,6 +5,7 @@ export type QsarFormulaTerm = {
 
 export type QsarFormulaDefinition = {
   descriptors: readonly string[];
+  ec50Formula: string;
   terms: readonly QsarFormulaTerm[];
   title: string;
 };
@@ -12,6 +13,7 @@ export type QsarFormulaDefinition = {
 export const PLASMO_QSAR_FORMULA: QsarFormulaDefinition = {
   title: "PlasmoQSAR Formula",
   descriptors: ["D143", "D312", "D470"],
+  ec50Formula: "EC50 = 10^(-pEC50 + 6)",
   terms: [
     { coefficient: -743.63518669, powers: [0, 0, 0] },
     { coefficient: 55.8464453262526, powers: [1, 0, 0] },
@@ -54,6 +56,7 @@ export const PLASMO_QSAR_FORMULA: QsarFormulaDefinition = {
 export const LEISH_QSAR_FORMULA: QsarFormulaDefinition = {
   title: "LeishQSAR Formula",
   descriptors: ["D237", "D215", "D466", "D590"],
+  ec50Formula: "EC50 = 10^(-pEC50) / 1,000,000",
   terms: [
     { coefficient: -2618.81325553337, powers: [0, 0, 0, 0] },
     { coefficient: 46.4128021, powers: [1, 0, 0, 0] },

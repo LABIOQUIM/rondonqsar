@@ -1,3 +1,5 @@
+import type React from "react";
+
 import {
   Alert,
   Badge,
@@ -23,7 +25,6 @@ import {
   type MRT_TableInstance,
   useMantineReactTable,
 } from "mantine-react-table-open";
-import type React from "react";
 import { useState } from "react";
 
 import { Heading } from "@/components/Heading";
@@ -31,12 +32,12 @@ import { Loader } from "@/components/Loader";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 
+import classes from "../$submissionId.module.css";
 import {
   LEISH_QSAR_FORMULA,
   PLASMO_QSAR_FORMULA,
   type QsarFormulaDefinition,
 } from "../-formula-data";
-import classes from "../$submissionId.module.css";
 
 type QsarSubmissionRecord = QsarSubmissionDetails | AdminQsarSubmissionDetails;
 
@@ -69,6 +70,7 @@ function formatDate(value: string | null) {
 
 const MOLECULE_COLUMN_SIZE = 88;
 const RESULT_COLUMN_MIN_SIZE = 116;
+const DESCRIPTOR_MAX_DISPLAY_VALUE = 99999.9999;
 const NUMERIC_COLUMN_IDS = new Set([
   "moleculeNumber",
   "descriptorA",
@@ -79,8 +81,20 @@ const NUMERIC_COLUMN_IDS = new Set([
   "ec50",
 ]);
 
-function formatScientific(value: number) {
-  return value.toExponential(4);
+function formatFixedDecimal(value: number, precision: number) {
+  return Number.isFinite(value) ? value.toFixed(precision) : String(value);
+}
+
+function formatDescriptorValue(value: number) {
+  return formatFixedDecimal(Math.min(value, DESCRIPTOR_MAX_DISPLAY_VALUE), 4);
+}
+
+function formatPec50Value(value: number) {
+  return formatFixedDecimal(value, 4);
+}
+
+function formatEc50Value(value: number) {
+  return formatFixedDecimal(value, 4);
 }
 
 function getNumberCellClass(column: MRT_Column<any, MRT_CellValue>) {
@@ -108,13 +122,14 @@ function moleculeColumn<TData extends { moleculeNumber: number }>(): MRT_ColumnD
 function resultNumberColumn<TData extends Record<string, unknown>>(
   accessorKey: keyof TData & string,
   header: string,
+  formatValue: (value: number) => string,
 ): MRT_ColumnDef<TData> {
   return {
     accessorKey,
     header,
     grow: 1,
     minSize: RESULT_COLUMN_MIN_SIZE,
-    Cell: ({ cell }) => formatScientific(cell.getValue<number>()),
+    Cell: ({ cell }) => formatValue(cell.getValue<number>()),
   };
 }
 
@@ -270,7 +285,7 @@ function FormulaPanel({ formula }: { formula: QsarFormulaDefinition }) {
         </Box>
         <Box className={classes.formulaSummaryItem}>
           <Text className={classes.summaryLabel}>EC50</Text>
-          <Code block>EC50 = 10^(-pEC50 + 6)</Code>
+          <Code block>{formula.ec50Formula}</Code>
         </Box>
       </div>
 
@@ -381,11 +396,11 @@ export function QsarSubmissionDetailView({
     }),
     columns: [
       moleculeColumn<PlasmoResultRow>(),
-      resultNumberColumn<PlasmoResultRow>("descriptorA", "D143"),
-      resultNumberColumn<PlasmoResultRow>("descriptorB", "D312"),
-      resultNumberColumn<PlasmoResultRow>("descriptorC", "D470"),
-      resultNumberColumn<PlasmoResultRow>("pec50", "pEC50"),
-      resultNumberColumn<PlasmoResultRow>("ec50", "EC50"),
+      resultNumberColumn<PlasmoResultRow>("descriptorA", "D143", formatDescriptorValue),
+      resultNumberColumn<PlasmoResultRow>("descriptorB", "D312", formatDescriptorValue),
+      resultNumberColumn<PlasmoResultRow>("descriptorC", "D470", formatDescriptorValue),
+      resultNumberColumn<PlasmoResultRow>("pec50", "pEC50", formatPec50Value),
+      resultNumberColumn<PlasmoResultRow>("ec50", "EC50 (µM)", formatEc50Value),
     ],
     renderBottomToolbar: ({ table }) => <ResultBottomToolbar table={table} />,
   });
@@ -422,12 +437,12 @@ export function QsarSubmissionDetailView({
     }),
     columns: [
       moleculeColumn<LeishResultRow>(),
-      resultNumberColumn<LeishResultRow>("descriptorA", "D237"),
-      resultNumberColumn<LeishResultRow>("descriptorB", "D215"),
-      resultNumberColumn<LeishResultRow>("descriptorC", "D466"),
-      resultNumberColumn<LeishResultRow>("descriptorD", "D590"),
-      resultNumberColumn<LeishResultRow>("pec50", "pEC50"),
-      resultNumberColumn<LeishResultRow>("ec50", "EC50"),
+      resultNumberColumn<LeishResultRow>("descriptorA", "D237", formatDescriptorValue),
+      resultNumberColumn<LeishResultRow>("descriptorB", "D215", formatDescriptorValue),
+      resultNumberColumn<LeishResultRow>("descriptorC", "D466", formatDescriptorValue),
+      resultNumberColumn<LeishResultRow>("descriptorD", "D590", formatDescriptorValue),
+      resultNumberColumn<LeishResultRow>("pec50", "pEC50", formatPec50Value),
+      resultNumberColumn<LeishResultRow>("ec50", "EC50 (µM)", formatEc50Value),
     ],
     renderBottomToolbar: ({ table }) => <ResultBottomToolbar table={table} />,
   });
