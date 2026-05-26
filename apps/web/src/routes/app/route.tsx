@@ -34,6 +34,7 @@ export const Route = createFileRoute("/app")({
       try {
         await authClient.signOut();
       } finally {
+        // oxlint-disable-next-line no-unsafe-finally
         throw redirect({ to: "/auth/login", replace: true });
       }
     }

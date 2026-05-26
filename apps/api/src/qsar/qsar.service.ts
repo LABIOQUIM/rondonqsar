@@ -1,6 +1,6 @@
 import { InjectQueue } from "@nestjs/bullmq";
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { Queue } from "bullmq";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Job, Queue } from "bullmq";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -13,6 +13,9 @@ import {
   QSAR_QUEUE,
   type QsarFile,
   type QsarJobData,
+  type QsarQueueDiagnostics,
+  type QsarQueueJobSummary,
+  type QsarRequeueResponse,
   type QsarSubmissionDetails,
   type QsarSubmitResponse,
   type UserQsarSubmissionsResponse,
@@ -145,6 +148,43 @@ type RawAdminSubmissionDetails = RawSubmissionDetails & {
   };
 };
 
+type RawQueuedSubmissionDiagnostic = {
+  id: string;
+  originalName: string;
+  jobId: string | null;
+  errorMessage: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
+type RawRequeueSubmission = {
+  id: string;
+  originalName: string;
+  filename: string;
+  filePath: string;
+  status: string;
+};
+
+async function mapQueueJob(job: Job): Promise<QsarQueueJobSummary> {
+  return {
+    id: job.id,
+    name: job.name,
+    state: await job.getState(),
+    submissionId:
+      typeof job.data === "object" &&
+      job.data !== null &&
+      "submissionId" in job.data &&
+      typeof job.data.submissionId === "string"
+        ? job.data.submissionId
+        : null,
+    attemptsMade: job.attemptsMade,
+    failedReason: job.failedReason ?? null,
+    timestamp: job.timestamp,
+    processedOn: job.processedOn,
+    finishedOn: job.finishedOn,
+  };
+}
+
 @Injectable()
 export class QsarService {
   constructor(
@@ -197,6 +237,103 @@ export class QsarService {
       where: { id: submission.id },
       data: {
         jobId: String(job.id),
+      },
+    });
+
+    return {
+      calculation: "qsar",
+      submissionId: submission.id,
+      jobId: String(job.id),
+      status: "queued",
+      file: storedFile,
+    };
+  }
+
+  async getQueueDiagnostics(): Promise<QsarQueueDiagnostics> {
+    const [counts, paused, workerCount, waitingJobs, activeJobs, failedJobs, queuedSubmissions] =
+      await Promise.all([
+        this.qsarQueue.getJobCounts(),
+        this.qsarQueue.isPaused(),
+        this.qsarQueue.getWorkersCount(),
+        this.qsarQueue.getJobs("waiting", 0, 9, false),
+        this.qsarQueue.getJobs("active", 0, 9, false),
+        this.qsarQueue.getJobs("failed", 0, 9, false),
+        (this.prisma as any).qsarSubmission.findMany({
+          where: { status: "QUEUED" },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+          select: {
+            id: true,
+            originalName: true,
+            jobId: true,
+            errorMessage: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        }),
+      ]);
+
+    return {
+      counts,
+      paused,
+      workerCount,
+      recentJobs: {
+        waiting: await Promise.all(waitingJobs.map((job) => mapQueueJob(job))),
+        active: await Promise.all(activeJobs.map((job) => mapQueueJob(job))),
+        failed: await Promise.all(failedJobs.map((job) => mapQueueJob(job))),
+      },
+      queuedSubmissions: await Promise.all(
+        (queuedSubmissions as RawQueuedSubmissionDiagnostic[]).map(async (submission) => ({
+          ...submission,
+          redisState: submission.jobId ? await this.qsarQueue.getJobState(submission.jobId) : null,
+        })),
+      ),
+    };
+  }
+
+  async requeueAdminSubmission(submissionId: string): Promise<QsarRequeueResponse> {
+    const submission = (await (this.prisma as any).qsarSubmission.findFirst({
+      where: { id: submissionId },
+      select: {
+        id: true,
+        originalName: true,
+        filename: true,
+        filePath: true,
+        status: true,
+      },
+    })) as RawRequeueSubmission | null;
+
+    if (!submission) {
+      throw new NotFoundException("QSAR submission not found");
+    }
+
+    if (submission.status !== "QUEUED" && submission.status !== "FAILED") {
+      throw new BadRequestException("Only queued or failed QSAR submissions can be requeued");
+    }
+
+    if (!fs.existsSync(submission.filePath)) {
+      throw new BadRequestException("QSAR input file is missing and cannot be requeued");
+    }
+
+    const storedFile: QsarFile = {
+      filename: submission.filename,
+      path: submission.filePath,
+      originalName: submission.originalName,
+    };
+
+    const job = await this.qsarQueue.add("calculate-qsar", {
+      calculation: "qsar",
+      submissionId: submission.id,
+      file: storedFile,
+      submittedAt: new Date().toISOString(),
+    } satisfies QsarJobData);
+
+    await (this.prisma as any).qsarSubmission.update({
+      where: { id: submission.id },
+      data: {
+        status: "QUEUED",
+        jobId: String(job.id),
+        errorMessage: null,
       },
     });
 

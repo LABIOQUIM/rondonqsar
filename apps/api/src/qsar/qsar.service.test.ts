@@ -1,23 +1,30 @@
 import { NotFoundException } from "@nestjs/common";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { QsarService } from "./qsar.service.js";
 
-const { mkdirSync, renameSync } = vi.hoisted(() => ({
+const { existsSync, mkdirSync, renameSync } = vi.hoisted(() => ({
+  existsSync: vi.fn(),
   mkdirSync: vi.fn(),
   renameSync: vi.fn(),
 }));
 
 vi.mock("fs", () => ({
   default: {
+    existsSync,
     mkdirSync,
     renameSync,
   },
+  existsSync,
   mkdirSync,
   renameSync,
 }));
 
 describe("QsarService", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("lists the current user's qsar submissions with pagination and result counts", async () => {
     const queue = {
       add: vi.fn(),
@@ -407,5 +414,219 @@ describe("QsarService", () => {
         jobId: "job-1",
       },
     });
+  });
+
+  it("returns queue diagnostics for admins", async () => {
+    const waitingJob = {
+      id: "job-waiting",
+      name: "calculate-qsar",
+      data: { submissionId: "submission-1" },
+      attemptsMade: 0,
+      failedReason: undefined,
+      timestamp: 1,
+      processedOn: undefined,
+      finishedOn: undefined,
+      getState: vi.fn().mockResolvedValue("waiting"),
+    };
+    const activeJob = {
+      id: "job-active",
+      name: "calculate-qsar",
+      data: { submissionId: "submission-2" },
+      attemptsMade: 0,
+      failedReason: undefined,
+      timestamp: 2,
+      processedOn: 3,
+      finishedOn: undefined,
+      getState: vi.fn().mockResolvedValue("active"),
+    };
+    const failedJob = {
+      id: "job-failed",
+      name: "calculate-qsar",
+      data: { submissionId: "submission-3" },
+      attemptsMade: 1,
+      failedReason: "Mold2 failed",
+      timestamp: 4,
+      processedOn: 5,
+      finishedOn: 6,
+      getState: vi.fn().mockResolvedValue("failed"),
+    };
+    const queue = {
+      getJobCounts: vi.fn().mockResolvedValue({ waiting: 1, active: 1, failed: 1 }),
+      isPaused: vi.fn().mockResolvedValue(false),
+      getWorkersCount: vi.fn().mockResolvedValue(1),
+      getJobs: vi
+        .fn()
+        .mockResolvedValueOnce([waitingJob])
+        .mockResolvedValueOnce([activeJob])
+        .mockResolvedValueOnce([failedJob]),
+      getJobState: vi.fn().mockResolvedValue("waiting"),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findMany: vi.fn().mockResolvedValue([
+          {
+            id: "submission-1",
+            originalName: "molecule.sdf",
+            jobId: "job-waiting",
+            errorMessage: null,
+            createdAt: new Date("2026-05-17T00:00:00.000Z"),
+            updatedAt: null,
+          },
+        ]),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.getQueueDiagnostics()).resolves.toEqual({
+      counts: { waiting: 1, active: 1, failed: 1 },
+      paused: false,
+      workerCount: 1,
+      recentJobs: {
+        waiting: [
+          {
+            id: "job-waiting",
+            name: "calculate-qsar",
+            state: "waiting",
+            submissionId: "submission-1",
+            attemptsMade: 0,
+            failedReason: null,
+            timestamp: 1,
+            processedOn: undefined,
+            finishedOn: undefined,
+          },
+        ],
+        active: [
+          {
+            id: "job-active",
+            name: "calculate-qsar",
+            state: "active",
+            submissionId: "submission-2",
+            attemptsMade: 0,
+            failedReason: null,
+            timestamp: 2,
+            processedOn: 3,
+            finishedOn: undefined,
+          },
+        ],
+        failed: [
+          {
+            id: "job-failed",
+            name: "calculate-qsar",
+            state: "failed",
+            submissionId: "submission-3",
+            attemptsMade: 1,
+            failedReason: "Mold2 failed",
+            timestamp: 4,
+            processedOn: 5,
+            finishedOn: 6,
+          },
+        ],
+      },
+      queuedSubmissions: [
+        {
+          id: "submission-1",
+          originalName: "molecule.sdf",
+          jobId: "job-waiting",
+          redisState: "waiting",
+          errorMessage: null,
+          createdAt: new Date("2026-05-17T00:00:00.000Z"),
+          updatedAt: null,
+        },
+      ],
+    });
+
+    expect(queue.getJobs).toHaveBeenNthCalledWith(1, "waiting", 0, 9, false);
+    expect(queue.getJobs).toHaveBeenNthCalledWith(2, "active", 0, 9, false);
+    expect(queue.getJobs).toHaveBeenNthCalledWith(3, "failed", 0, 9, false);
+    expect(prisma.qsarSubmission.findMany).toHaveBeenCalledWith({
+      where: { status: "QUEUED" },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        originalName: true,
+        jobId: true,
+        errorMessage: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  });
+
+  it("requeues queued and failed submissions", async () => {
+    existsSync.mockReturnValue(true);
+    const queue = {
+      add: vi.fn().mockResolvedValue({ id: "job-2" }),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: "submission-1",
+          originalName: "molecule.sdf",
+          filename: "input_uuid-123.sdf",
+          filePath: "/files/owner/qsar/submission-1/input_uuid-123.sdf",
+          status: "FAILED",
+        }),
+        update: vi.fn().mockResolvedValue({ id: "submission-1" }),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.requeueAdminSubmission("submission-1")).resolves.toEqual({
+      calculation: "qsar",
+      submissionId: "submission-1",
+      jobId: "job-2",
+      status: "queued",
+      file: {
+        filename: "input_uuid-123.sdf",
+        path: "/files/owner/qsar/submission-1/input_uuid-123.sdf",
+        originalName: "molecule.sdf",
+      },
+    });
+
+    expect(queue.add).toHaveBeenCalledWith(
+      "calculate-qsar",
+      expect.objectContaining({
+        calculation: "qsar",
+        submissionId: "submission-1",
+        file: {
+          filename: "input_uuid-123.sdf",
+          path: "/files/owner/qsar/submission-1/input_uuid-123.sdf",
+          originalName: "molecule.sdf",
+        },
+        submittedAt: expect.any(String),
+      }),
+    );
+    expect(prisma.qsarSubmission.update).toHaveBeenCalledWith({
+      where: { id: "submission-1" },
+      data: {
+        status: "QUEUED",
+        jobId: "job-2",
+        errorMessage: null,
+      },
+    });
+  });
+
+  it.each(["PROCESSING", "COMPLETED"])("rejects requeue for %s submissions", async (status) => {
+    const queue = {
+      add: vi.fn(),
+    };
+    const prisma = {
+      qsarSubmission: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: "submission-1",
+          originalName: "molecule.sdf",
+          filename: "input_uuid-123.sdf",
+          filePath: "/files/owner/qsar/submission-1/input_uuid-123.sdf",
+          status,
+        }),
+      },
+    };
+    const service = new QsarService(queue as any, prisma as any);
+
+    await expect(service.requeueAdminSubmission("submission-1")).rejects.toThrow(
+      "Only queued or failed QSAR submissions can be requeued",
+    );
+    expect(queue.add).not.toHaveBeenCalled();
   });
 });

@@ -71,6 +71,30 @@ describe("QsarController", () => {
     expect(findAdminSubmission).toHaveBeenCalledWith("submission-1");
   });
 
+  it("returns admin queue diagnostics", async () => {
+    const getQueueDiagnostics = vi.fn().mockResolvedValue({ workerCount: 1 });
+    const controller = new QsarController({
+      getQueueDiagnostics,
+    } as unknown as QsarService);
+
+    await expect(controller.getQueueDiagnostics()).resolves.toEqual({ workerCount: 1 });
+
+    expect(getQueueDiagnostics).toHaveBeenCalledWith();
+  });
+
+  it("requeues admin qsar submissions", async () => {
+    const requeueAdminSubmission = vi.fn().mockResolvedValue({ jobId: "job-2" });
+    const controller = new QsarController({
+      requeueAdminSubmission,
+    } as unknown as QsarService);
+
+    await expect(controller.requeueAdminSubmission("submission-1")).resolves.toEqual({
+      jobId: "job-2",
+    });
+
+    expect(requeueAdminSubmission).toHaveBeenCalledWith("submission-1");
+  });
+
   it("submits uploaded files to the qsar service with the session user", async () => {
     const submit = vi.fn().mockResolvedValue({ submissionId: "submission-1" });
     const controller = new QsarController({ submit } as unknown as QsarService);

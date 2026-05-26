@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 
 import { QsarConsumer } from "./qsar.consumer.js";
@@ -206,5 +207,43 @@ describe("QsarConsumer", () => {
     expect(prisma.leishResult.createMany).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
     expect(readFileSync).not.toHaveBeenCalled();
+  });
+
+  it("logs worker lifecycle events", () => {
+    const log = vi.spyOn(Logger.prototype, "log").mockImplementation(() => undefined);
+    const warn = vi.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
+    const error = vi.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+    const consumer = new QsarConsumer({} as any);
+    const job = {
+      id: "job-1",
+      data: {
+        submissionId: "submission-1",
+      },
+    };
+
+    consumer.onReady();
+    consumer.onActive(job as any);
+    consumer.onCompleted(job as any);
+    consumer.onFailed(job as any, new Error("Mold2 failed"));
+    consumer.onError(new Error("redis failed"));
+    consumer.onStalled("job-2");
+    consumer.onLockRenewalFailed(["job-3", "job-4"]);
+
+    expect(log).toHaveBeenCalledWith("QSAR worker ready.");
+    expect(log).toHaveBeenCalledWith("QSAR job job-1 active for submission submission-1.");
+    expect(log).toHaveBeenCalledWith("QSAR job job-1 completed for submission submission-1.");
+    expect(error).toHaveBeenCalledWith(
+      "QSAR job job-1 failed for submission submission-1: Mold2 failed",
+      expect.any(String),
+    );
+    expect(error).toHaveBeenCalledWith("QSAR worker error: redis failed", expect.any(String));
+    expect(warn).toHaveBeenCalledWith("QSAR job job-2 stalled and was returned to the queue.");
+    expect(error).toHaveBeenCalledWith(
+      "QSAR worker failed to renew locks for jobs: job-3, job-4",
+    );
+
+    log.mockRestore();
+    warn.mockRestore();
+    error.mockRestore();
   });
 });

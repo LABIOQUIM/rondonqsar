@@ -36,6 +36,42 @@ export type QsarSubmitResponse = {
   file: QsarFile;
 };
 
+export type QsarQueueJobSummary = {
+  id: string | undefined;
+  name: string;
+  state: string;
+  submissionId: string | null;
+  attemptsMade: number;
+  failedReason: string | null;
+  timestamp: number;
+  processedOn: number | undefined;
+  finishedOn: number | undefined;
+};
+
+export type QsarQueuedSubmissionDiagnostic = {
+  id: string;
+  originalName: string;
+  jobId: string | null;
+  redisState: string | null;
+  errorMessage: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+};
+
+export type QsarQueueDiagnostics = {
+  counts: Record<string, number>;
+  paused: boolean;
+  workerCount: number;
+  recentJobs: {
+    waiting: QsarQueueJobSummary[];
+    active: QsarQueueJobSummary[];
+    failed: QsarQueueJobSummary[];
+  };
+  queuedSubmissions: QsarQueuedSubmissionDiagnostic[];
+};
+
+export type QsarRequeueResponse = QsarSubmitResponse;
+
 export type QsarSubmissionSummary = {
   id: string;
   originalName: string;

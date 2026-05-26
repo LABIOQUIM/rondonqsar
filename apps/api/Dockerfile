@@ -32,6 +32,7 @@ RUN pnpm --filter api build
 FROM base AS runner
 WORKDIR /app
 
+ENV NODE_ENV=production
 ENV PATH="${PATH}:/mold2"
 
 COPY --from=deps /app/node_modules ./node_modules

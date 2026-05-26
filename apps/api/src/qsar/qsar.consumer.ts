@@ -1,7 +1,9 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { OnWorkerEvent, Processor, WorkerHost } from "@nestjs/bullmq";
+import { Logger } from "@nestjs/common";
 import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+import type { Job } from "bullmq";
 
 import { PrismaService } from "../prisma.service.js";
 import {
@@ -25,6 +27,12 @@ type DescriptorTerm<TPowers extends readonly number[]> = {
   coefficient: number;
   powers: TPowers;
 };
+
+function getWorkerConcurrency() {
+  const concurrency = Number(process.env.QSAR_WORKER_CONCURRENCY ?? 1);
+
+  return Number.isInteger(concurrency) && concurrency > 0 ? concurrency : 1;
+}
 
 const PLASMO_TERMS: Array<DescriptorTerm<PlasmoDescriptorPowers>> = [
   { coefficient: -743.63518669, powers: [0, 0, 0] },
@@ -232,10 +240,50 @@ function calculateLeishResultRow(line: string): LeishResultRow | null {
   };
 }
 
-@Processor(QSAR_QUEUE)
+@Processor(QSAR_QUEUE, { concurrency: getWorkerConcurrency() })
 export class QsarConsumer extends WorkerHost {
+  private readonly logger = new Logger(QsarConsumer.name);
+
   constructor(private readonly prisma: PrismaService) {
     super();
+  }
+
+  @OnWorkerEvent("ready")
+  onReady() {
+    this.logger.log("QSAR worker ready.");
+  }
+
+  @OnWorkerEvent("active")
+  onActive(job: Job<QsarJob["data"]>) {
+    this.logger.log(`QSAR job ${job.id} active for submission ${job.data.submissionId}.`);
+  }
+
+  @OnWorkerEvent("completed")
+  onCompleted(job: Job<QsarJob["data"]>) {
+    this.logger.log(`QSAR job ${job.id} completed for submission ${job.data.submissionId}.`);
+  }
+
+  @OnWorkerEvent("failed")
+  onFailed(job: Job<QsarJob["data"]> | undefined, error: Error) {
+    this.logger.error(
+      `QSAR job ${job?.id ?? "unknown"} failed for submission ${job?.data.submissionId ?? "unknown"}: ${error.message}`,
+      error.stack,
+    );
+  }
+
+  @OnWorkerEvent("error")
+  onError(error: Error) {
+    this.logger.error(`QSAR worker error: ${error.message}`, error.stack);
+  }
+
+  @OnWorkerEvent("stalled")
+  onStalled(jobId: string) {
+    this.logger.warn(`QSAR job ${jobId} stalled and was returned to the queue.`);
+  }
+
+  @OnWorkerEvent("lockRenewalFailed")
+  onLockRenewalFailed(jobIds: string[]) {
+    this.logger.error(`QSAR worker failed to renew locks for jobs: ${jobIds.join(", ")}`);
   }
 
   async process(job: QsarJob): Promise<QsarCalculationResult> {

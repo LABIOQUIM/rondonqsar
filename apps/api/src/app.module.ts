@@ -4,6 +4,7 @@ import { MailerModule as NestMailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/adapters/handlebars.adapter";
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
+import type { DynamicModule } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthModule } from "@thallesp/nestjs-better-auth";
@@ -13,6 +14,18 @@ import { auth } from "./lib/auth.js";
 import { MailerModule } from "./mailer/mailer.module.js";
 import { QsarModule } from "./qsar/qsar.module.js";
 import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
+
+const bullBoardEnabled =
+  process.env.NODE_ENV !== "production" || process.env.ENABLE_BULL_BOARD === "true";
+
+const bullBoardImports: DynamicModule[] = bullBoardEnabled
+  ? [
+      BullBoardModule.forRoot({
+        route: "/queues",
+        adapter: ExpressAdapter,
+      }),
+    ]
+  : [];
 
 @Module({
   imports: [
@@ -28,10 +41,7 @@ import { SystemInfoModule } from "./systeminfo/systeminfo.module.js";
         // attempts: 1,
       },
     }),
-    BullBoardModule.forRoot({
-      route: "/queues",
-      adapter: ExpressAdapter,
-    }),
+    ...bullBoardImports,
     MailerModule,
     NestMailerModule.forRootAsync({
       useFactory: () => ({

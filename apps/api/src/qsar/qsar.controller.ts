@@ -61,6 +61,20 @@ export class QsarController {
   }
 
   @Roles(["admin"])
+  @Get("admin/queue")
+  getQueueDiagnostics() {
+    return this.qsarService.getQueueDiagnostics();
+  }
+
+  @Roles(["admin"])
+  @Post("admin/:submissionId/requeue")
+  requeueAdminSubmission(
+    @Param("submissionId") submissionId: string,
+  ) {
+    return this.qsarService.requeueAdminSubmission(submissionId);
+  }
+
+  @Roles(["admin"])
   @Get("admin/:submissionId")
   findAdminSubmission(
     @Param("submissionId") submissionId: string,

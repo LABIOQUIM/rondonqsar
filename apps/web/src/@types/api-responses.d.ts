@@ -69,6 +69,62 @@ declare global {
     };
   };
 
+  type SystemInfo = {
+    cpu: {
+      brand: string;
+      vendor: string;
+      cores: number;
+      physicalCores: number;
+    };
+    load: {
+      current: number;
+      average: number;
+    };
+    mem: {
+      total: number;
+      used: number;
+    };
+    fs: {
+      size: number;
+      used: number;
+      available: number;
+    };
+  };
+
+  type QsarQueueJobSummary = {
+    id?: string;
+    name: string;
+    state: string;
+    submissionId: string | null;
+    attemptsMade: number;
+    failedReason: string | null;
+    timestamp: number;
+    processedOn?: number;
+    finishedOn?: number;
+  };
+
+  type QsarQueuedSubmissionDiagnostic = {
+    id: string;
+    originalName: string;
+    jobId: string | null;
+    redisState: string | null;
+    errorMessage: string | null;
+    createdAt: string;
+    updatedAt: string | null;
+  };
+
+  type QsarQueueDiagnostics = {
+    counts: Record<string, number>;
+    paused: boolean;
+    workerCount: number;
+    recentJobs: {
+      waiting: QsarQueueJobSummary[];
+      active: QsarQueueJobSummary[];
+      failed: QsarQueueJobSummary[];
+    };
+    queuedSubmissions: QsarQueuedSubmissionDiagnostic[];
+  };
+
   type SimulationDetails = {
     isActive: boolean;
     isStored: boolean;

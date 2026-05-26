@@ -23,4 +23,6 @@ export const QUERY_KEYS = {
   ) => ["mgmt-users", pagination, columnFilters, sorting] as const,
   mgmtUser: (userId: string) => ["mgmt-user", userId] as const,
   featureFlags: () => ["feature-flags"] as const,
+  systemInfo: () => ["system-info"] as const,
+  qsarQueueDiagnostics: () => ["qsar-queue-diagnostics"] as const,
 } as const;
