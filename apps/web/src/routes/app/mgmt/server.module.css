@@ -56,12 +56,19 @@
   margin-top: var(--mantine-spacing-xs);
 }
 
-.tableWrap {
+.mrtPaper {
+  border: 1px solid var(--mantine-color-default-border);
+  box-shadow: none;
+}
+
+.mrtTableContainer {
   max-width: 100%;
+  height: 284px;
+  min-height: 284px;
   overflow-x: auto;
 }
 
-.tableWrap table {
+.mrtTableContainer table {
   min-width: 760px;
 }
 

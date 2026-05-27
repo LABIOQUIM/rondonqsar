@@ -237,7 +237,7 @@ function calculateLeishResultRow(line: string): LeishResultRow | null {
     descriptorC: C,
     descriptorD: D,
     pec50,
-    ec50: 10 ** -pec50 / 1_000_000,
+    ec50: 10 ** -pec50,
   };
 }
 

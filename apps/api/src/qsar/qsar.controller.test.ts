@@ -77,9 +77,16 @@ describe("QsarController", () => {
       getQueueDiagnostics,
     } as unknown as QsarService);
 
-    await expect(controller.getQueueDiagnostics()).resolves.toEqual({ workerCount: 1 });
+    await expect(controller.getQueueDiagnostics("2", "1", "3", "4")).resolves.toEqual({
+      workerCount: 1,
+    });
 
-    expect(getQueueDiagnostics).toHaveBeenCalledWith();
+    expect(getQueueDiagnostics).toHaveBeenCalledWith({
+      waitingPage: 2,
+      activePage: 1,
+      failedPage: 3,
+      queuedPage: 4,
+    });
   });
 
   it("requeues admin qsar submissions", async () => {

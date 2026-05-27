@@ -62,23 +62,29 @@ export class QsarController {
 
   @Roles(["admin"])
   @Get("admin/queue")
-  getQueueDiagnostics() {
-    return this.qsarService.getQueueDiagnostics();
+  getQueueDiagnostics(
+    @Query("waitingPage") waitingPage: string | undefined,
+    @Query("activePage") activePage: string | undefined,
+    @Query("failedPage") failedPage: string | undefined,
+    @Query("queuedPage") queuedPage: string | undefined,
+  ) {
+    return this.qsarService.getQueueDiagnostics({
+      waitingPage: waitingPage === undefined ? undefined : Number(waitingPage),
+      activePage: activePage === undefined ? undefined : Number(activePage),
+      failedPage: failedPage === undefined ? undefined : Number(failedPage),
+      queuedPage: queuedPage === undefined ? undefined : Number(queuedPage),
+    });
   }
 
   @Roles(["admin"])
   @Post("admin/:submissionId/requeue")
-  requeueAdminSubmission(
-    @Param("submissionId") submissionId: string,
-  ) {
+  requeueAdminSubmission(@Param("submissionId") submissionId: string) {
     return this.qsarService.requeueAdminSubmission(submissionId);
   }
 
   @Roles(["admin"])
   @Get("admin/:submissionId")
-  findAdminSubmission(
-    @Param("submissionId") submissionId: string,
-  ) {
+  findAdminSubmission(@Param("submissionId") submissionId: string) {
     return this.qsarService.findAdminSubmission(submissionId);
   }
 

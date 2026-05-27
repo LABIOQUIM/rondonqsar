@@ -58,16 +58,28 @@ export type QsarQueuedSubmissionDiagnostic = {
   updatedAt: Date | null;
 };
 
+export type PaginatedRecords<TRecord> = {
+  records: TRecord[];
+  total: number;
+};
+
+export type QsarQueueDiagnosticsPagination = {
+  waitingPage?: number | undefined;
+  activePage?: number | undefined;
+  failedPage?: number | undefined;
+  queuedPage?: number | undefined;
+};
+
 export type QsarQueueDiagnostics = {
   counts: Record<string, number>;
   paused: boolean;
   workerCount: number;
   recentJobs: {
-    waiting: QsarQueueJobSummary[];
-    active: QsarQueueJobSummary[];
-    failed: QsarQueueJobSummary[];
+    waiting: PaginatedRecords<QsarQueueJobSummary>;
+    active: PaginatedRecords<QsarQueueJobSummary>;
+    failed: PaginatedRecords<QsarQueueJobSummary>;
   };
-  queuedSubmissions: QsarQueuedSubmissionDiagnostic[];
+  queuedSubmissions: PaginatedRecords<QsarQueuedSubmissionDiagnostic>;
 };
 
 export type QsarRequeueResponse = QsarSubmitResponse;

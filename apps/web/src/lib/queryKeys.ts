@@ -24,5 +24,6 @@ export const QUERY_KEYS = {
   mgmtUser: (userId: string) => ["mgmt-user", userId] as const,
   featureFlags: () => ["feature-flags"] as const,
   systemInfo: () => ["system-info"] as const,
-  qsarQueueDiagnostics: () => ["qsar-queue-diagnostics"] as const,
+  qsarQueueDiagnostics: (waitingPage = 0, activePage = 0, failedPage = 0, queuedPage = 0) =>
+    ["qsar-queue-diagnostics", waitingPage, activePage, failedPage, queuedPage] as const,
 } as const;

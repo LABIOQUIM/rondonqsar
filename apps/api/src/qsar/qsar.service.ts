@@ -14,6 +14,7 @@ import {
   type QsarFile,
   type QsarJobData,
   type QsarQueueDiagnostics,
+  type QsarQueueDiagnosticsPagination,
   type QsarQueueJobSummary,
   type QsarRequeueResponse,
   type QsarSubmissionDetails,
@@ -28,6 +29,7 @@ type PaginationInput = {
 
 const DEFAULT_PAGE_SIZE = 10;
 const MAX_PAGE_SIZE = 100;
+const QUEUE_DIAGNOSTICS_PAGE_SIZE = 5;
 
 const qsarSubmissionCountSelect = {
   _count: {
@@ -100,9 +102,24 @@ function normalizePagination({ pageSize, page }: PaginationInput) {
   };
 }
 
-function mapSubmissionCounts<TSubmission extends { _count: { plasmoResults: number; leishResults: number } }>(
-  submission: TSubmission,
-) {
+function normalizeQueuePage(page: number | undefined) {
+  return Number.isInteger(page) && page && page > 0 ? page : 0;
+}
+
+function getQueuePageBounds(page: number | undefined) {
+  const normalizedPage = normalizeQueuePage(page);
+  const start = normalizedPage * QUEUE_DIAGNOSTICS_PAGE_SIZE;
+
+  return {
+    start,
+    end: start + QUEUE_DIAGNOSTICS_PAGE_SIZE - 1,
+    page: normalizedPage,
+  };
+}
+
+function mapSubmissionCounts<
+  TSubmission extends { _count: { plasmoResults: number; leishResults: number } },
+>(submission: TSubmission) {
   const { _count, ...details } = submission;
 
   return {
@@ -249,45 +266,78 @@ export class QsarService {
     };
   }
 
-  async getQueueDiagnostics(): Promise<QsarQueueDiagnostics> {
-    const [counts, paused, workerCount, waitingJobs, activeJobs, failedJobs, queuedSubmissions] =
-      await Promise.all([
-        this.qsarQueue.getJobCounts(),
-        this.qsarQueue.isPaused(),
-        this.qsarQueue.getWorkersCount(),
-        this.qsarQueue.getJobs("waiting", 0, 9, false),
-        this.qsarQueue.getJobs("active", 0, 9, false),
-        this.qsarQueue.getJobs("failed", 0, 9, false),
-        (this.prisma as any).qsarSubmission.findMany({
-          where: { status: "QUEUED" },
-          orderBy: { createdAt: "desc" },
-          take: 10,
-          select: {
-            id: true,
-            originalName: true,
-            jobId: true,
-            errorMessage: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        }),
-      ]);
+  async getQueueDiagnostics(
+    pagination: QsarQueueDiagnosticsPagination = {},
+  ): Promise<QsarQueueDiagnostics> {
+    const waitingPage = getQueuePageBounds(pagination.waitingPage);
+    const activePage = getQueuePageBounds(pagination.activePage);
+    const failedPage = getQueuePageBounds(pagination.failedPage);
+    const queuedPage = getQueuePageBounds(pagination.queuedPage);
+
+    const [
+      counts,
+      paused,
+      workerCount,
+      waitingJobs,
+      activeJobs,
+      failedJobs,
+      queuedSubmissions,
+      queuedSubmissionsTotal,
+    ] = await Promise.all([
+      this.qsarQueue.getJobCounts(),
+      this.qsarQueue.isPaused(),
+      this.qsarQueue.getWorkersCount(),
+      this.qsarQueue.getJobs("waiting", waitingPage.start, waitingPage.end, false),
+      this.qsarQueue.getJobs("active", activePage.start, activePage.end, false),
+      this.qsarQueue.getJobs("failed", failedPage.start, failedPage.end, false),
+      (this.prisma as any).qsarSubmission.findMany({
+        where: { status: "QUEUED" },
+        orderBy: { createdAt: "desc" },
+        skip: queuedPage.start,
+        take: QUEUE_DIAGNOSTICS_PAGE_SIZE,
+        select: {
+          id: true,
+          originalName: true,
+          jobId: true,
+          errorMessage: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      (this.prisma as any).qsarSubmission.count({
+        where: { status: "QUEUED" },
+      }),
+    ]);
 
     return {
       counts,
       paused,
       workerCount,
       recentJobs: {
-        waiting: await Promise.all(waitingJobs.map((job) => mapQueueJob(job))),
-        active: await Promise.all(activeJobs.map((job) => mapQueueJob(job))),
-        failed: await Promise.all(failedJobs.map((job) => mapQueueJob(job))),
+        waiting: {
+          records: await Promise.all(waitingJobs.map((job) => mapQueueJob(job))),
+          total: counts.waiting ?? 0,
+        },
+        active: {
+          records: await Promise.all(activeJobs.map((job) => mapQueueJob(job))),
+          total: counts.active ?? 0,
+        },
+        failed: {
+          records: await Promise.all(failedJobs.map((job) => mapQueueJob(job))),
+          total: counts.failed ?? 0,
+        },
       },
-      queuedSubmissions: await Promise.all(
-        (queuedSubmissions as RawQueuedSubmissionDiagnostic[]).map(async (submission) => ({
-          ...submission,
-          redisState: submission.jobId ? await this.qsarQueue.getJobState(submission.jobId) : null,
-        })),
-      ),
+      queuedSubmissions: {
+        records: await Promise.all(
+          (queuedSubmissions as RawQueuedSubmissionDiagnostic[]).map(async (submission) => ({
+            ...submission,
+            redisState: submission.jobId
+              ? await this.qsarQueue.getJobState(submission.jobId)
+              : null,
+          })),
+        ),
+        total: queuedSubmissionsTotal,
+      },
     };
   }
 

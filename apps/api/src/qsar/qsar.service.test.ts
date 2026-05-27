@@ -451,7 +451,7 @@ describe("QsarService", () => {
       getState: vi.fn().mockResolvedValue("failed"),
     };
     const queue = {
-      getJobCounts: vi.fn().mockResolvedValue({ waiting: 1, active: 1, failed: 1 }),
+      getJobCounts: vi.fn().mockResolvedValue({ waiting: 11, active: 6, failed: 16 }),
       isPaused: vi.fn().mockResolvedValue(false),
       getWorkersCount: vi.fn().mockResolvedValue(1),
       getJobs: vi
@@ -473,75 +473,96 @@ describe("QsarService", () => {
             updatedAt: null,
           },
         ]),
+        count: vi.fn().mockResolvedValue(21),
       },
     };
     const service = new QsarService(queue as any, prisma as any);
 
-    await expect(service.getQueueDiagnostics()).resolves.toEqual({
-      counts: { waiting: 1, active: 1, failed: 1 },
+    await expect(
+      service.getQueueDiagnostics({
+        waitingPage: 2,
+        activePage: 1,
+        failedPage: 3,
+        queuedPage: 4,
+      }),
+    ).resolves.toEqual({
+      counts: { waiting: 11, active: 6, failed: 16 },
       paused: false,
       workerCount: 1,
       recentJobs: {
-        waiting: [
-          {
-            id: "job-waiting",
-            name: "calculate-qsar",
-            state: "waiting",
-            submissionId: "submission-1",
-            attemptsMade: 0,
-            failedReason: null,
-            timestamp: 1,
-            processedOn: undefined,
-            finishedOn: undefined,
-          },
-        ],
-        active: [
-          {
-            id: "job-active",
-            name: "calculate-qsar",
-            state: "active",
-            submissionId: "submission-2",
-            attemptsMade: 0,
-            failedReason: null,
-            timestamp: 2,
-            processedOn: 3,
-            finishedOn: undefined,
-          },
-        ],
-        failed: [
-          {
-            id: "job-failed",
-            name: "calculate-qsar",
-            state: "failed",
-            submissionId: "submission-3",
-            attemptsMade: 1,
-            failedReason: "Mold2 failed",
-            timestamp: 4,
-            processedOn: 5,
-            finishedOn: 6,
-          },
-        ],
-      },
-      queuedSubmissions: [
-        {
-          id: "submission-1",
-          originalName: "molecule.sdf",
-          jobId: "job-waiting",
-          redisState: "waiting",
-          errorMessage: null,
-          createdAt: new Date("2026-05-17T00:00:00.000Z"),
-          updatedAt: null,
+        waiting: {
+          records: [
+            {
+              id: "job-waiting",
+              name: "calculate-qsar",
+              state: "waiting",
+              submissionId: "submission-1",
+              attemptsMade: 0,
+              failedReason: null,
+              timestamp: 1,
+              processedOn: undefined,
+              finishedOn: undefined,
+            },
+          ],
+          total: 11,
         },
-      ],
+        active: {
+          records: [
+            {
+              id: "job-active",
+              name: "calculate-qsar",
+              state: "active",
+              submissionId: "submission-2",
+              attemptsMade: 0,
+              failedReason: null,
+              timestamp: 2,
+              processedOn: 3,
+              finishedOn: undefined,
+            },
+          ],
+          total: 6,
+        },
+        failed: {
+          records: [
+            {
+              id: "job-failed",
+              name: "calculate-qsar",
+              state: "failed",
+              submissionId: "submission-3",
+              attemptsMade: 1,
+              failedReason: "Mold2 failed",
+              timestamp: 4,
+              processedOn: 5,
+              finishedOn: 6,
+            },
+          ],
+          total: 16,
+        },
+      },
+      queuedSubmissions: {
+        records: [
+          {
+            id: "submission-1",
+            originalName: "molecule.sdf",
+            jobId: "job-waiting",
+            redisState: "waiting",
+            errorMessage: null,
+            createdAt: new Date("2026-05-17T00:00:00.000Z"),
+            updatedAt: null,
+          },
+        ],
+        total: 21,
+      },
     });
 
-    expect(queue.getJobs).toHaveBeenNthCalledWith(1, "waiting", 0, 9, false);
-    expect(queue.getJobs).toHaveBeenNthCalledWith(2, "active", 0, 9, false);
-    expect(queue.getJobs).toHaveBeenNthCalledWith(3, "failed", 0, 9, false);
+    expect(queue.getJobs).toHaveBeenNthCalledWith(1, "waiting", 10, 14, false);
+    expect(queue.getJobs).toHaveBeenNthCalledWith(2, "active", 5, 9, false);
+    expect(queue.getJobs).toHaveBeenNthCalledWith(3, "failed", 15, 19, false);
     expect(prisma.qsarSubmission.findMany).toHaveBeenCalledWith({
       where: { status: "QUEUED" },
       orderBy: { createdAt: "desc" },
-      take: 10,
+      skip: 20,
+      take: 5,
       select: {
         id: true,
         originalName: true,
@@ -550,6 +571,9 @@ describe("QsarService", () => {
         createdAt: true,
         updatedAt: true,
       },
+    });
+    expect(prisma.qsarSubmission.count).toHaveBeenCalledWith({
+      where: { status: "QUEUED" },
     });
   });
 

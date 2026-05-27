@@ -1,25 +1,24 @@
-import {
-  Alert,
-  Badge,
-  Button,
-  Group,
-  Loader,
-  Progress,
-  Table,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Alert, Badge, Button, Group, Loader, Progress, Text, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconRefresh, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
+import {
+  MantineReactTable,
+  type MRT_ColumnDef,
+  type MRT_PaginationState,
+  useMantineReactTable,
+} from "mantine-react-table-open";
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
 
 import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
-import { QUERY_KEYS } from "@/lib/queryKeys";
 import { requeueQsarSubmission } from "@/mutations/requeueQsarSubmission";
-import { getQsarQueueDiagnostics } from "@/queries/getQsarQueueDiagnostics";
+import {
+  getQsarQueueDiagnostics,
+  type QsarQueueDiagnosticsPagination,
+} from "@/queries/getQsarQueueDiagnostics";
 import { getSystemInfo } from "@/queries/getSystemInfo";
 
 import classes from "./server.module.css";
@@ -29,6 +28,9 @@ export const Route = createFileRoute("/app/mgmt/server")({
 });
 
 const queueCountKeys = ["waiting", "active", "completed", "failed", "delayed"] as const;
+const QUEUE_TABLE_PAGE_SIZE = 5;
+
+type PaginationSetter = Dispatch<SetStateAction<MRT_PaginationState>>;
 
 function formatBytes(value: number) {
   if (!Number.isFinite(value) || value <= 0) return "0 B";
@@ -110,165 +112,299 @@ function QueueStateBadge({ paused }: { paused: boolean }) {
   );
 }
 
-function EmptyRows({ colSpan, label }: { colSpan: number; label: string }) {
-  return (
-    <Table.Tr>
-      <Table.Td colSpan={colSpan}>
-        <Text c="dimmed" py="sm" ta="center">
-          {label}
-        </Text>
-      </Table.Td>
-    </Table.Tr>
-  );
+function getInitialQueuePagination(): MRT_PaginationState {
+  return {
+    pageIndex: 0,
+    pageSize: QUEUE_TABLE_PAGE_SIZE,
+  };
+}
+
+function setQueuePagination(
+  setPagination: PaginationSetter,
+  updater: SetStateAction<MRT_PaginationState>,
+) {
+  setPagination((current) => {
+    const next = typeof updater === "function" ? updater(current) : updater;
+
+    return {
+      ...next,
+      pageSize: QUEUE_TABLE_PAGE_SIZE,
+    };
+  });
 }
 
 function RecentJobsTable({
+  isFetching,
+  isLoading,
   jobs,
   onRequeue,
+  onPaginationChange,
+  pagination,
   requeueingSubmissionId,
   title,
 }: {
-  jobs: QsarQueueJobSummary[];
+  isFetching: boolean;
+  isLoading: boolean;
+  jobs: PaginatedRecords<QsarQueueJobSummary>;
   onRequeue?: (submissionId: string) => void;
+  onPaginationChange: PaginationSetter;
+  pagination: MRT_PaginationState;
   requeueingSubmissionId?: string | undefined;
   title: string;
 }) {
+  const columns = useMemo<MRT_ColumnDef<QsarQueueJobSummary>[]>(() => {
+    const tableColumns: MRT_ColumnDef<QsarQueueJobSummary>[] = [
+      {
+        accessorKey: "id",
+        header: "Job",
+        Cell: ({ cell }) => cell.getValue<string | undefined>() ?? "--",
+      },
+      {
+        accessorKey: "submissionId",
+        header: "Submission",
+        Cell: ({ cell }) => cell.getValue<string | null>() ?? "--",
+      },
+      {
+        accessorKey: "state",
+        header: "State",
+        Cell: ({ cell }) => {
+          const state = cell.getValue<string>();
+
+          return (
+            <Badge color={state === "failed" ? "red" : "blue"} variant="light">
+              {state}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "attemptsMade",
+        header: "Attempts",
+      },
+      {
+        accessorKey: "processedOn",
+        header: "Started",
+        Cell: ({ cell }) => formatDateTime(cell.getValue<number | undefined>()),
+      },
+      {
+        accessorKey: "finishedOn",
+        header: "Finished",
+        Cell: ({ cell }) => formatDateTime(cell.getValue<number | undefined>()),
+      },
+    ];
+
+    if (onRequeue) {
+      tableColumns.push({
+        id: "action",
+        header: "Action",
+        Cell: ({ row }) => (
+          <Button
+            disabled={!row.original.submissionId}
+            leftSection={<IconRefresh size={14} />}
+            loading={requeueingSubmissionId === row.original.submissionId}
+            onClick={() => row.original.submissionId && onRequeue(row.original.submissionId)}
+            size="xs"
+            variant="light"
+          >
+            Requeue
+          </Button>
+        ),
+      });
+    }
+
+    return tableColumns;
+  }, [onRequeue, requeueingSubmissionId]);
+
+  const table = useMantineReactTable({
+    data: jobs.records,
+    columns,
+    enableColumnActions: false,
+    enablePagination: true,
+    enableSorting: false,
+    enableStickyHeader: true,
+    enableTopToolbar: false,
+    layoutMode: "grid",
+    manualPagination: true,
+    mantinePaginationProps: {
+      showRowsPerPage: false,
+    },
+    mantinePaperProps: {
+      className: classes.mrtPaper,
+    },
+    mantineTableContainerProps: {
+      className: classes.mrtTableContainer,
+    },
+    mantineTableProps: {
+      highlightOnHover: true,
+    },
+    onPaginationChange,
+    paginationDisplayMode: "default",
+    rowCount: jobs.total,
+    state: {
+      isLoading,
+      pagination,
+      showProgressBars: isFetching,
+    },
+  });
+
   return (
     <section className={classes.section}>
       <Group justify="space-between">
         <Title order={4}>{title}</Title>
-        <Badge variant="light">{jobs.length}</Badge>
+        <Badge variant="light">{jobs.total}</Badge>
       </Group>
 
-      <div className={classes.tableWrap}>
-        <Table highlightOnHover stickyHeader>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Job</Table.Th>
-              <Table.Th>Submission</Table.Th>
-              <Table.Th>State</Table.Th>
-              <Table.Th>Attempts</Table.Th>
-              <Table.Th>Started</Table.Th>
-              <Table.Th>Finished</Table.Th>
-              {onRequeue ? <Table.Th>Action</Table.Th> : null}
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {jobs.length === 0 ? (
-              <EmptyRows colSpan={onRequeue ? 7 : 6} label="No jobs in this state." />
-            ) : (
-              jobs.map((job) => (
-                <Table.Tr key={`${title}-${job.id ?? job.submissionId ?? job.timestamp}`}>
-                  <Table.Td>{job.id ?? "--"}</Table.Td>
-                  <Table.Td>{job.submissionId ?? "--"}</Table.Td>
-                  <Table.Td>
-                    <Badge color={job.state === "failed" ? "red" : "blue"} variant="light">
-                      {job.state}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>{job.attemptsMade}</Table.Td>
-                  <Table.Td>{formatDateTime(job.processedOn)}</Table.Td>
-                  <Table.Td>{formatDateTime(job.finishedOn)}</Table.Td>
-                  {onRequeue ? (
-                    <Table.Td>
-                      <Button
-                        disabled={!job.submissionId}
-                        leftSection={<IconRefresh size={14} />}
-                        loading={requeueingSubmissionId === job.submissionId}
-                        onClick={() => job.submissionId && onRequeue(job.submissionId)}
-                        size="xs"
-                        variant="light"
-                      >
-                        Requeue
-                      </Button>
-                    </Table.Td>
-                  ) : null}
-                </Table.Tr>
-              ))
-            )}
-          </Table.Tbody>
-        </Table>
-      </div>
+      <MantineReactTable table={table} />
     </section>
   );
 }
 
 function QueuedSubmissionsTable({
+  isFetching,
+  isLoading,
   onRequeue,
+  onPaginationChange,
+  pagination,
   requeueingSubmissionId,
   submissions,
 }: {
+  isFetching: boolean;
+  isLoading: boolean;
   onRequeue: (submissionId: string) => void;
+  onPaginationChange: PaginationSetter;
+  pagination: MRT_PaginationState;
   requeueingSubmissionId?: string | undefined;
-  submissions: QsarQueuedSubmissionDiagnostic[];
+  submissions: PaginatedRecords<QsarQueuedSubmissionDiagnostic>;
 }) {
+  const columns = useMemo<MRT_ColumnDef<QsarQueuedSubmissionDiagnostic>[]>(
+    () => [
+      {
+        accessorKey: "id",
+        header: "Submission",
+      },
+      {
+        accessorKey: "originalName",
+        header: "File",
+      },
+      {
+        accessorKey: "jobId",
+        header: "Job",
+        Cell: ({ cell }) => cell.getValue<string | null>() ?? "--",
+      },
+      {
+        accessorKey: "redisState",
+        header: "Redis",
+        Cell: ({ cell }) => {
+          const redisState = cell.getValue<string | null>();
+
+          return (
+            <Badge color={redisState === "unknown" ? "red" : "blue"} variant="light">
+              {redisState ?? "none"}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Submitted",
+        Cell: ({ cell }) => formatDateTime(cell.getValue<string>()),
+      },
+      {
+        accessorKey: "errorMessage",
+        header: "Error",
+        Cell: ({ cell }) => cell.getValue<string | null>() ?? "--",
+      },
+      {
+        id: "action",
+        header: "Action",
+        Cell: ({ row }) => (
+          <Button
+            leftSection={<IconRefresh size={14} />}
+            loading={requeueingSubmissionId === row.original.id}
+            onClick={() => onRequeue(row.original.id)}
+            size="xs"
+            variant="light"
+          >
+            Requeue
+          </Button>
+        ),
+      },
+    ],
+    [onRequeue, requeueingSubmissionId],
+  );
+
+  const table = useMantineReactTable({
+    data: submissions.records,
+    columns,
+    enableColumnActions: false,
+    enablePagination: true,
+    enableSorting: false,
+    enableStickyHeader: true,
+    enableTopToolbar: false,
+    layoutMode: "grid",
+    manualPagination: true,
+    mantinePaginationProps: {
+      showRowsPerPage: false,
+    },
+    mantinePaperProps: {
+      className: classes.mrtPaper,
+    },
+    mantineTableContainerProps: {
+      className: classes.mrtTableContainer,
+    },
+    mantineTableProps: {
+      highlightOnHover: true,
+    },
+    onPaginationChange,
+    paginationDisplayMode: "default",
+    rowCount: submissions.total,
+    state: {
+      isLoading,
+      pagination,
+      showProgressBars: isFetching,
+    },
+  });
+
   return (
     <section className={classes.section}>
       <Group justify="space-between">
         <Title order={4}>Queued Submissions</Title>
-        <Badge variant="light">{submissions.length}</Badge>
+        <Badge variant="light">{submissions.total}</Badge>
       </Group>
 
-      <div className={classes.tableWrap}>
-        <Table highlightOnHover stickyHeader>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Submission</Table.Th>
-              <Table.Th>File</Table.Th>
-              <Table.Th>Job</Table.Th>
-              <Table.Th>Redis</Table.Th>
-              <Table.Th>Submitted</Table.Th>
-              <Table.Th>Error</Table.Th>
-              <Table.Th>Action</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {submissions.length === 0 ? (
-              <EmptyRows colSpan={7} label="No queued database submissions." />
-            ) : (
-              submissions.map((submission) => (
-                <Table.Tr key={submission.id}>
-                  <Table.Td>{submission.id}</Table.Td>
-                  <Table.Td>{submission.originalName}</Table.Td>
-                  <Table.Td>{submission.jobId ?? "--"}</Table.Td>
-                  <Table.Td>
-                    <Badge color={submission.redisState === "unknown" ? "red" : "blue"} variant="light">
-                      {submission.redisState ?? "none"}
-                    </Badge>
-                  </Table.Td>
-                  <Table.Td>{formatDateTime(submission.createdAt)}</Table.Td>
-                  <Table.Td>{submission.errorMessage ?? "--"}</Table.Td>
-                  <Table.Td>
-                    <Button
-                      leftSection={<IconRefresh size={14} />}
-                      loading={requeueingSubmissionId === submission.id}
-                      onClick={() => onRequeue(submission.id)}
-                      size="xs"
-                      variant="light"
-                    >
-                      Requeue
-                    </Button>
-                  </Table.Td>
-                </Table.Tr>
-              ))
-            )}
-          </Table.Tbody>
-        </Table>
-      </div>
+      <MantineReactTable table={table} />
     </section>
   );
 }
 
 function RouteComponent() {
   const queryClient = useQueryClient();
+  const [waitingPagination, setWaitingPagination] = useState(getInitialQueuePagination);
+  const [activePagination, setActivePagination] = useState(getInitialQueuePagination);
+  const [failedPagination, setFailedPagination] = useState(getInitialQueuePagination);
+  const [queuedPagination, setQueuedPagination] = useState(getInitialQueuePagination);
+  const queuePagination = useMemo<QsarQueueDiagnosticsPagination>(
+    () => ({
+      waitingPage: waitingPagination.pageIndex,
+      activePage: activePagination.pageIndex,
+      failedPage: failedPagination.pageIndex,
+      queuedPage: queuedPagination.pageIndex,
+    }),
+    [
+      activePagination.pageIndex,
+      failedPagination.pageIndex,
+      queuedPagination.pageIndex,
+      waitingPagination.pageIndex,
+    ],
+  );
   const systemInfo = useQuery(getSystemInfo());
-  const queueDiagnostics = useQuery(getQsarQueueDiagnostics());
+  const queueDiagnostics = useQuery(getQsarQueueDiagnostics(queuePagination));
 
   const requeueMutation = useMutation({
     mutationFn: requeueQsarSubmission,
     onSuccess: (data) => {
       notify(`Submission requeued as job ${data.jobId}.`, true);
-      void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qsarQueueDiagnostics() });
+      void queryClient.invalidateQueries({ queryKey: ["qsar-queue-diagnostics"] });
       void queryClient.invalidateQueries({ queryKey: ["mgmt-qsar-submissions"] });
       void queryClient.invalidateQueries({ queryKey: ["mgmt-qsar-submission"] });
     },
@@ -355,20 +491,42 @@ function RouteComponent() {
           </section>
 
           <div className={classes.jobsGrid}>
-            <RecentJobsTable jobs={queueData?.recentJobs.waiting ?? []} title="Waiting Jobs" />
-            <RecentJobsTable jobs={queueData?.recentJobs.active ?? []} title="Active Jobs" />
             <RecentJobsTable
-              jobs={queueData?.recentJobs.failed ?? []}
+              isFetching={queueDiagnostics.isFetching}
+              isLoading={queueDiagnostics.isLoading}
+              jobs={queueData?.recentJobs.waiting ?? { records: [], total: 0 }}
+              onPaginationChange={(updater) => setQueuePagination(setWaitingPagination, updater)}
+              pagination={waitingPagination}
+              title="Waiting Jobs"
+            />
+            <RecentJobsTable
+              isFetching={queueDiagnostics.isFetching}
+              isLoading={queueDiagnostics.isLoading}
+              jobs={queueData?.recentJobs.active ?? { records: [], total: 0 }}
+              onPaginationChange={(updater) => setQueuePagination(setActivePagination, updater)}
+              pagination={activePagination}
+              title="Active Jobs"
+            />
+            <RecentJobsTable
+              isFetching={queueDiagnostics.isFetching}
+              isLoading={queueDiagnostics.isLoading}
+              jobs={queueData?.recentJobs.failed ?? { records: [], total: 0 }}
               onRequeue={(submissionId) => requeueMutation.mutate(submissionId)}
+              onPaginationChange={(updater) => setQueuePagination(setFailedPagination, updater)}
+              pagination={failedPagination}
               requeueingSubmissionId={requeueMutation.variables}
               title="Failed Jobs"
             />
           </div>
 
           <QueuedSubmissionsTable
+            isFetching={queueDiagnostics.isFetching}
+            isLoading={queueDiagnostics.isLoading}
             onRequeue={(submissionId) => requeueMutation.mutate(submissionId)}
+            onPaginationChange={(updater) => setQueuePagination(setQueuedPagination, updater)}
+            pagination={queuedPagination}
             requeueingSubmissionId={requeueMutation.variables}
-            submissions={queueData?.queuedSubmissions ?? []}
+            submissions={queueData?.queuedSubmissions ?? { records: [], total: 0 }}
           />
         </>
       )}

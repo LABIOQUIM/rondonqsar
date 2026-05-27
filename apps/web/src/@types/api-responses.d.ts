@@ -113,16 +113,21 @@ declare global {
     updatedAt: string | null;
   };
 
+  type PaginatedRecords<TRecord> = {
+    records: TRecord[];
+    total: number;
+  };
+
   type QsarQueueDiagnostics = {
     counts: Record<string, number>;
     paused: boolean;
     workerCount: number;
     recentJobs: {
-      waiting: QsarQueueJobSummary[];
-      active: QsarQueueJobSummary[];
-      failed: QsarQueueJobSummary[];
+      waiting: PaginatedRecords<QsarQueueJobSummary>;
+      active: PaginatedRecords<QsarQueueJobSummary>;
+      failed: PaginatedRecords<QsarQueueJobSummary>;
     };
-    queuedSubmissions: QsarQueuedSubmissionDiagnostic[];
+    queuedSubmissions: PaginatedRecords<QsarQueuedSubmissionDiagnostic>;
   };
 
   type SimulationDetails = {
