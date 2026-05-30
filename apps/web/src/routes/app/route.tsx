@@ -83,7 +83,7 @@ function RouteComponent() {
         breakpoint: "sm",
         collapsed: { mobile: !opened },
       }}
-      padding="md"
+      padding={0}
     >
       <AppShell.Header>
         <Group align="center" h="100%" justify="space-between" px="md" w="100%">

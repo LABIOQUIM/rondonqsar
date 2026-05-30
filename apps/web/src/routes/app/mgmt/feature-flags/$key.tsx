@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { type SerializableJson } from "@/lib/api";
 import { type UpdateFeatureFlagInput } from "@/mutations/featureFlags";
@@ -57,8 +56,7 @@ function RouteComponent() {
   }
 
   return (
-    <PageLayout>
-      <Heading title={`Edit: ${flag.key}`} />
+    <PageLayout title={`Edit: ${flag.key}`}>
       <FlagForm
         disabledFields={["key", "type"]}
         initialValues={{

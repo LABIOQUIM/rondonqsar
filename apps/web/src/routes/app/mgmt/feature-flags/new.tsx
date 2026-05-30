@@ -1,6 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { type SerializableJson } from "@/lib/api";
 import { type CreateFeatureFlagInput } from "@/mutations/featureFlags";
@@ -46,8 +45,7 @@ function RouteComponent() {
   }
 
   return (
-    <PageLayout>
-      <Heading title="New Feature Flag" />
+    <PageLayout title="New Feature Flag">
       <FlagForm
         isLoading={createMutation.isPending}
         onCancel={() => void navigate({ to: "/app/mgmt/feature-flags" })}

@@ -10,7 +10,6 @@ import {
 } from "mantine-react-table-open";
 import { useState } from "react";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableDateCell } from "@/components/TableDateCell";
@@ -129,8 +128,7 @@ function RouteComponent() {
 
   if (isError) {
     return (
-      <PageLayout>
-        <Heading title="QSAR Submissions" />
+      <PageLayout title="QSAR Submissions">
         <Alert color="red" title="Unable to load submissions">
           {error instanceof Error ? error.message : "The admin QSAR submissions could not be loaded."}
         </Alert>
@@ -139,8 +137,7 @@ function RouteComponent() {
   }
 
   return (
-    <PageLayout>
-      <Heading title="QSAR Submissions" />
+    <PageLayout title="QSAR Submissions">
       <MantineReactTable table={table} />
     </PageLayout>
   );

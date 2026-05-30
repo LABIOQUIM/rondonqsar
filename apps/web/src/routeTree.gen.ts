@@ -23,6 +23,7 @@ import { Route as homeAnalyticsRouteImport } from './routes/(home)/analytics'
 import { Route as homeAboutRouteImport } from './routes/(home)/about'
 import { Route as AppMgmtRouteRouteImport } from './routes/app/mgmt/route'
 import { Route as AppSubmitIndexRouteImport } from './routes/app/submit/index'
+import { Route as AppMgmtIndexRouteImport } from './routes/app/mgmt/index'
 import { Route as AppMgmtUsersRouteImport } from './routes/app/mgmt/users'
 import { Route as AppMgmtSettingsRouteImport } from './routes/app/mgmt/settings'
 import { Route as AppMgmtQsarRouteRouteImport } from './routes/app/mgmt/qsar/route'
@@ -107,6 +108,11 @@ const AppSubmitIndexRoute = AppSubmitIndexRouteImport.update({
   id: '/submit/',
   path: '/submit/',
   getParentRoute: () => AppRouteRoute,
+} as any)
+const AppMgmtIndexRoute = AppMgmtIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppMgmtRouteRoute,
 } as any)
 const AppMgmtUsersRoute = AppMgmtUsersRouteImport.update({
   id: '/users',
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/app/mgmt/qsar': typeof AppMgmtQsarRouteRouteWithChildren
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
+  '/app/mgmt/': typeof AppMgmtIndexRoute
   '/app/submit/': typeof AppSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -216,7 +223,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteRouteWithChildren
-  '/app/mgmt': typeof AppMgmtRouteRouteWithChildren
   '/about': typeof homeAboutRoute
   '/analytics': typeof homeAnalyticsRoute
   '/guides': typeof homeGuidesRoute
@@ -229,6 +235,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
+  '/app/mgmt': typeof AppMgmtIndexRoute
   '/app/submit': typeof AppSubmitIndexRoute
   '/app/mgmt/feature-flags/$key': typeof AppMgmtFeatureFlagsKeyRoute
   '/app/mgmt/feature-flags/new': typeof AppMgmtFeatureFlagsNewRoute
@@ -258,6 +265,7 @@ export interface FileRoutesById {
   '/app/mgmt/qsar': typeof AppMgmtQsarRouteRouteWithChildren
   '/app/mgmt/settings': typeof AppMgmtSettingsRoute
   '/app/mgmt/users': typeof AppMgmtUsersRoute
+  '/app/mgmt/': typeof AppMgmtIndexRoute
   '/app/submit/': typeof AppSubmitIndexRoute
   '/app/mgmt/tools/batch-email': typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   '/app/mgmt/tools/user-importer': typeof AppMgmtToolsUserImporterRouteRouteWithChildren
@@ -290,6 +298,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/qsar'
     | '/app/mgmt/settings'
     | '/app/mgmt/users'
+    | '/app/mgmt/'
     | '/app/submit/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/user-importer'
@@ -305,7 +314,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
-    | '/app/mgmt'
     | '/about'
     | '/analytics'
     | '/guides'
@@ -318,6 +326,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/mgmt/settings'
     | '/app/mgmt/users'
+    | '/app/mgmt'
     | '/app/submit'
     | '/app/mgmt/feature-flags/$key'
     | '/app/mgmt/feature-flags/new'
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/app/mgmt/qsar'
     | '/app/mgmt/settings'
     | '/app/mgmt/users'
+    | '/app/mgmt/'
     | '/app/submit/'
     | '/app/mgmt/tools/batch-email'
     | '/app/mgmt/tools/user-importer'
@@ -470,6 +480,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/submit/'
       preLoaderRoute: typeof AppSubmitIndexRouteImport
       parentRoute: typeof AppRouteRoute
+    }
+    '/app/mgmt/': {
+      id: '/app/mgmt/'
+      path: '/'
+      fullPath: '/app/mgmt/'
+      preLoaderRoute: typeof AppMgmtIndexRouteImport
+      parentRoute: typeof AppMgmtRouteRoute
     }
     '/app/mgmt/users': {
       id: '/app/mgmt/users'
@@ -617,6 +634,7 @@ interface AppMgmtRouteRouteChildren {
   AppMgmtQsarRouteRoute: typeof AppMgmtQsarRouteRouteWithChildren
   AppMgmtSettingsRoute: typeof AppMgmtSettingsRoute
   AppMgmtUsersRoute: typeof AppMgmtUsersRoute
+  AppMgmtIndexRoute: typeof AppMgmtIndexRoute
   AppMgmtToolsBatchEmailRouteRoute: typeof AppMgmtToolsBatchEmailRouteRouteWithChildren
   AppMgmtToolsUserImporterRouteRoute: typeof AppMgmtToolsUserImporterRouteRouteWithChildren
   AppMgmtFeatureFlagsKeyRoute: typeof AppMgmtFeatureFlagsKeyRoute
@@ -630,6 +648,7 @@ const AppMgmtRouteRouteChildren: AppMgmtRouteRouteChildren = {
   AppMgmtQsarRouteRoute: AppMgmtQsarRouteRouteWithChildren,
   AppMgmtSettingsRoute: AppMgmtSettingsRoute,
   AppMgmtUsersRoute: AppMgmtUsersRoute,
+  AppMgmtIndexRoute: AppMgmtIndexRoute,
   AppMgmtToolsBatchEmailRouteRoute:
     AppMgmtToolsBatchEmailRouteRouteWithChildren,
   AppMgmtToolsUserImporterRouteRoute:

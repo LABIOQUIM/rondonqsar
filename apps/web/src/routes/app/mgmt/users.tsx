@@ -16,7 +16,6 @@ import {
 } from "mantine-react-table-open";
 import { useState } from "react";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { TableBooleanCell } from "@/components/TableBooleanCell";
 import { TableDateCell } from "@/components/TableDateCell";
@@ -203,8 +202,7 @@ function RouteComponent() {
   });
 
   return (
-    <PageLayout>
-      <Heading title="Users" />
+    <PageLayout title="Users">
       <MantineReactTable table={table} />
     </PageLayout>
   );

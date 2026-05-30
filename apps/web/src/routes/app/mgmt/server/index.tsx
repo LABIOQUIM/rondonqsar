@@ -6,7 +6,6 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { requeueQsarSubmission } from "@/mutations/requeueQsarSubmission";
 import {
@@ -90,9 +89,7 @@ function RouteComponent() {
   );
 
   return (
-    <PageLayout>
-      <Heading title="Server" />
-
+    <PageLayout title="Server">
       {(systemInfo.isError || queueDiagnostics.isError) && (
         <Alert color="red" title="Unable to load server diagnostics" variant="light">
           {systemInfo.error instanceof Error

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 
 import { DropFileButton } from "./-components/DropFileButton";
@@ -15,9 +14,7 @@ function RouteComponent() {
   const { users } = useUserImporter();
 
   return (
-    <PageLayout>
-      <Heading title="User Importer" />
-
+    <PageLayout title="User Importer">
       {users.length > 0 ? <ImportTable /> : <DropFileButton />}
     </PageLayout>
   );

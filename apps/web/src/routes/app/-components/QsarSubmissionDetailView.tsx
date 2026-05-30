@@ -27,7 +27,6 @@ import {
 } from "mantine-react-table-open";
 import { useState } from "react";
 
-import { Heading } from "@/components/Heading";
 import { Loader } from "@/components/Loader";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -449,8 +448,7 @@ export function QsarSubmissionDetailView({
 
   if (isLoading) {
     return (
-      <PageLayout className={classes.content}>
-        <Heading title={heading} />
+      <PageLayout className={classes.content} title={heading}>
         <Loader />
       </PageLayout>
     );
@@ -458,8 +456,7 @@ export function QsarSubmissionDetailView({
 
   if (isError || !data) {
     return (
-      <PageLayout className={classes.content}>
-        <Heading title={heading} />
+      <PageLayout className={classes.content} title={heading}>
         <Alert color="red" icon={<IconAlertCircle size={18} />} title="Unable to load submission">
           {error instanceof Error ? error.message : "The submission details could not be loaded."}
         </Alert>
@@ -470,9 +467,7 @@ export function QsarSubmissionDetailView({
   const isCompleted = data.status === "COMPLETED";
 
   return (
-    <PageLayout className={classes.content}>
-      <Heading title={heading} />
-
+    <PageLayout className={classes.content} title={heading}>
       <section className={classes.summary}>
         <SummaryItem label="Status" value={<StatusBadge status={data.status} />} />
         <SummaryItem

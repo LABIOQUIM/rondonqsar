@@ -4,13 +4,10 @@ import type { LinkProps } from "@tanstack/react-router";
 import { MantineColor } from "@mantine/core";
 
 declare global {
-  interface NavLink {
+  interface NavChildLink {
     icon: Icon;
     label: string;
-    href:
-      | LinkProps["to"]
-      | "https://www.qsar.labioquim.fiocruz.br/"
-      | "https://www.plasmoia.labioquim.fiocruz.br/";
+    href: LinkProps["to"] | "https://visualdynamics.fiocruz.br/";
     external?: boolean;
     disabled?: boolean;
     role?: USER_ROLE;
@@ -18,6 +15,10 @@ declare global {
       color: MantineColor;
       message: string;
     };
+  }
+
+  interface NavLink extends NavChildLink {
+    children?: NavChildLink[];
   }
 
   interface NavSection {

@@ -5,7 +5,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 import { buildPageTitle } from "@/lib/seo";
 import { submitQsarSubmission } from "@/mutations/submitQsarSubmission";
@@ -40,8 +39,7 @@ function RouteComponent() {
   });
 
   return (
-    <PageLayout>
-      <Heading title="New QSAR Submission" />
+    <PageLayout title="New QSAR Submission">
       <form
         className={classes.form}
         onSubmit={handleSubmit((values) => submitQsarSubmission(values, navigate))}

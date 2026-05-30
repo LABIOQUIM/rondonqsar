@@ -7,11 +7,13 @@ import {
   IconInfoCircle,
   IconListNumbers,
   IconMail,
+  IconMailForward,
   IconPlus,
   IconReportAnalytics,
   IconServerSpark,
   IconSettings,
   IconSpider,
+  IconTableImport,
   IconTools,
   IconUsers,
 } from "@tabler/icons-react";
@@ -24,22 +26,6 @@ import { Section } from "./Section";
 import { User } from "./User";
 
 const sections: NavSection[] = [
-  {
-    title: "General",
-    links: [
-      { icon: IconInfoCircle, label: "About", href: "/" },
-      {
-        icon: IconReportAnalytics,
-        label: "Analytics",
-        href: "/analytics",
-      },
-      {
-        icon: IconListNumbers,
-        label: "Tutorials",
-        href: "/guides",
-      },
-    ],
-  },
   {
     title: "QSAR",
     links: [
@@ -56,52 +42,107 @@ const sections: NavSection[] = [
     ],
   },
   {
-    title: "More LABIOQUIM Tools",
+    title: "Resources",
     links: [
+      { icon: IconInfoCircle, label: "About", href: "/" },
+      {
+        icon: IconListNumbers,
+        label: "Tutorials",
+        href: "/guides",
+      },
+      {
+        icon: IconReportAnalytics,
+        label: "Analytics",
+        href: "/analytics",
+      },
       {
         icon: IconExternalLink,
-        label: "PlasmoIA",
-        href: "https://www.plasmoia.labioquim.fiocruz.br/",
+        label: "Visual Dynamics",
+        href: "https://visualdynamics.fiocruz.br/",
         external: true,
       },
     ],
   },
 ];
 
-const adminSection: NavSection = {
-  title: "Management",
-  links: [
-    {
-      label: "Users",
-      icon: IconUsers,
-      href: "/app/mgmt/users",
-    },
-    {
-      label: "QSAR Submissions",
-      icon: IconAutomation,
-      href: "/app/mgmt/qsar",
-    },
-    {
-      label: "Server Statistics",
-      icon: IconServerSpark,
-      href: "/app/mgmt/server",
-    },
-    {
-      label: "Tools",
-      icon: IconTools,
-      href: "/app/mgmt/tools",
-    },
-    {
-      label: "Feature Flags",
-      icon: IconFlag,
-      href: "/app/mgmt/feature-flags",
-    },
-    {
-      label: "Settings",
-      icon: IconSettings,
-      href: "/app/mgmt/settings",
-    },
-  ],
+const adminSections: NavSection[] = [
+  {
+    title: "Admin",
+    links: [
+      {
+        href: '/app/mgmt',
+        icon: IconServerSpark,
+        label: "Operations",
+        children: [
+          {
+            label: "Users",
+            icon: IconUsers,
+            href: "/app/mgmt/users",
+          },
+          {
+            label: "QSAR Submissions",
+            icon: IconAutomation,
+            href: "/app/mgmt/qsar",
+          },
+          {
+            label: "Server Statistics",
+            icon: IconServerSpark,
+            href: "/app/mgmt/server",
+          },
+        ]
+      },
+      {
+        href: '/app/mgmt',
+        icon: IconSettings,
+        label: "Configuration",
+        children: [
+          {
+            label: "Feature Flags",
+            icon: IconFlag,
+            href: "/app/mgmt/feature-flags",
+          },
+          {
+            label: "Settings",
+            icon: IconSettings,
+            href: "/app/mgmt/settings",
+          },
+        ]
+      },
+      {
+        label: "Tools",
+        icon: IconTools,
+        href: "/app/mgmt/tools",
+        children: [
+          {
+            label: "All Tools",
+            icon: IconTools,
+            href: "/app/mgmt/tools",
+          },
+          {
+            label: "User Importer",
+            icon: IconTableImport,
+            href: "/app/mgmt/tools/user-importer",
+          },
+          {
+            label: "Batch Email",
+            icon: IconMailForward,
+            href: "/app/mgmt/tools/batch-email",
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const qsarSections = sections.slice(0, 1);
+const resourceSections = sections.slice(1);
+
+const getFinalSections = (isAdmin: boolean) => {
+  if (isAdmin) {
+    return [...qsarSections, ...adminSections, ...resourceSections];
+  }
+
+  return sections;
 };
 
 interface Props {
@@ -111,12 +152,7 @@ interface Props {
 export function Navbar({ toggle }: Props) {
   const { data } = authClient.useSession();
 
-  const finalSections = useMemo(() => {
-    if (data?.user?.role === "admin") {
-      return [adminSection, ...sections];
-    }
-    return sections;
-  }, [data]);
+  const finalSections = useMemo(() => getFinalSections(data?.user?.role === "admin"), [data]);
 
   const mainLinks = finalSections.map((section) => (
     <Section key={section.title} section={section} toggle={toggle} />

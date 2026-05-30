@@ -2,7 +2,6 @@ import { Group, Text } from "@mantine/core";
 import { IconArrowRight, IconMailForward, IconTableImport } from "@tabler/icons-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Heading } from "@/components/Heading";
 import { PageLayout } from "@/components/PageLayout";
 
 import classes from "./index.module.css";
@@ -28,8 +27,7 @@ const tools = [
 
 function RouteComponent() {
   return (
-    <PageLayout>
-      <Heading title="Management Tools" />
+    <PageLayout title="Management Tools">
       <div className={classes.grid}>
         {tools.map(({ icon: Icon, label, description, url }) => (
           <Link className={classes.card} key={label} to={url}>
