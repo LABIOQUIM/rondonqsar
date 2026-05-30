@@ -1,5 +1,5 @@
 import { QueryCache, QueryClient } from "@tanstack/react-query";
-import { createRouter } from "@tanstack/react-router";
+import { createRouter, type RouterHistory } from "@tanstack/react-router";
 
 import { authClient } from "@/lib/auth-client";
 import { routeTree } from "@/routeTree.gen";
@@ -26,7 +26,11 @@ async function handleUnauthorizedQueryError(queryClient: QueryClient, error: unk
   }
 }
 
-export function getRouter() {
+interface GetRouterOptions {
+  history?: RouterHistory;
+}
+
+export function getRouter(options: GetRouterOptions = {}) {
   let queryClient: QueryClient;
 
   const queryCache = new QueryCache({
@@ -45,6 +49,7 @@ export function getRouter() {
   });
 
   return createRouter({
+    ...(options.history ? { history: options.history } : {}),
     routeTree,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 30_000,

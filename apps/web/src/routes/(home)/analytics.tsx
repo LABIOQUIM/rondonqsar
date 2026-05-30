@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(home)/analytics")({
     buildSeoHead({
       title: "Platform Analytics",
       description:
-        "Review public analytics and adoption metrics for the Visual Dynamics molecular dynamics platform.",
+        "Review public analytics and adoption metrics for the RondonQSAR malaria and leishmaniasis QSAR screening platform.",
       path: "/analytics",
       index: true,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,
@@ -32,7 +32,7 @@ function RouteComponent() {
           className={classes.analyticsIframe}
           src="https://lookerstudio.google.com/embed/reporting/c52ec58d-916c-4291-b5db-10f6e9df6e85/page/fhpXD"
           style={{ border: 0 }}
-          title="LABIOQUIM Platform Analytics"
+          title="RondonQSAR Platform Analytics"
         />
       </AspectRatio>
       <LanderCallToActionSection />

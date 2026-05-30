@@ -8,7 +8,7 @@ export const Route = createFileRoute("/(home)/about")({
   head: ({ loaderData }) =>
     buildSeoHead({
       title: "About",
-      description: "About Visual Dynamics.",
+      description: "About RondonQSAR.",
       path: "/about",
       index: false,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,

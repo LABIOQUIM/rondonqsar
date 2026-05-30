@@ -39,7 +39,7 @@ export const Route = createFileRoute("/(home)/guides")({
     buildSeoHead({
       title: "Simulation Guides",
       description:
-        "Watch step-by-step video guides for Visual Dynamics simulation setup, ACPYPE workflows, APO simulations, and result downloads.",
+        "Watch step-by-step video guides for RondonQSAR QSAR submission, screening workflows, and result review.",
       path: "/guides",
       index: true,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,

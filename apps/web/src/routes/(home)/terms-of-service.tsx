@@ -8,7 +8,7 @@ export const Route = createFileRoute("/(home)/terms-of-service")({
   head: ({ loaderData }) =>
     buildSeoHead({
       title: "Terms of Service",
-      description: "Terms of service for Visual Dynamics.",
+      description: "Terms of service for RondonQSAR.",
       path: "/terms-of-service",
       index: false,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,

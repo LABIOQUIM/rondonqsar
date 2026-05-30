@@ -8,7 +8,7 @@ export const Route = createFileRoute("/(home)/privacy")({
   head: ({ loaderData }) =>
     buildSeoHead({
       title: "Privacy Policy",
-      description: "Privacy policy for Visual Dynamics.",
+      description: "Privacy policy for RondonQSAR.",
       path: "/privacy",
       index: false,
       siteUrl: loaderData?.siteUrl ?? DEFAULT_SITE_URL,

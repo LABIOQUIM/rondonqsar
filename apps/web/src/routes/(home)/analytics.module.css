@@ -5,6 +5,11 @@
   margin: var(--mantine-spacing-md) auto 0 auto;
 }
 
+.analyticsIframe {
+  width: 100%;
+  height: 100%;
+}
+
 .sectionTitle {
   font-family: "Lexend", sans-serif;
   font-size: clamp(2.2rem, 5vw, 3.2rem);
