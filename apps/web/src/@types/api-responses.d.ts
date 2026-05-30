@@ -93,6 +93,7 @@ declare global {
 
   type QsarQueueJobSummary = {
     id?: string;
+    username: string | null;
     name: string;
     state: string;
     submissionId: string | null;
@@ -105,6 +106,7 @@ declare global {
 
   type QsarQueuedSubmissionDiagnostic = {
     id: string;
+    username: string;
     originalName: string;
     jobId: string | null;
     redisState: string | null;

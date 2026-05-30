@@ -38,6 +38,7 @@ export type QsarSubmitResponse = {
 
 export type QsarQueueJobSummary = {
   id: string | undefined;
+  username: string | null;
   name: string;
   state: string;
   submissionId: string | null;
@@ -50,6 +51,7 @@ export type QsarQueueJobSummary = {
 
 export type QsarQueuedSubmissionDiagnostic = {
   id: string;
+  username: string;
   originalName: string;
   jobId: string | null;
   redisState: string | null;

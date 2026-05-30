@@ -92,7 +92,6 @@ function RouteComponent() {
             <Logo />
           </Group>
           <Group>
-            {/*<SystemsStatus />*/}
             <ServerTime />
           </Group>
         </Group>

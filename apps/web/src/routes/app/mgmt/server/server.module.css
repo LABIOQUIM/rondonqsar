@@ -4,7 +4,6 @@
 }
 
 .metricsGrid,
-.queueGrid,
 .jobsGrid {
   display: grid;
   gap: var(--mantine-spacing-md);
@@ -14,12 +13,14 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-.queueGrid {
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+.jobsGrid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+  align-items: start;
+  min-width: 0;
 }
 
-.jobsGrid {
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+.jobsGrid > * {
+  min-width: 0;
 }
 
 .panel,
@@ -54,22 +55,6 @@
 
 .progress {
   margin-top: var(--mantine-spacing-xs);
-}
-
-.mrtPaper {
-  border: 1px solid var(--mantine-color-default-border);
-  box-shadow: none;
-}
-
-.mrtTableContainer {
-  max-width: 100%;
-  height: 284px;
-  min-height: 284px;
-  overflow-x: auto;
-}
-
-.mrtTableContainer table {
-  min-width: 760px;
 }
 
 .loading {

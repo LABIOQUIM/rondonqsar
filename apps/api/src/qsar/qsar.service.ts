@@ -167,6 +167,9 @@ type RawAdminSubmissionDetails = RawSubmissionDetails & {
 
 type RawQueuedSubmissionDiagnostic = {
   id: string;
+  user: {
+    username: string;
+  };
   originalName: string;
   jobId: string | null;
   errorMessage: string | null;
@@ -185,6 +188,7 @@ type RawRequeueSubmission = {
 async function mapQueueJob(job: Job): Promise<QsarQueueJobSummary> {
   return {
     id: job.id,
+    username: null,
     name: job.name,
     state: await job.getState(),
     submissionId:
@@ -200,6 +204,42 @@ async function mapQueueJob(job: Job): Promise<QsarQueueJobSummary> {
     processedOn: job.processedOn,
     finishedOn: job.finishedOn,
   };
+}
+
+async function addQueueJobUsernames(
+  prisma: PrismaService,
+  jobs: QsarQueueJobSummary[],
+): Promise<QsarQueueJobSummary[]> {
+  const submissionIds = jobs
+    .map((job) => job.submissionId)
+    .filter((submissionId): submissionId is string => typeof submissionId === "string");
+
+  if (submissionIds.length === 0) return jobs;
+
+  const submissions = (await (prisma as any).qsarSubmission.findMany({
+    where: {
+      id: {
+        in: submissionIds,
+      },
+    },
+    select: {
+      id: true,
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  })) as { id: string; user: { username: string } }[];
+
+  const usernamesBySubmissionId = new Map(
+    submissions.map((submission) => [submission.id, submission.user.username]),
+  );
+
+  return jobs.map((job) => ({
+    ...job,
+    username: job.submissionId ? (usernamesBySubmissionId.get(job.submissionId) ?? null) : null,
+  }));
 }
 
 @Injectable()
@@ -297,6 +337,11 @@ export class QsarService {
         take: QUEUE_DIAGNOSTICS_PAGE_SIZE,
         select: {
           id: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
           originalName: true,
           jobId: true,
           errorMessage: true,
@@ -308,6 +353,17 @@ export class QsarService {
         where: { status: "QUEUED" },
       }),
     ]);
+    const [mappedWaitingJobs, mappedActiveJobs, mappedFailedJobs] = await Promise.all([
+      Promise.all(waitingJobs.map((job) => mapQueueJob(job))).then((jobs) =>
+        addQueueJobUsernames(this.prisma, jobs),
+      ),
+      Promise.all(activeJobs.map((job) => mapQueueJob(job))).then((jobs) =>
+        addQueueJobUsernames(this.prisma, jobs),
+      ),
+      Promise.all(failedJobs.map((job) => mapQueueJob(job))).then((jobs) =>
+        addQueueJobUsernames(this.prisma, jobs),
+      ),
+    ]);
 
     return {
       counts,
@@ -315,26 +371,31 @@ export class QsarService {
       workerCount,
       recentJobs: {
         waiting: {
-          records: await Promise.all(waitingJobs.map((job) => mapQueueJob(job))),
+          records: mappedWaitingJobs,
           total: counts.waiting ?? 0,
         },
         active: {
-          records: await Promise.all(activeJobs.map((job) => mapQueueJob(job))),
+          records: mappedActiveJobs,
           total: counts.active ?? 0,
         },
         failed: {
-          records: await Promise.all(failedJobs.map((job) => mapQueueJob(job))),
+          records: mappedFailedJobs,
           total: counts.failed ?? 0,
         },
       },
       queuedSubmissions: {
         records: await Promise.all(
-          (queuedSubmissions as RawQueuedSubmissionDiagnostic[]).map(async (submission) => ({
-            ...submission,
-            redisState: submission.jobId
-              ? await this.qsarQueue.getJobState(submission.jobId)
-              : null,
-          })),
+          (queuedSubmissions as RawQueuedSubmissionDiagnostic[]).map(async (submission) => {
+            const { user, ...submissionData } = submission;
+
+            return {
+              ...submissionData,
+              username: user.username,
+              redisState: submission.jobId
+                ? await this.qsarQueue.getJobState(submission.jobId)
+                : null,
+            };
+          }),
         ),
         total: queuedSubmissionsTotal,
       },

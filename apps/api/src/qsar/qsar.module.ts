@@ -28,7 +28,13 @@ const bullBoardImports: DynamicModule[] = bullBoardEnabled
 
 @Module({
   imports: [
-    BullModule.registerQueue({ name: QSAR_QUEUE }),
+    BullModule.registerQueue({
+      name: QSAR_QUEUE,
+      defaultJobOptions: {
+        removeOnComplete: false,
+        removeOnFail: false,
+      },
+    }),
     ...bullBoardImports,
   ],
   controllers: [QsarController],
