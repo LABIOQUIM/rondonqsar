@@ -123,6 +123,20 @@
   }
 }
 
+.childLinkActiveContainer {
+  background-color: var(--mantine-primary-color-light);
+  color: var(--mantine-primary-color-light-color);
+
+  .linkIcon {
+    color: var(--mantine-primary-color-light-color);
+  }
+
+  &:hover {
+    background-color: var(--mantine-primary-color-light-hover);
+    color: var(--mantine-primary-color-light-color);
+  }
+}
+
 .badge {
   margin-left: auto;
   cursor: pointer;

@@ -46,7 +46,8 @@ function NavLinkItem({
     <UnstyledButton
       className={clsx(classes.linkContainer, {
         [classes.childLinkContainer]: isChild,
-        [classes.linkActiveContainer]: !disabled && isActive(pathname, link.href),
+        [classes.childLinkActiveContainer]: isChild && !disabled && isActive(pathname, link.href),
+        [classes.linkActiveContainer]: !isChild && !disabled && isActive(pathname, link.href),
       })}
       component={Link}
       onClick={toggle}
