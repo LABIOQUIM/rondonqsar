@@ -1,2 +1,14 @@
 packages:
   - "apps/*"
+
+allowBuilds:
+  '@nestjs/core': true
+  '@prisma/engines': true
+  '@scarf/scarf': true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+
+shamefullyHoist: true
+nodeLinker: hoisted
+
