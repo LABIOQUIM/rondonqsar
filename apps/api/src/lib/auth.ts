@@ -6,7 +6,6 @@ import { APIError, createAuthMiddleware } from "better-auth/api";
 import { admin, twoFactor, username } from "better-auth/plugins";
 
 import { PrismaClient } from "../generated/prisma/client.js";
-import { getPublicOrigins } from "./origins.js";
 
 const user = process.env.DB_USER;
 const pass = process.env.DB_PASS;
@@ -21,7 +20,7 @@ const prisma = new PrismaClient({ adapter });
 
 export const auth = betterAuth({
   basePath: "/auth",
-  trustedOrigins: getPublicOrigins(),
+  trustedOrigins: [process.env.SITE_URL ?? "http://localhost:3000"],
   emailAndPassword: {
     enabled: true,
   },

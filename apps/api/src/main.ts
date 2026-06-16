@@ -5,7 +5,6 @@ import * as fs from "fs/promises";
 import { setTimeout as delay } from "timers/promises";
 
 import { AppModule } from "./app.module.js";
-import { getPublicOrigins } from "./lib/origins.js";
 
 const DEV_SERVER_PID_FILE = "/tmp/rondonqsar-api-dev.pid";
 
@@ -94,7 +93,7 @@ async function bootstrap(): Promise<void> {
     bodyParser: false,
     cors: {
       credentials: true,
-      origin: getPublicOrigins(),
+      origin: process.env.SITE_URL ?? "http://localhost:3000",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
       allowedHeaders: "Content-Type, Authorization, Accept",
       exposedHeaders: "Content-Length",
