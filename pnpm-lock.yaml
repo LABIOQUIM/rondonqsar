@@ -113,6 +113,9 @@ importers:
       graphql:
         specifier: ^16.13.2
         version: 16.13.2
+      multer:
+        specifier: ^2.2.0
+        version: 2.2.0
       nodemailer:
         specifier: ^8.0.5
         version: 8.0.5
@@ -183,6 +186,9 @@ importers:
       tsconfig-paths:
         specifier: 4.2.0
         version: 4.2.0
+      tsx:
+        specifier: ^4.19.0
+        version: 4.21.0
       type-fest:
         specifier: ^5.6.0
         version: 5.6.0
@@ -264,6 +270,9 @@ importers:
       chroma-js:
         specifier: ^3.2.0
         version: 3.2.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       dayjs:
         specifier: ^1.11.20
         version: 1.11.20
@@ -4628,7 +4637,7 @@ packages:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
 
   mantine-react-table@https://codeload.github.com/CareHarmony/mantine-react-table-ch/tar.gz/629c356bd8e9b60c93800f138913c2db01c259b9:
-    resolution: {gitHosted: true, integrity: sha512-2Bxl04i9noIdrVN+iZ01ImwvNWCAZv+E62xHWKuoxroe/4wkL0Tu5xg/6aoIfAGfdlHQ8NERngVyoxIJvWzjNA==, tarball: https://codeload.github.com/CareHarmony/mantine-react-table-ch/tar.gz/629c356bd8e9b60c93800f138913c2db01c259b9}
+    resolution: {tarball: https://codeload.github.com/CareHarmony/mantine-react-table-ch/tar.gz/629c356bd8e9b60c93800f138913c2db01c259b9}
     version: 2.0.0-beta.9
     engines: {node: '>=16'}
     peerDependencies:
@@ -4862,6 +4871,10 @@ packages:
 
   multer@2.1.1:
     resolution: {integrity: sha512-mo+QTzKlx8R7E5ylSXxWzGoXoZbOsRMpyitcht8By2KHvMbf3tjwosZ/Mu/XYU6UuJ3VZnODIrak5ZrPiPyB6A==}
+    engines: {node: '>= 10.16.0'}
+
+  multer@2.2.0:
+    resolution: {integrity: sha512-6rdyFg2kLrMh9Jee7/BMPuV9lEAd7lLW2YUpF9/YxR7njyoUwwQ0ZPh3TaIY50Sw6vlyD2HW3wGOkTS4P79xrQ==}
     engines: {node: '>= 10.16.0'}
 
   mute-stream@2.0.0:
@@ -10230,7 +10243,6 @@ snapshots:
       '@esbuild/win32-arm64': 0.27.7
       '@esbuild/win32-ia32': 0.27.7
       '@esbuild/win32-x64': 0.27.7
-    optional: true
 
   escalade@3.2.0: {}
 
@@ -10557,7 +10569,6 @@ snapshots:
   get-tsconfig@4.14.0:
     dependencies:
       resolve-pkg-maps: 1.0.0
-    optional: true
 
   giget@2.0.0:
     dependencies:
@@ -11825,6 +11836,13 @@ snapshots:
       concat-stream: 2.0.0
       type-is: 1.6.18
 
+  multer@2.2.0:
+    dependencies:
+      append-field: 1.0.0
+      busboy: 1.6.0
+      concat-stream: 2.0.0
+      type-is: 1.6.18
+
   mute-stream@2.0.0: {}
 
   mysql2@3.15.3:
@@ -12913,8 +12931,7 @@ snapshots:
 
   resolve-from@5.0.0: {}
 
-  resolve-pkg-maps@1.0.0:
-    optional: true
+  resolve-pkg-maps@1.0.0: {}
 
   resolve@1.22.12:
     dependencies:
@@ -13481,7 +13498,6 @@ snapshots:
       get-tsconfig: 4.14.0
     optionalDependencies:
       fsevents: 2.3.3
-    optional: true
 
   tunnel@0.0.6: {}
 
