@@ -17,7 +17,7 @@ services:
     networks:
       - net
     volumes:
-      - files:/files
+      - files_prod:/files
       - /usr/local/bin/Mold2:/mold2/Mold2
 
   web:
@@ -45,7 +45,7 @@ services:
       - redis:/data
 
 volumes:
-  files:
+  files_prod:
     driver: nfsvol
   redis:
     driver: nfsvol
