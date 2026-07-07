@@ -1,11 +1,11 @@
 import "dotenv/config";
-import { PrismaPg } from "@prisma/adapter-pg";
 
 import { auth } from "../src/lib/auth.js";
 import {
   FEATURE_FLAG_TYPE,
   PrismaClient,
 } from "../src/generated/prisma/client.js";
+import { createPrismaAdapter } from "../src/shared/db-pool.js";
 
 type SeedAdminRole = "admin" | "user";
 
@@ -34,18 +34,8 @@ const featureFlags = [
   },
 ] as const;
 
-function getConnectionString() {
-  const user = process.env.DB_USER;
-  const pass = process.env.DB_PASS;
-  const host = process.env.DB_HOST;
-  const port = process.env.DB_PORT;
-  const name = process.env.DB_DATABASE;
-
-  return `postgresql://${user}:${pass}@${host}:${port}/${name}`;
-}
-
 function getPrismaClient() {
-  const adapter = new PrismaPg({ connectionString: getConnectionString() });
+  const adapter = createPrismaAdapter();
 
   return new PrismaClient({ adapter });
 }

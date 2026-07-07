@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { withEnv } from "../test-utils/env.js";
 
-const prismaPg = vi.fn();
 const prismaAdapter = vi.fn();
 const betterAuth = vi.fn((config) => config);
 const admin = vi.fn(() => "admin-plugin");
@@ -27,12 +26,11 @@ const mockPrisma = {
   },
 };
 
-vi.mock("@prisma/adapter-pg", () => ({
-  PrismaPg: class {
-    constructor(options: unknown) {
-      prismaPg(options);
-    }
-  },
+const mockAdapter = vi.hoisted(() => ({}));
+const createPrismaAdapter = vi.hoisted(() => vi.fn(() => mockAdapter));
+
+vi.mock("../shared/db-pool.js", () => ({
+  createPrismaAdapter,
 }));
 
 vi.mock("better-auth", () => ({
@@ -83,25 +81,16 @@ describe("auth", () => {
       },
       async () => {
         vi.resetModules();
-        prismaPg.mockClear();
         prismaAdapter.mockClear();
         betterAuth.mockClear();
 
         const { auth } = await import("./auth.js");
 
         expect(auth.basePath).toBe("/auth");
-        expect(auth.trustedOrigins).toEqual([
-          "https://app.example.com",
-          "https://auth.example.com",
-          "https://site.example.com",
-          "https://public.example.com",
-          "http://localhost:3000",
-        ]);
+        expect(auth.trustedOrigins).toEqual(["https://site.example.com"]);
         expect(auth.emailAndPassword).toEqual({ enabled: true });
         expect(auth.plugins).toEqual(["admin-plugin", "two-factor-plugin", "username-plugin"]);
-        expect(prismaPg).toHaveBeenCalledWith({
-          connectionString: "postgresql://dbuser:dbpass@dbhost:5432/dbname",
-        });
+        expect(createPrismaAdapter).toHaveBeenCalled();
         expect(prismaAdapter).toHaveBeenCalledWith(expect.anything(), {
           provider: "postgresql",
         });

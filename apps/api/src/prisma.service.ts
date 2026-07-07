@@ -1,23 +1,27 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 
 import { PrismaClient } from "./generated/prisma/client.js";
+import { createPrismaAdapter } from "./shared/db-pool.js";
 
 @Injectable()
-export class PrismaService extends PrismaClient {
+export class PrismaService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger(PrismaService.name);
+
   constructor() {
-    const user = process.env.DB_USER;
-    const pass = process.env.DB_PASS;
-    const host = process.env.DB_HOST;
-    const port = process.env.DB_PORT;
-    const name = process.env.DB_DATABASE;
-
-    const connectionString = `postgresql://${user}:${pass}@${host}:${port}/${name}`;
-
-    const adapter = new PrismaPg({
-      connectionString,
-    });
+    const adapter = createPrismaAdapter();
 
     super({ adapter });
+  }
+
+  async onModuleInit() {
+    try {
+      await this.$queryRaw`SELECT 1`;
+      this.logger.debug("Database connection established");
+    } catch (error) {
+      this.logger.error(
+        "Failed to connect to database",
+        error instanceof Error ? error.stack : undefined,
+      );
+    }
   }
 }

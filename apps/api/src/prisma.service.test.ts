@@ -1,28 +1,28 @@
+import { Logger } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 
 import { withEnv } from "./test-utils/env.js";
 
-const prismaPg = vi.fn();
 const prismaClient = vi.fn();
+const queryRaw = vi.fn();
+const mockAdapter = vi.hoisted(() => ({}));
+const createPrismaAdapter = vi.hoisted(() => vi.fn(() => mockAdapter));
 
-vi.mock("@prisma/adapter-pg", () => ({
-  PrismaPg: class {
-    constructor(options: unknown) {
-      prismaPg(options);
-    }
-  },
+vi.mock("./shared/db-pool.js", () => ({
+  createPrismaAdapter,
 }));
 
 vi.mock("./generated/prisma/client.js", () => ({
   PrismaClient: class {
     constructor(options: unknown) {
       prismaClient(options);
+      this.$queryRaw = queryRaw;
     }
   },
 }));
 
 describe("PrismaService", () => {
-  it("builds the prisma adapter from database env vars", async () => {
+  it("builds the PrismaClient with the adapter from createPrismaAdapter", async () => {
     await withEnv(
       {
         DB_USER: "dbuser",
@@ -33,19 +33,75 @@ describe("PrismaService", () => {
       },
       async () => {
         vi.resetModules();
-        prismaPg.mockClear();
         prismaClient.mockClear();
+        createPrismaAdapter.mockClear();
 
         const { PrismaService } = await import("./prisma.service.js");
 
         new PrismaService();
 
-        expect(prismaPg).toHaveBeenCalledWith({
-          connectionString: "postgresql://dbuser:dbpass@dbhost:5432/dbname",
-        });
         expect(prismaClient).toHaveBeenCalledWith({
-          adapter: expect.anything(),
+          adapter: mockAdapter,
         });
+      },
+    );
+  });
+
+  it("logs when database connection is established on init", async () => {
+    await withEnv(
+      {
+        DB_USER: "u",
+        DB_PASS: "p",
+        DB_HOST: "h",
+        DB_PORT: "5432",
+        DB_DATABASE: "db",
+      },
+      async () => {
+        vi.resetModules();
+        queryRaw.mockResolvedValue([{ "?column?": 1 }]);
+
+        const logSpy = vi.spyOn(Logger.prototype, "debug").mockImplementation(() => undefined);
+
+        const { PrismaService } = await import("./prisma.service.js");
+
+        const service = new PrismaService();
+        await service.onModuleInit();
+
+        expect(logSpy).toHaveBeenCalledWith("Database connection established");
+
+        logSpy.mockRestore();
+      },
+    );
+  });
+
+  it("logs error when database connection fails on init", async () => {
+    await withEnv(
+      {
+        DB_USER: "u",
+        DB_PASS: "p",
+        DB_HOST: "h",
+        DB_PORT: "5432",
+        DB_DATABASE: "db",
+      },
+      async () => {
+        vi.resetModules();
+        queryRaw.mockRejectedValue(new Error("connection refused"));
+
+        const errorSpy = vi
+          .spyOn(Logger.prototype, "error")
+          .mockImplementation(() => undefined);
+
+        const { PrismaService } = await import("./prisma.service.js");
+
+        const service = new PrismaService();
+        await service.onModuleInit();
+
+        expect(errorSpy).toHaveBeenCalledWith(
+          "Failed to connect to database",
+          expect.any(String),
+        );
+
+        errorSpy.mockRestore();
       },
     );
   });
