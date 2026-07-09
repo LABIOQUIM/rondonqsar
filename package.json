@@ -1,7 +1,7 @@
 {
   "name": "rondonqsar",
   "packageManager": "pnpm@10.33.0",
-  "version": "1.0.0-next.18",
+  "version": "1.0.0-next.19",
   "private": true,
   "scripts": {
     "format": "oxfmt",
