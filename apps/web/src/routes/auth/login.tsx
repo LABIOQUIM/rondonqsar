@@ -127,7 +127,7 @@ function RouteComponent() {
           onClick={doAnonymousLogin}
           variant="subtle"
         >
-          Entrar como anônimo
+          Login anonymously
         </Button>
       </Box>
 
