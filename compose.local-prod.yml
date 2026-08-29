@@ -10,8 +10,12 @@ services:
     environment:
       APP_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
       BETTER_AUTH_URL: ${WEB_PUBLIC_URL:-http://192.168.1.99:3001}
+      DB_HOST: postgres
     depends_on:
-      - redis
+      redis:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     ports:
       - "4001:3000"
     networks:
@@ -44,10 +48,31 @@ services:
     volumes:
       - redis:/data
 
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_DATABASE}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - net
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   files_prod:
     driver: nfsvol
   redis:
+    driver: nfsvol
+  postgres_data:
     driver: nfsvol
 
 networks:
