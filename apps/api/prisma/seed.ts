@@ -9,6 +9,16 @@ import { createPrismaAdapter } from "../src/shared/db-pool.js";
 
 type SeedAdminRole = "admin" | "user";
 
+const ANONYMOUS_USER = {
+  email: "anonymous@rondonqsar.local",
+  username: "anonymous",
+  displayUsername: "Anonymous",
+  name: "Anonymous User",
+  // Public account by design — keep in sync with
+  // apps/web/src/lib/auth-session.ts (ANONYMOUS_CREDENTIALS)
+  password: "anonymous",
+} as const;
+
 const featureFlags = [
   {
     key: "maintenance-mode",
@@ -120,6 +130,35 @@ async function seedAdminUser(prisma: PrismaClient) {
   console.log(`Seeded admin user "${admin.email}".`);
 }
 
+async function seedAnonymousUser(prisma: PrismaClient) {
+  const existing = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: ANONYMOUS_USER.email }, { username: ANONYMOUS_USER.username }],
+    },
+    select: { id: true },
+  });
+
+  if (existing) {
+    console.log("Skipping anonymous user seed. Already exists.");
+    return;
+  }
+
+  await auth.api.createUser({
+    body: {
+      email: ANONYMOUS_USER.email,
+      password: ANONYMOUS_USER.password,
+      name: ANONYMOUS_USER.name,
+      role: "user",
+      data: {
+        username: ANONYMOUS_USER.username,
+        displayUsername: ANONYMOUS_USER.displayUsername,
+      },
+    },
+  });
+
+  console.log(`Seeded anonymous user "${ANONYMOUS_USER.email}".`);
+}
+
 async function main() {
   const prisma = getPrismaClient();
 
@@ -128,6 +167,7 @@ async function main() {
     console.log(`Seeded ${featureFlags.length} feature flags.`);
 
     await seedAdminUser(prisma);
+    await seedAnonymousUser(prisma);
   } finally {
     await prisma.$disconnect();
   }
