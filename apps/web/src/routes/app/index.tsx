@@ -10,10 +10,13 @@ import {
 } from "mantine-react-table-open";
 import { useState } from "react";
 
+import { Alert } from "@/components/Alert";
 import { PageLayout } from "@/components/PageLayout";
 import { StatusBadge } from "@/components/StatusBadge";
 import { TableDateCell } from "@/components/TableDateCell";
 import { TableTextCell } from "@/components/TableTextCell";
+import { authClient } from "@/lib/auth-client";
+import { isAnonymousSession } from "@/lib/auth-session";
 import { buildPageTitle } from "@/lib/seo";
 import { getUserQsarSubmissions } from "@/queries/getUserQsarSubmissions";
 
@@ -31,6 +34,7 @@ function StatusCell({ cell }: { cell: MRT_Cell<QsarSubmissionSummary> }) {
 }
 
 function RouteComponent() {
+  const { data: session } = authClient.useSession();
   const [pagination, onPaginationChange] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -123,6 +127,17 @@ function RouteComponent() {
 
   return (
     <PageLayout title="My QSAR Submissions">
+      {isAnonymousSession(session) && (
+        <Alert
+          mb="md"
+          status={{
+            status: "info",
+            title: "This is a shared account",
+            message:
+              "Under anonymous access all your submissions will be visible to other anonymous users, prefer not submitting confidential works here, instead, log-out and create your own, private account for that.",
+          }}
+        />
+      )}
       <MantineReactTable table={table} />
     </PageLayout>
   );

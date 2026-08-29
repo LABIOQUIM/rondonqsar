@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { Alert } from "@/components/Alert";
 import { Heading } from "@/components/Heading";
+import { ANONYMOUS_CREDENTIALS } from "@/lib/auth-session";
 import { buildPageTitle } from "@/lib/seo";
 import { login } from "@/mutations/auth";
 
@@ -39,7 +40,7 @@ function RouteComponent() {
     formState: { errors },
   } = useForm<FormInputs>({ resolver: zodResolver(schema) });
 
-  async function doLogin({ identifier, password }: FormInputs) {
+  async function performLogin(identifier: string, password: string) {
     setStatus({ status: "loading" });
 
     try {
@@ -57,6 +58,14 @@ function RouteComponent() {
         message: error instanceof Error ? error.message : "Unable to sign in.",
       });
     }
+  }
+
+  async function doLogin({ identifier, password }: FormInputs) {
+    await performLogin(identifier, password);
+  }
+
+  async function doAnonymousLogin() {
+    await performLogin(ANONYMOUS_CREDENTIALS.identifier, ANONYMOUS_CREDENTIALS.password);
   }
 
   function RenderAlert() {
@@ -112,6 +121,13 @@ function RouteComponent() {
 
         <Button loading={status?.status === "loading"} type="submit">
           Login
+        </Button>
+        <Button
+          disabled={status?.status === "loading" || maintenanceMode}
+          onClick={doAnonymousLogin}
+          variant="subtle"
+        >
+          Entrar como anônimo
         </Button>
       </Box>
 
