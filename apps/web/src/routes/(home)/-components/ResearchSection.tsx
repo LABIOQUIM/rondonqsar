@@ -37,8 +37,12 @@ const researches = [
   },
   {
     doi: "under review",
-    title:
-      "Machine Learning-Based QSAR Modeling and Web Implementation for Predicting Antileishmanial Activity against Leishmania (Viannia) braziliensis",
+    title: (
+      <>
+        Machine Learning-Based QSAR Modeling and Web Implementation for Predicting Antileishmanial
+        Activity against <i>Leishmania (Viannia) braziliensis</i>
+      </>
+    ),
     summary: "",
     highlights: [],
     download: {
